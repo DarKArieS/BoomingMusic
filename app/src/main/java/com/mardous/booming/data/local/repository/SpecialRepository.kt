@@ -32,7 +32,7 @@ interface SpecialRepository {
     suspend fun songsByYear(year: Int, query: String?): List<Song>
     suspend fun musicFolders(): FileSystemQuery
     suspend fun folderByPath(path: String): Folder
-    suspend fun songsByFolder(path: String, includeSubfolders: Boolean): List<Song>
+    suspend fun songsByFolder(path: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean = false): List<Song>
     suspend fun songsByFolder(path: String, query: String): List<Song>
     suspend fun musicFilesInPath(path: String, recursiveSubfolders: Boolean = true): FileSystemQuery
 }
@@ -92,12 +92,13 @@ class RealSpecialRepository(private val songRepository: RealSongRepository) : Sp
         return Folder(path, with(SongSortMode.FolderSongs) { songs.sorted() })
     }
 
-    override suspend fun songsByFolder(path: String, includeSubfolders: Boolean): List<Song> {
+    override suspend fun songsByFolder(path: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean): List<Song> {
         if (includeSubfolders) {
             val dirPath = path.takeIf { it.endsWith("/") } ?: "$path/"
             val cursor = songRepository.makeSongCursor(
                 selection = "${AudioColumns.DATA} LIKE ?",
-                selectionValues = arrayOf("$dirPath%")
+                selectionValues = arrayOf("$dirPath%"),
+                ignoreBlacklist = ignoreBlacklist
             )
             return songRepository.songs(cursor)
         }

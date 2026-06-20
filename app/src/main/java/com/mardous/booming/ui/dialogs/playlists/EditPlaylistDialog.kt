@@ -32,14 +32,17 @@ import com.mardous.booming.R
 import com.mardous.booming.coil.DEFAULT_PLAYLIST_IMAGE
 import com.mardous.booming.coil.placeholderDrawableRes
 import com.mardous.booming.data.local.room.PlaylistEntity
+import com.mardous.booming.data.model.Song
 import com.mardous.booming.databinding.DialogCreatePlaylistBinding
 import com.mardous.booming.extensions.extraNotNull
 import com.mardous.booming.extensions.media.isFavorites
 import com.mardous.booming.extensions.showToast
 import com.mardous.booming.extensions.withArgs
+import com.mardous.booming.ui.dialogs.library.FolderChooserDialog
 import com.mardous.booming.ui.screen.library.LibraryViewModel
 import com.mardous.booming.ui.screen.library.ReloadType
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import java.io.File
 
 /**
  * @author SifouByte
@@ -53,6 +56,7 @@ class EditPlaylistDialog : DialogFragment() {
     private val binding get() = _binding!!
 
     private var selectedImageUri: String? = null
+    private val pendingSongs = mutableListOf<Song>()
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         uri?.let {
@@ -84,6 +88,19 @@ class EditPlaylistDialog : DialogFragment() {
         binding.selectCoverFab.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+        binding.addSongsButton.setOnClickListener {
+            val dialog = FolderChooserDialog()
+            dialog.setCallback(object : FolderChooserDialog.FolderCallback {
+                override fun onFolderSelection(dialog: FolderChooserDialog, folder: File) {
+                    libraryViewModel.scanFolderForPlaylist(folder.absolutePath)
+                        .observe(this@EditPlaylistDialog) { songs ->
+                            pendingSongs.addAll(songs)
+                            updateAddSongsButton()
+                        }
+                }
+            })
+            dialog.show(childFragmentManager, "FOLDER_CHOOSER")
+        }
 
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.action_edit_playlist)
@@ -103,12 +120,22 @@ class EditPlaylistDialog : DialogFragment() {
                     newImageUri = selectedImageUri,
                     newDescription = description?.ifEmpty { null }
                 )
+                if (pendingSongs.isNotEmpty()) {
+                    libraryViewModel.addSongsToPlaylist(pendingSongs.distinctBy { it.id }, playlistEntity)
+                }
 
                 libraryViewModel.forceReload(ReloadType.Playlists)
                 showToast(R.string.playlist_updated)
             }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
+    }
+
+    private fun updateAddSongsButton() {
+        val count = pendingSongs.size
+        binding.addSongsButton.text =
+            if (count == 0) getString(R.string.action_add_songs_from_folder)
+            else getString(R.string.action_add_songs_from_folder_count, count)
     }
 
     override fun onDestroyView() {

@@ -37,8 +37,10 @@ import com.mardous.booming.extensions.EXTRA_SONGS
 import com.mardous.booming.extensions.extraNotNull
 import com.mardous.booming.extensions.showToast
 import com.mardous.booming.extensions.withArgs
+import com.mardous.booming.ui.dialogs.library.FolderChooserDialog
 import com.mardous.booming.ui.screen.library.LibraryViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import java.io.File
 
 class CreatePlaylistDialog : DialogFragment() {
 
@@ -50,6 +52,7 @@ class CreatePlaylistDialog : DialogFragment() {
 
     private var callback: PlaylistCreatedCallback? = null
     private var selectedCoverUri: Uri? = null
+    private val pendingSongs = mutableListOf<Song>()
 
     private val imagePickerLauncher = 
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -88,15 +91,34 @@ class CreatePlaylistDialog : DialogFragment() {
     }
 
     private fun setupViews() {
-        // Set up cover image selection
         binding.selectCoverFab.setOnClickListener {
             imagePickerLauncher.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
         }
-
-        // Load default playlist image
+        binding.addSongsButton.setOnClickListener {
+            val dialog = FolderChooserDialog()
+            dialog.setCallback(object : FolderChooserDialog.FolderCallback {
+                override fun onFolderSelection(dialog: FolderChooserDialog, folder: File) {
+                    libraryViewModel.scanFolderForPlaylist(folder.absolutePath)
+                        .observe(this@CreatePlaylistDialog) { songs ->
+                            pendingSongs.addAll(songs)
+                            updateAddSongsButton()
+                        }
+                }
+            })
+            dialog.show(childFragmentManager, "FOLDER_CHOOSER")
+        }
         loadCoverImage(null)
+    }
+
+    private fun updateAddSongsButton() {
+        val count = pendingSongs.size
+        binding.addSongsButton.text = if (count == 0) {
+            getString(R.string.action_add_songs_from_folder)
+        } else {
+            getString(R.string.action_add_songs_from_folder_count, count)
+        }
     }
 
     private fun loadCoverImage(uri: Uri?) {
@@ -118,11 +140,12 @@ class CreatePlaylistDialog : DialogFragment() {
         val customCoverUri = selectedCoverUri?.toString()
 
         // Use the new createCustomPlaylist method
+        val allSongs = (songs + pendingSongs).distinctBy { it.id }
         libraryViewModel.createCustomPlaylist(
             playlistName = playlistName,
             customCoverUri = customCoverUri,
             description = if (description.isNullOrEmpty()) null else description,
-            songs = songs
+            songs = allSongs
         ).observe(this) { result ->
             if (result.isWorking) {
                 return@observe

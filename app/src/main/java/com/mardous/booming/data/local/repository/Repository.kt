@@ -108,7 +108,7 @@ interface Repository {
     suspend fun songsByUri(uri: Uri): List<Song>
     suspend fun songsByMediaItems(mediaItems: List<MediaItem>): Pair<List<Song>, List<MediaItem>>
     suspend fun songByMediaItem(mediaItem: MediaItem?): Song
-    suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean): List<Song>
+    suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean = false): List<Song>
     suspend fun songByFilePath(path: String, ignoreBlacklist: Boolean): Song
     suspend fun homeSuggestions(): List<Suggestion>
     suspend fun topArtistsSuggestion(): Suggestion
@@ -331,8 +331,8 @@ class RealRepository(
     override suspend fun songByMediaItem(mediaItem: MediaItem?): Song =
         songRepository.songByMediaItem(mediaItem)
 
-    override suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean) =
-        specialRepository.songsByFolder(folderPath, includeSubfolders)
+    override suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean) =
+        specialRepository.songsByFolder(folderPath, includeSubfolders, ignoreBlacklist)
 
     override suspend fun songByFilePath(path: String, ignoreBlacklist: Boolean) =
         songRepository.songByFilePath(path, ignoreBlacklist)

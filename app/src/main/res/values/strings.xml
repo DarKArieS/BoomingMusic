@@ -334,6 +334,8 @@
     <string name="action_toggle_playlist_lock">Lock/unlock playlist</string>
     <string name="playlist_locked">Playlist locked</string>
     <string name="playlist_unlocked">Playlist unlocked</string>
+    <string name="action_add_songs_from_folder">Add songs from folder</string>
+    <string name="action_add_songs_from_folder_count">Add songs from folder (%1$d)</string>
     <string name="action_toggle_queue_lock">Lock/unlock queue</string>
     <string name="queue_locked">Queue locked</string>
     <string name="queue_unlocked">Queue unlocked</string>

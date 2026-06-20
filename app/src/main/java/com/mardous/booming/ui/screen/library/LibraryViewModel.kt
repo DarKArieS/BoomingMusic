@@ -475,6 +475,20 @@ class LibraryViewModel(
 
     suspend fun insertSongs(songs: List<SongEntity>) = repository.insertSongsInPlaylist(songs)
 
+    fun scanFolderForPlaylist(path: String): LiveData<List<Song>> = liveData(IO) {
+        emit(repository.songsByFolder(path, includeSubfolders = true, ignoreBlacklist = true))
+    }
+
+    fun addSongsToPlaylist(songs: List<Song>, playlist: PlaylistEntity) = viewModelScope.launch(IO) {
+        val entities = songs
+            .filterNot { repository.checkSongExistInPlaylist(playlist, it) }
+            .map { it.toSongEntity(playlist.playListId) }
+        if (entities.isNotEmpty()) {
+            repository.insertSongsInPlaylist(entities)
+            forceReload(ReloadType.Playlists)
+        }
+    }
+
     private suspend fun checkPlaylistExists(playlistName: String): List<PlaylistEntity> =
         repository.checkPlaylistExists(playlistName)
 
