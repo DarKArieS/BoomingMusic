@@ -102,6 +102,24 @@ fun LyricsView(
         disableBlurEffect = true
     }
 
+    LaunchedEffect(Unit) {
+        if (state.currentLineIndex >= 0) {
+            val layoutInfo = listState.layoutInfo
+            val viewportHeight = with(layoutInfo) { viewportEndOffset - viewportStartOffset }
+            val bottomPadding = with(density) { settings.contentPadding.calculateBottomPadding().toPx() }
+            val targetOffset = if (settings.isCenterCurrentLine) {
+                val fontSize = with(density) { textStyle.fontSize.toPx() * 2 }
+                -((viewportHeight / 2) - fontSize - bottomPadding).toInt()
+            } else {
+                0
+            }
+            listState.scrollToItem(
+                index = state.currentLineIndex,
+                scrollOffset = targetOffset
+            )
+        }
+    }
+
     LaunchedEffect(state.currentLineIndex) {
         if (state.currentLineIndex >= 0) {
             if (!isInDragGesture && !isScrollInProgress) {
