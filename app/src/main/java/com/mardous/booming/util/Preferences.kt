@@ -408,6 +408,9 @@ object Preferences : KoinComponent {
         get() = preferences.getBoolean(BLACKLIST_ENABLED, true)
         set(value) = preferences.edit { putBoolean(BLACKLIST_ENABLED, value) }
 
+    val privacyMode: Boolean
+        get() = preferences.getBoolean(PRIVACY_MODE, false)
+
     val minimumSongCountForArtist: Int
         get() = preferences.getInt(ARTIST_MINIMUM_SONGS, 1)
 
@@ -589,6 +592,7 @@ const val WIDGET_IMAGE_CORNER_RADIUS = "widget_image_corner_radius"
 const val WIDGET_THIRD_LINE_CONTENT = "widget_third_line_content"
 const val PREFER_REMAINING_TIME = "prefer_remaining_time"
 const val PREFER_ALBUM_ARTIST_NAME = "prefer_album_artist_name_on_np"
+const val PRIVACY_MODE = "privacy_mode"
 const val REWIND_WITH_BACK = "rewind_with_back"
 const val SEEK_INTERVAL = "seek_interval"
 const val QUEUE_NEXT_MODE = "queue_next_mode"

@@ -98,6 +98,7 @@ import com.mardous.booming.ui.screen.MainActivity
 import com.mardous.booming.util.CLEAR_QUEUE_ON_COMPLETION
 import com.mardous.booming.util.ENABLE_HISTORY
 import com.mardous.booming.util.IGNORE_AUDIO_FOCUS
+import com.mardous.booming.util.PRIVACY_MODE
 import com.mardous.booming.util.MP3_INDEX_SEEKING
 import com.mardous.booming.util.PAUSE_ON_ZERO_VOLUME
 import com.mardous.booming.util.PLAY_ON_STARTUP_MODE
@@ -284,6 +285,7 @@ class PlaybackService :
 
         player.exoPlayer.shuffleOrder = ImprovedShuffleOrder(0, 0, Random.nextLong())
         player.setSequentialTimelineEnabled(sequentialTimeline)
+        player.privacyModeEnabled = Preferences.privacyMode
         player.addListener(this)
 
         mediaSession = with(MediaLibrarySession.Builder(this, player, this)) {
@@ -866,6 +868,10 @@ class PlaybackService :
                         repository.clearPlayCount()
                     }
                 }
+            }
+
+            PRIVACY_MODE -> {
+                player.privacyModeEnabled = preferences.getBoolean(key, false)
             }
 
             IGNORE_AUDIO_FOCUS -> {

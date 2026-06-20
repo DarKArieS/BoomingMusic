@@ -3,6 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <SwitchPreferenceCompat
+        app:icon="@drawable/ic_lock_24dp"
+        app:title="@string/privacy_mode_title"
+        app:summary="@string/privacy_mode_summary"
+        app:defaultValue="false"
+        app:layout="@layout/list_item_view"
+        app:widgetLayout="@layout/preference_switch"
+        app:key="privacy_mode"/>
+
     <ListPreference
         app:iconSpaceReserved="true"
         app:title="@string/play_on_startup_title"

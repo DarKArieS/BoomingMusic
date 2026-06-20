@@ -3,6 +3,7 @@ package com.mardous.booming.playback
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -16,6 +17,13 @@ class AdvancedForwardingPlayer(
     private val listeners = mutableListOf<Player.Listener>()
 
     private var sequentialTimelineEnabled = false
+    var privacyModeEnabled = false
+        set(value) {
+            if (field != value) {
+                field = value
+                listeners.toList().forEach { it.onMediaMetadataChanged(mediaMetadata) }
+            }
+        }
 
     private val internalListener = object : Player.Listener {
         override fun onPositionDiscontinuity(
@@ -51,6 +59,12 @@ class AdvancedForwardingPlayer(
     override fun release() {
         wrappedPlayer.removeListener(internalListener)
         super.release()
+    }
+
+    override fun getMediaMetadata(): MediaMetadata {
+        val original = super.getMediaMetadata()
+        if (!privacyModeEnabled) return original
+        return original.buildUpon().setTitle("Booming Playing").build()
     }
 
     override fun addListener(listener: Player.Listener) {
