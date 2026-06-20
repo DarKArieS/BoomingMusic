@@ -67,7 +67,7 @@ class App : Application(), SingletonImageLoader.Factory {
             modules(appModules)
         }
 
-        if (BuildConfig.DEBUG) enableStrictMode()
+        // if (BuildConfig.DEBUG) enableStrictMode()
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         // we cannot call setDefaultValues for multiple fragment based XML preference

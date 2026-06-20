@@ -9,6 +9,7 @@ import com.mardous.booming.data.local.EditTarget
 import com.mardous.booming.data.local.MetadataReader
 import com.mardous.booming.data.local.MetadataWriter
 import com.mardous.booming.data.local.lyrics.lrc.LrcLyricsParser
+import com.mardous.booming.data.local.lyrics.srt.SrtLyricsParser
 import com.mardous.booming.data.local.lyrics.ttml.TtmlLyricsParser
 import com.mardous.booming.data.local.room.LyricsDao
 import com.mardous.booming.data.local.room.LyricsEntity
@@ -59,8 +60,9 @@ class RealLyricsRepository(
 
     private val lrcLyricsParser = LrcLyricsParser()
     private val ttmlLyricsParser = TtmlLyricsParser()
+    private val srtLyricsParser = SrtLyricsParser()
 
-    private val lyricsParsers = listOf(lrcLyricsParser, ttmlLyricsParser)
+    private val lyricsParsers = listOf(lrcLyricsParser, ttmlLyricsParser, srtLyricsParser)
 
     override suspend fun parseRawLyrics(song: Song, rawLyrics: RawLyrics): SyncedLyrics? {
         val ignoreBlankLines = preferences.getBoolean(IGNORE_BLANK_LINES, false)
@@ -318,7 +320,7 @@ class RealLyricsRepository(
         ).filter { it.isNotBlank() }.map { Pattern.quote(it) }
 
         val patterns = baseNames.map { base ->
-            Regex(".*$base.*\\.(lrc|ttml)", RegexOption.IGNORE_CASE)
+            Regex(".*$base.*\\.(lrc|ttml|srt)", RegexOption.IGNORE_CASE)
         }
 
         return parentDir.listFiles()

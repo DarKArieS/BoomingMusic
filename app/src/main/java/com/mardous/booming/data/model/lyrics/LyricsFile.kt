@@ -12,6 +12,7 @@ class LyricsFile(
 ) : Parcelable {
     enum class Format(val value: String) {
         TTML("ttml"),
-        LRC("lrc")
+        LRC("lrc"),
+        SRT("srt")
     }
 }

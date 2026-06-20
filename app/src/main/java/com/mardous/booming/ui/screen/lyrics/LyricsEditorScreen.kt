@@ -239,13 +239,6 @@ fun LyricsEditorScreen(
         }
     }
 
-    val permissionRequestEvent by viewModel.permissionRequestEvent.collectAsState(null)
-    LaunchedEffect(permissionRequestEvent) {
-        permissionRequestEvent?.let {
-            requestWritePermissions(it)
-        }
-    }
-
     LaunchedEffect(Unit) {
         viewModel.loadEditorContent(song)
     }
@@ -254,8 +247,17 @@ fun LyricsEditorScreen(
 
     val uiState by viewModel.lyricsEditorUiState.collectAsStateWithLifecycle()
     val editedContent = rememberSaveable(saver = SnapshotMapSaver) { mutableStateMapOf() }
-    var selectedSource by rememberSaveable { mutableStateOf(LyricsSource.Embedded) }
+    var selectedSource by rememberSaveable { mutableStateOf(LyricsSource.File) }
     val isFileSource by remember { derivedStateOf { selectedSource == LyricsSource.File } }
+
+    val permissionRequestEvent by viewModel.permissionRequestEvent.collectAsState(null)
+    LaunchedEffect(permissionRequestEvent, selectedSource) {
+        if (selectedSource == LyricsSource.Embedded) {
+            permissionRequestEvent?.let {
+                requestWritePermissions(it)
+            }
+        }
+    }
 
     LaunchedEffect(uiState, selectedSource) {
         uiState.let {
@@ -538,6 +540,24 @@ fun LyricsEditorScreen(
                     onSourceSelected = { selectedSource = it },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
+
+                val filePath = remember(uiState, selectedSource) {
+                    if (selectedSource == LyricsSource.File) {
+                        ((uiState as? LyricsEditorUiState.Visible)
+                            ?.lyrics?.get(LyricsSource.File) as? RawLyrics.File)
+                            ?.file?.path
+                    } else null
+                }
+                AnimatedVisibility(visible = filePath != null) {
+                    Text(
+                        text = filePath.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
 
                 OutlinedTextField(
                     state = textFieldState,
