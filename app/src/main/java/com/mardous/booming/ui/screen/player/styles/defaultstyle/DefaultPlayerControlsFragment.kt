@@ -97,6 +97,42 @@ class DefaultPlayerControlsFragment : AbsPlayerControlsFragment(R.layout.fragmen
         binding.previousButton.setOnTouchListener(getSkipButtonTouchHandler(DIRECTION_PREVIOUS))
 
         setupQueueInfoView()
+        binding.root.addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
+            val height = bottom - top
+            binding.root.post {
+                if (height < 300) {
+                    binding.queueInfo.visibility = View.GONE
+                    binding.songInfo?.isVisible = false
+                    binding.text.isVisible = false
+                    binding.title.isVisible = false
+                    binding.playbackButtonsContainer?.isVisible = false
+                } else if (height < 500) {
+                    binding.queueInfo.visibility = View.GONE
+                    binding.songInfo?.isVisible = false
+                    binding.text.isVisible = false
+                    binding.title.isVisible = false
+                    binding.playbackButtonsContainer?.isVisible = true
+                } else if (height < 550) {
+                    binding.queueInfo.visibility = View.GONE
+                    binding.songInfo?.isVisible = false
+                    binding.text.isVisible = false
+                    binding.title.isVisible = true
+                    binding.playbackButtonsContainer?.isVisible = true
+                } else if (height < 600) {
+                    binding.queueInfo.visibility = View.GONE
+                    binding.songInfo?.isVisible = false
+                    binding.text.isVisible = true
+                    binding.title.isVisible = true
+                    binding.playbackButtonsContainer?.isVisible = true
+                } else {
+                    setupQueueInfoView()
+                    binding.songInfo?.isVisible = isExtraInfoEnabled()
+                    binding.text.isVisible = true
+                    binding.title.isVisible = true
+                    binding.playbackButtonsContainer?.isVisible = true
+                }
+            }
+        }
     }
 
     override fun onCreatePlayerAnimator(): PlayerAnimator {
