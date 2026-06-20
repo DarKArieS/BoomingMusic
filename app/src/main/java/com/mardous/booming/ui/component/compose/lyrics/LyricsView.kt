@@ -249,18 +249,25 @@ private fun LyricsLineView(
         else -> PaddingValues(horizontal = 32.dp)
     }
 
+    val progressLineAlpha by animateFloatAsState(
+        targetValue = if (selectedLine) 0.3f else 0f,
+        animationSpec = tween(durationMillis = 400),
+        label = "progress-line-alpha"
+    )
+
     val layoutDirection = if (isRtl) LayoutDirection.Rtl else LayoutDirection.Ltr
-    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable(
-                    indication = null,
-                    interactionSource = null,
-                    onClick = onClick
-                )
-                .padding(paddingValues)
-        ) {
+    Column(modifier = modifier) {
+        CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = null,
+                        onClick = onClick
+                    )
+                    .padding(paddingValues)
+            ) {
             if (line.isEmpty) {
                 BubblesLine(
                     selectedLine = selectedLine,
@@ -345,6 +352,17 @@ private fun LyricsLineView(
                 }
             }
         }
+    }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .padding(top = 6.dp)
+                .height(1.dp)
+                .drawBehind {
+                    drawRect(contentColor.copy(alpha = progressLineAlpha))
+                }
+        )
     }
 }
 
