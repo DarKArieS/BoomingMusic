@@ -319,6 +319,7 @@ class LibraryViewModel(
     fun clearHistory() {
         viewModelScope.launch(IO) {
             repository.clearSongHistory()
+            repository.clearPlayCount()
         }
         songHistory.value = emptyList()
     }

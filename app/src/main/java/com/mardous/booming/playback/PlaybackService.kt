@@ -863,6 +863,7 @@ class PlaybackService :
                 if (!preferences.getBoolean(key, true)) {
                     serviceScope.launch(IO) {
                         repository.clearSongHistory()
+                        repository.clearPlayCount()
                     }
                 }
             }
