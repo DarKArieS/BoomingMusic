@@ -153,7 +153,7 @@ class RealSongRepository(
             ids.chunked(900).forEach { chunk ->
                 val selection = "${AudioColumns._ID} IN (${chunk.joinToString(",") { "?" }})"
                 val selectionArgs = chunk.toTypedArray()
-                addAll(songs(makeSongCursor(selection = selection, selectionValues = selectionArgs)))
+                addAll(songs(makeSongCursor(selection = selection, selectionValues = selectionArgs, ignoreBlacklist = true)))
             }
         }
 
