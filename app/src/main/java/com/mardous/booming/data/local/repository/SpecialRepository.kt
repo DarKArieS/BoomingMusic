@@ -98,6 +98,7 @@ class RealSpecialRepository(private val songRepository: RealSongRepository) : Sp
             val cursor = songRepository.makeSongCursor(
                 selection = "${AudioColumns.DATA} LIKE ?",
                 selectionValues = arrayOf("$dirPath%"),
+                sortOrder = AudioColumns.DATA,
                 ignoreBlacklist = ignoreBlacklist
             )
             return songRepository.songs(cursor)
