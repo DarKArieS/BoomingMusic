@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.TimeInterpolator
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -100,36 +101,43 @@ class DefaultPlayerControlsFragment : AbsPlayerControlsFragment(R.layout.fragmen
         binding.root.addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
             val height = bottom - top
             binding.root.post {
-                if (height < 300) {
-                    binding.queueInfo.visibility = View.GONE
-                    binding.songInfo?.isVisible = false
-                    binding.text.isVisible = false
-                    binding.title.isVisible = false
-                    binding.playbackButtonsContainer?.isVisible = false
-                } else if (height < 500) {
-                    binding.queueInfo.visibility = View.GONE
-                    binding.songInfo?.isVisible = false
-                    binding.text.isVisible = false
-                    binding.title.isVisible = false
-                    binding.playbackButtonsContainer?.isVisible = true
-                } else if (height < 550) {
-                    binding.queueInfo.visibility = View.GONE
-                    binding.songInfo?.isVisible = false
-                    binding.text.isVisible = false
-                    binding.title.isVisible = true
-                    binding.playbackButtonsContainer?.isVisible = true
-                } else if (height < 600) {
-                    binding.queueInfo.visibility = View.GONE
-                    binding.songInfo?.isVisible = false
-                    binding.text.isVisible = true
-                    binding.title.isVisible = true
-                    binding.playbackButtonsContainer?.isVisible = true
-                } else {
-                    setupQueueInfoView()
-                    binding.songInfo?.isVisible = isExtraInfoEnabled()
-                    binding.text.isVisible = true
-                    binding.title.isVisible = true
-                    binding.playbackButtonsContainer?.isVisible = true
+                _binding?.apply {
+                    if (height < 300) {
+                        queueInfo.visibility = View.GONE
+                        songInfo?.isVisible = false
+                        text.isVisible = false
+                        title.isVisible = false
+                        playbackButtonsContainer?.isVisible = false
+                        playPauseButton.customSize = 45.dpToPx()
+                    } else if (height < 500) {
+                        queueInfo.visibility = View.GONE
+                        songInfo?.isVisible = false
+                        text.isVisible = false
+                        title.isVisible = false
+                        playbackButtonsContainer?.isVisible = true
+                        playPauseButton.customSize = 45.dpToPx()
+                    } else if (height < 550) {
+                        queueInfo.visibility = View.GONE
+                        songInfo?.isVisible = false
+                        text.isVisible = false
+                        title.isVisible = true
+                        playbackButtonsContainer?.isVisible = true
+                        playPauseButton.customSize = 45.dpToPx()
+                    } else if (height < 600) {
+                        queueInfo.visibility = View.GONE
+                        songInfo?.isVisible = false
+                        text.isVisible = true
+                        title.isVisible = true
+                        playbackButtonsContainer?.isVisible = true
+                        playPauseButton.customSize = 45.dpToPx()
+                    } else {
+                        setupQueueInfoView()
+                        songInfo?.isVisible = isExtraInfoEnabled()
+                        text.isVisible = true
+                        title.isVisible = true
+                        playbackButtonsContainer?.isVisible = true
+                        playPauseButton.customSize = 70.dpToPx()
+                    }
                 }
             }
         }
@@ -283,5 +291,10 @@ class DefaultPlayerControlsFragment : AbsPlayerControlsFragment(R.layout.fragmen
             prepareForScaleAnimation(binding.songCurrentProgress)
             prepareForScaleAnimation(binding.songTotalTime)
         }
+    }
+
+    fun Int.dpToPx(): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (this * scale + 0.5f).toInt() // +0.5f assists with precise rounding
     }
 }
