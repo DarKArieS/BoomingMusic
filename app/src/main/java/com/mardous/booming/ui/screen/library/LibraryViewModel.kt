@@ -37,6 +37,8 @@ import com.mardous.booming.coil.CustomPlaylistImageManager
 import com.mardous.booming.core.model.LibraryMargin
 import com.mardous.booming.core.model.filesystem.FileSystemItem
 import com.mardous.booming.core.model.filesystem.FileSystemQuery
+import com.mardous.booming.core.model.sort.SortKey
+import com.mardous.booming.core.sort.SongSortMode
 import com.mardous.booming.data.SongProvider
 import com.mardous.booming.data.local.room.InclExclDao
 import com.mardous.booming.data.local.room.InclExclEntity
@@ -463,7 +465,14 @@ class LibraryViewModel(
     suspend fun insertSongs(songs: List<SongEntity>) = repository.insertSongsInPlaylist(songs)
 
     fun scanFolderForPlaylist(path: String): LiveData<List<Song>> = liveData(IO) {
-        emit(repository.songsByFolder(path, includeSubfolders = true, ignoreBlacklist = true))
+        emit(
+            repository.songsByFolder(
+                path,
+                includeSubfolders = true,
+                ignoreBlacklist = true,
+                sortMode = SongSortMode.Dynamic(SortKey.FileName, selectedDescending = false)
+            )
+        )
     }
 
     fun addSongsToPlaylist(songs: List<Song>, playlist: PlaylistEntity) = viewModelScope.launch(IO) {

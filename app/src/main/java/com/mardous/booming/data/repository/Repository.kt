@@ -24,6 +24,7 @@ import androidx.lifecycle.LiveData
 import androidx.media3.common.MediaItem
 import com.mardous.booming.R
 import com.mardous.booming.core.model.filesystem.FileSystemQuery
+import com.mardous.booming.core.sort.SongSortMode
 import com.mardous.booming.data.SearchFilter
 import com.mardous.booming.data.local.room.PlayCountEntity
 import com.mardous.booming.data.local.room.PlaylistEntity
@@ -112,7 +113,12 @@ interface Repository {
     suspend fun songsByUri(uri: Uri): List<Song>
     suspend fun songsByMediaItems(mediaItems: List<MediaItem>, ignoreBlacklist: Boolean): Pair<List<Song>, List<MediaItem>>
     suspend fun songByMediaItem(mediaItem: MediaItem?, ignoreBlacklist: Boolean): Song
-    suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean = false): List<Song>
+    suspend fun songsByFolder(
+        folderPath: String,
+        includeSubfolders: Boolean,
+        ignoreBlacklist: Boolean = false,
+        sortMode: SongSortMode = SongSortMode.FolderSongs
+    ): List<Song>
     suspend fun songByFilePath(path: String, ignoreBlacklist: Boolean): Song
     suspend fun homeSuggestions(): List<Suggestion>
     suspend fun recentSongs(): List<Song>
@@ -337,8 +343,12 @@ class RealRepository(
     override suspend fun songByMediaItem(mediaItem: MediaItem?, ignoreBlacklist: Boolean): Song =
         songRepository.songByMediaItem(mediaItem, ignoreBlacklist)
 
-    override suspend fun songsByFolder(folderPath: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean) =
-        specialRepository.songsByFolder(folderPath, includeSubfolders, ignoreBlacklist)
+    override suspend fun songsByFolder(
+        folderPath: String,
+        includeSubfolders: Boolean,
+        ignoreBlacklist: Boolean,
+        sortMode: SongSortMode
+    ) = specialRepository.songsByFolder(folderPath, includeSubfolders, ignoreBlacklist, sortMode)
 
     override suspend fun songByFilePath(path: String, ignoreBlacklist: Boolean) =
         songRepository.songByFilePath(path, ignoreBlacklist)

@@ -34,7 +34,12 @@ interface SpecialRepository {
     suspend fun songsByYear(year: Int, query: String?): List<Song>
     suspend fun musicFolders(): FileSystemQuery
     suspend fun folderByPath(path: String): Folder
-    suspend fun songsByFolder(path: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean = false): List<Song>
+    suspend fun songsByFolder(
+        path: String,
+        includeSubfolders: Boolean,
+        ignoreBlacklist: Boolean = false,
+        sortMode: SongSortMode = SongSortMode.FolderSongs
+    ): List<Song>
     suspend fun songsByFolder(path: String, query: String): List<Song>
     suspend fun musicFilesInPath(path: String, recursiveSubfolders: Boolean = true): FileSystemQuery
 }
@@ -94,8 +99,13 @@ class RealSpecialRepository(private val songRepository: RealSongRepository) : Sp
         return Folder(path, with(SongSortMode.FolderSongs) { songs.sorted() })
     }
 
-    override suspend fun songsByFolder(path: String, includeSubfolders: Boolean, ignoreBlacklist: Boolean): List<Song> {
-        val songs = if (includeSubfolders) {
+    override suspend fun songsByFolder(
+        path: String,
+        includeSubfolders: Boolean,
+        ignoreBlacklist: Boolean,
+        sortMode: SongSortMode
+    ): List<Song> {
+        if (includeSubfolders) {
             val dirPath = path.takeIf { it.endsWith("/") } ?: "$path/"
             val cursor = songRepository.makeSongCursor(
                 selection = "${AudioColumns.DATA} LIKE ?",
@@ -103,11 +113,15 @@ class RealSpecialRepository(private val songRepository: RealSongRepository) : Sp
                 sortOrder = AudioColumns.DATA,
                 ignoreLibrarySettings = ignoreBlacklist
             )
-            songRepository.songs(cursor)
-        } else {
-            songRepository.songs().filter { song -> path == song.folderPath() }
+            // Keep songs grouped by folder (in path order) and only sort within each folder,
+            // e.g. A/{A,C,E} + B/{B,D,F} -> A C E B D F, not A B C D E F.
+            return songRepository.songs(cursor)
+                .groupBy { song -> song.folderPath() }
+                .values
+                .flatMap { folderSongs -> with(sortMode) { folderSongs.sorted() } }
         }
-        return with(SongSortMode.FolderSongs) { songs.sorted() }
+        val songs = songRepository.songs().filter { song -> path == song.folderPath() }
+        return with(sortMode) { songs.sorted() }
     }
 
     override suspend fun songsByFolder(path: String, query: String): List<Song> {
