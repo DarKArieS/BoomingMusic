@@ -68,6 +68,8 @@ import com.mardous.booming.core.model.lyrics.LyricsViewSettings.BackgroundEffect
 import com.mardous.booming.core.model.lyrics.LyricsViewState
 import com.mardous.booming.core.model.player.PlayerColorScheme
 import com.mardous.booming.data.model.Song
+import com.mardous.booming.data.model.lyrics.LyricsLineEdit
+import com.mardous.booming.data.model.lyrics.LyricsSource
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
 import com.mardous.booming.extensions.isPowerSaveMode
 import com.mardous.booming.extensions.resolveColor
@@ -91,7 +93,11 @@ sealed class LyricsUiState(open val id: Long) {
     data class Empty(override val id: Long) : LyricsUiState(id)
     data class Instrumental(override val id: Long) : LyricsUiState(id)
     data class Plain(override val id: Long, val lyrics: String) : LyricsUiState(id)
-    data class Synced(override val id: Long, val syncedLyrics: SyncedLyrics) : LyricsUiState(id)
+    data class Synced(
+        override val id: Long,
+        val syncedLyrics: SyncedLyrics,
+        val source: LyricsSource? = null
+    ) : LyricsUiState(id)
 }
 
 @Composable
@@ -285,6 +291,7 @@ fun LyricsScreen(
 
             LyricsSurface(
                 playerViewModel = playerViewModel,
+                lyricsViewModel = lyricsViewModel,
                 uiState = uiState,
                 settings = lyricsViewSettings,
                 contentPadding = PaddingValues(vertical = 96.dp, horizontal = 16.dp),
@@ -331,6 +338,7 @@ fun CoverLyricsScreen(
             LyricsSurface(
                 uiState = uiState,
                 playerViewModel = playerViewModel,
+                lyricsViewModel = lyricsViewModel,
                 settings = lyricsViewSettings,
                 contentPadding = PaddingValues(vertical = 72.dp, horizontal = 12.dp),
                 fadingEdges = FadingEdges(top = 72.dp, bottom = 64.dp),
@@ -371,6 +379,7 @@ fun CoverLyricsScreen(
 @Composable
 private fun LyricsSurface(
     playerViewModel: PlayerViewModel,
+    lyricsViewModel: LyricsViewModel,
     uiState: LyricsUiState,
     settings: LyricsViewSettings,
     contentPadding: PaddingValues,
@@ -396,6 +405,18 @@ private fun LyricsSurface(
     val song by playerViewModel.currentSongFlow.collectAsStateWithLifecycle()
     val rawPlayerProgress by playerViewModel.progressFlow.collectAsStateWithLifecycle()
     val playerProgress = rememberFreshProgress(song.id, rawPlayerProgress)
+
+    // Line being edited (external file lyrics only); reset when the song changes
+    var lineEdit by remember(song.id) { mutableStateOf<LyricsLineEdit?>(null) }
+    lineEdit?.let { edit ->
+        LyricsLineEditDialog(
+            initialText = edit.oldText,
+            events = lyricsViewModel.lineEditEvent,
+            onSave = { newText -> lyricsViewModel.saveLyricsLine(song, edit.copy(newText = newText)) },
+            onFolderAccessResult = { lyricsViewModel.onFolderAccessResult(it) },
+            onDismiss = { lineEdit = null }
+        )
+    }
 
     Box(modifier) {
         when (uiState) {
@@ -485,6 +506,10 @@ private fun LyricsSurface(
                     isPowerSaveMode = isPowerSaveMode,
                     hasBackgroundEffects = hasBackgroundEffects,
                     scrollResetKey = song.id,
+                    // Lyrics from an external file: long-press opens the line editor instead of copying
+                    onEditText = if (uiState.source == LyricsSource.File) {
+                        { line, kind, text -> lineEdit = LyricsLineEdit(line.start, kind, text) }
+                    } else null,
                     // Tapping a line only seeks while playing
                     onSeekTo = { position -> if (isPlaying) onSeekTo(position) }
                 )

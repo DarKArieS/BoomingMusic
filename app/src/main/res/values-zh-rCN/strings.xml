@@ -906,6 +906,12 @@
     <string name="lyrics_show_transliteration_title">显示音译</string>
     <string name="lyrics_show_transliteration_summary">显示可用的歌词音译。</string>
     <string name="lyrics_copied_to_clipboard">已复制歌词到剪贴板。</string>
+    <string name="lyrics_edit_line_title">编辑歌词</string>
+    <string name="lyrics_action_copy">复制</string>
+    <string name="lyrics_line_saved">已保存歌词。</string>
+    <string name="lyrics_line_not_found">无法在歌词文件中找到这一行。</string>
+    <string name="lyrics_grant_folder_access">请选择“%s”文件夹以允许保存歌词。</string>
+    <string name="lyrics_wrong_folder">所选文件夹不包含此歌词文件，请选择“%s”。</string>
     <string name="lyrics_resume_on_seek_title">用歌词跳转后继续播放</string>
     <string name="lyrics_resume_on_seek_summary">点按同步歌词行跳转后自动恢复播放。</string>
     <string name="app_version_x">版本 %s</string>

@@ -78,6 +78,7 @@ import com.mardous.booming.R
 import com.mardous.booming.core.model.lyrics.LyricsViewSettings
 import com.mardous.booming.core.model.lyrics.LyricsViewState
 import com.mardous.booming.data.model.lyrics.LyricsActor
+import com.mardous.booming.data.model.lyrics.LyricsTextKind
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
 import com.mardous.booming.extensions.hasS
 import com.mardous.booming.extensions.showToast
@@ -100,6 +101,7 @@ fun LyricsView(
     hasBackgroundEffects: Boolean,
     modifier: Modifier = Modifier,
     scrollResetKey: Any? = null,
+    onEditText: ((SyncedLyrics.Line, LyricsTextKind, String) -> Unit)? = null,
     onSeekTo: (Long) -> Unit
 ) {
     val density = LocalDensity.current
@@ -226,6 +228,7 @@ fun LyricsView(
                 lineSpacing = lineSpacing,
                 modifier = Modifier
                     .animateItem(placementSpec = tween(durationMillis = 500)),
+                onEditText = onEditText?.let { edit -> { kind, text -> edit(line, kind, text) } },
                 onClick = { onSeekTo(line.start - (state.lyrics?.offset ?: 0)) }
             )
         }
@@ -269,6 +272,7 @@ private fun LyricsLineView(
     textStyle: TextStyle,
     lineSpacing: Dp,
     modifier: Modifier = Modifier,
+    onEditText: ((LyricsTextKind, String) -> Unit)? = null,
     onClick: () -> Unit
 ) {
     val scale by animateFloatAsState(
@@ -317,9 +321,15 @@ private fun LyricsLineView(
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    fun copyToClipboard(text: String) {
+    // Long-press: open the editor when the caller supports it (external file lyrics),
+    // otherwise copy the pressed text
+    fun onTextLongPress(kind: LyricsTextKind, text: String) {
         if (text.isBlank()) return
         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        if (onEditText != null) {
+            onEditText(kind, text)
+            return
+        }
         coroutineScope.launch {
             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("lyrics", text)))
         }
@@ -382,7 +392,7 @@ private fun LyricsLineView(
                         transliterationContent = if (showTransliteration) line.transliteration else null,
                         backgroundContent = false,
                         onClick = onClick,
-                        onCopy = ::copyToClipboard,
+                        onLongPress = ::onTextLongPress,
                         enableSyllable = enableSyllable,
                         enableKaraokeStyle = enableKaraokeStyle,
                         progressiveColoring = progressiveColoring,
@@ -409,7 +419,7 @@ private fun LyricsLineView(
                             transliterationContent = if (showTransliteration) line.transliteration else null,
                             backgroundContent = true,
                             onClick = onClick,
-                            onCopy = ::copyToClipboard,
+                            onLongPress = ::onTextLongPress,
                             enableSyllable = enableSyllable,
                             enableKaraokeStyle = enableKaraokeStyle,
                             progressiveColoring = progressiveColoring,
@@ -466,16 +476,16 @@ fun LyricsLineContentView(
     align: TextAlign,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onCopy: ((String) -> Unit)? = null
+    onLongPress: ((LyricsTextKind, String) -> Unit)? = null
 ) {
-    // Tap seeks to the line; long-press copies only the text that was pressed
+    // Tap seeks to the line; long-press acts only on the text that was pressed
     // (original, transliteration or translation).
-    fun Modifier.lineGestures(text: String): Modifier =
-        if (onCopy == null) this else combinedClickable(
+    fun Modifier.lineGestures(kind: LyricsTextKind, text: String): Modifier =
+        if (onLongPress == null) this else combinedClickable(
             indication = null,
             interactionSource = null,
             onClick = onClick,
-            onLongClick = { onCopy(text) }
+            onLongClick = { onLongPress(kind, text) }
         )
 
     val progressFraction = when {
@@ -519,7 +529,10 @@ fun LyricsLineContentView(
         style = style,
         align = align,
         modifier = modifier
-            .lineGestures(mainText)
+            .lineGestures(
+                if (backgroundContent) LyricsTextKind.Background else LyricsTextKind.Main,
+                mainText
+            )
             .graphicsLayer {
                 renderEffect = blurEffect
             }
@@ -545,7 +558,7 @@ fun LyricsLineContentView(
             ),
             align = align,
             modifier = modifier
-                .lineGestures(transliterationText)
+                .lineGestures(LyricsTextKind.Transliteration, transliterationText)
                 .graphicsLayer {
                     renderEffect = blurEffect
                 }
@@ -575,7 +588,7 @@ fun LyricsLineContentView(
             ),
             align = align,
             modifier = modifier
-                .lineGestures(translatedText)
+                .lineGestures(LyricsTextKind.Translation, translatedText)
                 .graphicsLayer {
                     renderEffect = blurEffect
                 }

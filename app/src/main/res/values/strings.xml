@@ -767,6 +767,12 @@
     <string name="lyrics_show_transliteration_title">Show transliteration</string>
     <string name="lyrics_show_transliteration_summary">Display transliterated lyrics if available.</string>
     <string name="lyrics_copied_to_clipboard">Lyrics copied to clipboard.</string>
+    <string name="lyrics_edit_line_title">Edit lyrics</string>
+    <string name="lyrics_action_copy">Copy</string>
+    <string name="lyrics_line_saved">Lyrics saved.</string>
+    <string name="lyrics_line_not_found">Couldn\'t find this line in the lyrics file.</string>
+    <string name="lyrics_grant_folder_access">Select the folder \"%s\" to allow saving lyrics.</string>
+    <string name="lyrics_wrong_folder">The selected folder doesn\'t contain the lyrics file. Select \"%s\".</string>
     <string name="lyrics_bold_synced_title">Bold font for synced lyrics</string>
     <string name="lyrics_bold_synced_summary">Display synced lyrics in bold font.</string>
     <string name="lyrics_resume_on_seek_title">Resume on seek</string>

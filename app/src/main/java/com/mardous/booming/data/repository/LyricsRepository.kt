@@ -9,6 +9,7 @@ import com.mardous.booming.data.local.EditTarget
 import com.mardous.booming.data.local.MetadataReader
 import com.mardous.booming.data.local.MetadataWriter
 import com.mardous.booming.data.local.lyrics.LyricsInfo
+import com.mardous.booming.data.local.lyrics.LyricsLineLocator
 import com.mardous.booming.data.local.lyrics.LyricsParser
 import com.mardous.booming.data.local.lyrics.lrc.LrcLyricsParser
 import com.mardous.booming.data.local.lyrics.srt.SrtLyricsParser
@@ -16,6 +17,9 @@ import com.mardous.booming.data.local.lyrics.ttml.TtmlLyricsParser
 import com.mardous.booming.data.local.room.LyricsDao
 import com.mardous.booming.data.model.Song
 import com.mardous.booming.data.model.lyrics.LyricsFile
+import com.mardous.booming.data.model.lyrics.LyricsLineEdit
+import com.mardous.booming.data.model.lyrics.LyricsLineEditResult
+import com.mardous.booming.data.model.lyrics.LyricsTextKind
 import com.mardous.booming.data.model.lyrics.LyricsSource
 import com.mardous.booming.data.model.lyrics.ParsedLyrics
 import com.mardous.booming.data.model.lyrics.RawLyrics
@@ -49,6 +53,17 @@ interface LyricsRepository {
 
     suspend fun writableUris(song: Song): List<Uri>
     suspend fun deleteAllLyrics()
+
+    /** The external file that holds the given text of the song's lyrics, if they come from one. */
+    suspend fun lyricsFileForEdit(song: Song, kind: LyricsTextKind): File?
+
+    /** Replaces one line's text in [file] and hands the new bytes to [write]. */
+    suspend fun editLyricsFileLine(
+        song: Song,
+        file: File,
+        edit: LyricsLineEdit,
+        write: (ByteArray) -> Boolean
+    ): LyricsLineEditResult
 }
 
 class RealLyricsRepository(
@@ -161,12 +176,7 @@ class RealLyricsRepository(
         translated: ParsedLyrics.Synced,
         ignoreBlankLines: Boolean
     ): ParsedLyrics {
-        val srtFile = File(file.path)
-        val originalFile = srtFile.parentFile
-            ?.listFiles { dir -> dir.isDirectory && dir.name.equals("rawSRT", ignoreCase = true) }
-            ?.firstNotNullOfOrNull { dir ->
-                dir.listFiles { f -> f.isFile && f.name.equals(srtFile.name, ignoreCase = true) }?.firstOrNull()
-            } ?: return translated
+        val originalFile = findSrtOriginal(File(file.path)) ?: return translated
 
         val originalText = runCatching {
             originalFile.inputStream().buffered().use { stream ->
@@ -184,6 +194,60 @@ class RealLyricsRepository(
         ) ?: return translated
 
         return ParsedLyrics.Synced(srtLyricsParser.mergeTranslation(original, translated.lyrics))
+    }
+
+    /** The same-named file in a `rawSRT` folder next to [srtFile] (names compared ignoring case). */
+    private fun findSrtOriginal(srtFile: File): File? {
+        return srtFile.parentFile
+            ?.listFiles { dir -> dir.isDirectory && dir.name.equals("rawSRT", ignoreCase = true) }
+            ?.firstNotNullOfOrNull { dir ->
+                dir.listFiles { f -> f.isFile && f.name.equals(srtFile.name, ignoreCase = true) }?.firstOrNull()
+            }
+    }
+
+    override suspend fun lyricsFileForEdit(song: Song, kind: LyricsTextKind): File? {
+        val lyricsFile = fileLyrics(song)?.file ?: return null
+        val file = File(lyricsFile.path)
+        // With a rawSRT original, the main text lives there and the outer SRT holds the translation
+        if (lyricsFile.format == LyricsFile.Format.SRT && kind != LyricsTextKind.Translation) {
+            findSrtOriginal(file)?.let { return it }
+        }
+        return file
+    }
+
+    override suspend fun editLyricsFileLine(
+        song: Song,
+        file: File,
+        edit: LyricsLineEdit,
+        write: (ByteArray) -> Boolean
+    ): LyricsLineEditResult {
+        if (edit.newText == edit.oldText) return LyricsLineEditResult.NoChanges
+        return try {
+            val format = LyricsFile.Format.entries.firstOrNull { it.value == file.extension.lowercase() }
+                ?: return LyricsLineEditResult.Failed
+            val bytes = file.readBytes()
+            val charset = bytes.inputStream().buffered().use { detectEncoding(it) }
+            val content = String(bytes, charset)
+
+            val newContent = LyricsLineLocator.replace(
+                content = content,
+                format = format,
+                lineStart = edit.lineStart,
+                oldText = edit.oldText,
+                newText = edit.newText
+            ) ?: return LyricsLineEditResult.NotFound
+            if (newContent == content) return LyricsLineEditResult.NoChanges
+
+            if (write(newContent.toByteArray(charset))) {
+                removeCachedLyrics(LyricsSource.File, song.id)
+                LyricsLineEditResult.Success
+            } else {
+                LyricsLineEditResult.Failed
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Couldn't edit lyrics file ${file.path}", e)
+            LyricsLineEditResult.Failed
+        }
     }
 
     private suspend fun getUserOffset(songId: Long): Long? {

@@ -21,6 +21,8 @@ import com.mardous.booming.core.model.lyrics.LyricsViewSettings
 import com.mardous.booming.core.model.lyrics.LyricsViewSettings.BackgroundEffect
 import com.mardous.booming.core.model.lyrics.LyricsViewSettings.Key
 import com.mardous.booming.data.model.Song
+import com.mardous.booming.data.model.lyrics.LyricsLineEdit
+import com.mardous.booming.data.model.lyrics.LyricsLineEditResult
 import com.mardous.booming.data.model.lyrics.LyricsSource
 import com.mardous.booming.data.model.lyrics.ParsedLyrics
 import com.mardous.booming.data.model.lyrics.RawLyrics
@@ -30,6 +32,7 @@ import com.mardous.booming.data.repository.LyricsRepository
 import com.mardous.booming.extensions.files.belongsTo
 import com.mardous.booming.extensions.media.isArtistNameUnknown
 import com.mardous.booming.extensions.utilities.sanitize
+import com.mardous.booming.util.DocumentTreeAccess
 import com.mardous.booming.util.FileTypeVerifier
 import com.mardous.booming.util.FileUtil
 import kotlinx.coroutines.Dispatchers.IO
@@ -44,6 +47,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import com.mardous.booming.core.model.lyrics.LyricsViewSettings.Mode as LyricsViewMode
+
+sealed interface LyricsLineEditEvent {
+    data class Result(val result: LyricsLineEditResult) : LyricsLineEditEvent
+    data class RequestFolderAccess(val folderPath: String, val initialUri: Uri?) : LyricsLineEditEvent
+    data class WrongFolder(val folderPath: String) : LyricsLineEditEvent
+}
 
 /**
  * @author Christians M. A. (mardous)
@@ -74,6 +83,12 @@ class LyricsViewModel(
 
     private val _fullLyricsViewSettings = MutableStateFlow(createViewSettings(LyricsViewMode.Full))
     val fullLyricsViewSettings = _fullLyricsViewSettings.asStateFlow()
+
+    private val _lineEditEvent = Channel<LyricsLineEditEvent>(Channel.BUFFERED)
+    val lineEditEvent = _lineEditEvent.receiveAsFlow()
+
+    // Edit waiting for the user to grant access to its folder
+    private var pendingLineEdit: Pair<Song, LyricsLineEdit>? = null
 
     private var lyricsJob: Job? = null
 
@@ -159,6 +174,56 @@ class LyricsViewModel(
 
     fun preparePermissionRequest(song: Song) = viewModelScope.launch(IO) {
         _permissionRequestEvent.send(repository.writableUris(song))
+    }
+
+    /**
+     * Saves an edited line back to the external lyrics file. Writing goes through a folder the
+     * user granted with the system picker; if none covers the file, access is requested first
+     * and the save resumes in [onFolderAccessResult].
+     */
+    fun saveLyricsLine(song: Song, edit: LyricsLineEdit) = viewModelScope.launch(IO) {
+        val context = getApplication<Application>()
+        val file = repository.lyricsFileForEdit(song, edit.kind)
+        if (file == null) {
+            _lineEditEvent.send(LyricsLineEditEvent.Result(LyricsLineEditResult.Failed))
+            return@launch
+        }
+        val documentUri = DocumentTreeAccess.findDocumentUri(context, file)
+        if (documentUri == null) {
+            pendingLineEdit = song to edit
+            _lineEditEvent.send(
+                LyricsLineEditEvent.RequestFolderAccess(
+                    folderPath = file.parent.orEmpty(),
+                    initialUri = DocumentTreeAccess.initialUriFor(file.parentFile)
+                )
+            )
+            return@launch
+        }
+        val result = repository.editLyricsFileLine(song, file, edit) { bytes ->
+            context.contentResolver.openOutputStream(documentUri, "wt")?.use {
+                it.write(bytes)
+                true
+            } ?: false
+        }
+        _lineEditEvent.send(LyricsLineEditEvent.Result(result))
+        if (result == LyricsLineEditResult.Success && song.id == lyricsUiState.value.id) {
+            updateSong(song)
+        }
+    }
+
+    fun onFolderAccessResult(treeUri: Uri?) = viewModelScope.launch(IO) {
+        val (song, edit) = pendingLineEdit ?: return@launch
+        pendingLineEdit = null
+        if (treeUri == null) return@launch
+
+        val context = getApplication<Application>()
+        DocumentTreeAccess.persist(context, treeUri)
+        val file = repository.lyricsFileForEdit(song, edit.kind)
+        if (file == null || DocumentTreeAccess.findDocumentUri(context, file) == null) {
+            _lineEditEvent.send(LyricsLineEditEvent.WrongFolder(file?.parent.orEmpty()))
+        } else {
+            saveLyricsLine(song, edit)
+        }
     }
 
     fun deleteLyrics() = viewModelScope.launch(IO) {
@@ -269,7 +334,7 @@ class LyricsViewModel(
             } ?: continue
             when (val parsed = repository.parseRawLyrics(song, rawLyrics)) {
                 is ParsedLyrics.Instrumental -> return@withContext LyricsUiState.Instrumental(song.id)
-                is ParsedLyrics.Synced -> return@withContext LyricsUiState.Synced(song.id, parsed.lyrics)
+                is ParsedLyrics.Synced -> return@withContext LyricsUiState.Synced(song.id, parsed.lyrics, source)
                 is ParsedLyrics.Plain -> if (plainLyrics.isNullOrEmpty()) plainLyrics = parsed.lyrics
                 is ParsedLyrics.Empty -> {
                     Log.d("LyricsViewModel", "No lyrics found for song ${song.data} in source $source")

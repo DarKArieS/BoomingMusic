@@ -892,6 +892,12 @@
     <string name="lyrics_show_transliteration_title">顯示音譯</string>
     <string name="lyrics_show_transliteration_summary">如有音譯歌詞則顯示。</string>
     <string name="lyrics_copied_to_clipboard">已複製歌詞到剪貼簿。</string>
+    <string name="lyrics_edit_line_title">編輯歌詞</string>
+    <string name="lyrics_action_copy">複製</string>
+    <string name="lyrics_line_saved">已儲存歌詞。</string>
+    <string name="lyrics_line_not_found">無法在歌詞檔中找到這一行。</string>
+    <string name="lyrics_grant_folder_access">請選擇「%s」資料夾以允許儲存歌詞。</string>
+    <string name="lyrics_wrong_folder">所選資料夾不包含此歌詞檔，請選擇「%s」。</string>
     <string name="lyrics_bold_synced_title">粗體同步歌詞</string>
     <string name="lyrics_bold_synced_summary">以粗體顯示同步歌詞。</string>
     <string name="lyrics_resume_on_seek_title">用歌詞跳轉後繼續播放</string>
