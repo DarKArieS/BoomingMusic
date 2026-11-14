@@ -766,6 +766,7 @@
     <string name="lyrics_show_translation_summary">Display translated lyrics if available.</string>
     <string name="lyrics_show_transliteration_title">Show transliteration</string>
     <string name="lyrics_show_transliteration_summary">Display transliterated lyrics if available.</string>
+    <string name="lyrics_copied_to_clipboard">Lyrics copied to clipboard.</string>
     <string name="lyrics_bold_synced_title">Bold font for synced lyrics</string>
     <string name="lyrics_bold_synced_summary">Display synced lyrics in bold font.</string>
     <string name="lyrics_resume_on_seek_title">Resume on seek</string>

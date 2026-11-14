@@ -905,6 +905,7 @@
     <string name="lyrics_show_translation_summary">显示可用的歌词翻译。</string>
     <string name="lyrics_show_transliteration_title">显示音译</string>
     <string name="lyrics_show_transliteration_summary">显示可用的歌词音译。</string>
+    <string name="lyrics_copied_to_clipboard">已复制歌词到剪贴板。</string>
     <string name="lyrics_resume_on_seek_title">用歌词跳转后继续播放</string>
     <string name="lyrics_resume_on_seek_summary">点按同步歌词行跳转后自动恢复播放。</string>
     <string name="app_version_x">版本 %s</string>

@@ -1,5 +1,7 @@
 package com.mardous.booming.ui.component.compose.lyrics
 
+import android.content.ClipData
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -14,6 +16,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +58,12 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
@@ -71,9 +80,11 @@ import com.mardous.booming.core.model.lyrics.LyricsViewState
 import com.mardous.booming.data.model.lyrics.LyricsActor
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
 import com.mardous.booming.extensions.hasS
+import com.mardous.booming.extensions.showToast
 import com.mardous.booming.extensions.utilities.isRtl
 import com.mardous.booming.ui.component.compose.decoration.FadingEdges
 import com.mardous.booming.ui.component.compose.decoration.fadingEdges
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
@@ -283,6 +294,23 @@ private fun LyricsLineView(
         label = "progress-line-alpha"
     )
 
+    val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+    val hapticFeedback = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+
+    fun copyToClipboard(text: String) {
+        if (text.isBlank()) return
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        coroutineScope.launch {
+            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("lyrics", text)))
+        }
+        // Android 13+ shows its own confirmation when the clipboard changes
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            context.showToast(R.string.lyrics_copied_to_clipboard)
+        }
+    }
+
     val layoutDirection = if (isRtl) LayoutDirection.Rtl else LayoutDirection.Ltr
     Column(modifier = modifier) {
         CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
@@ -335,6 +363,8 @@ private fun LyricsLineView(
                         translatedContent = if (showTranslation) line.translation else null,
                         transliterationContent = if (showTransliteration) line.transliteration else null,
                         backgroundContent = false,
+                        onClick = onClick,
+                        onCopy = ::copyToClipboard,
                         enableSyllable = enableSyllable,
                         enableKaraokeStyle = enableKaraokeStyle,
                         progressiveColoring = progressiveColoring,
@@ -360,6 +390,8 @@ private fun LyricsLineView(
                             translatedContent = if (showTranslation) line.translation else null,
                             transliterationContent = if (showTransliteration) line.transliteration else null,
                             backgroundContent = true,
+                            onClick = onClick,
+                            onCopy = ::copyToClipboard,
                             enableSyllable = enableSyllable,
                             enableKaraokeStyle = enableKaraokeStyle,
                             progressiveColoring = progressiveColoring,
@@ -414,8 +446,20 @@ fun LyricsLineContentView(
     endMillis: Long,
     style: TextStyle,
     align: TextAlign,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onCopy: ((String) -> Unit)? = null
 ) {
+    // Tap seeks to the line; long-press copies only the text that was pressed
+    // (original, transliteration or translation).
+    fun Modifier.lineGestures(text: String): Modifier =
+        if (onCopy == null) this else combinedClickable(
+            indication = null,
+            interactionSource = null,
+            onClick = onClick,
+            onLongClick = { onCopy(text) }
+        )
+
     val progressFraction = when {
         progressMillis < startMillis -> 0f
         progressMillis > endMillis -> 1f
@@ -456,14 +500,17 @@ fun LyricsLineContentView(
         progressMillis = progressMillis,
         style = style,
         align = align,
-        modifier = modifier.graphicsLayer {
-            renderEffect = blurEffect
-        }
+        modifier = modifier
+            .lineGestures(mainText)
+            .graphicsLayer {
+                renderEffect = blurEffect
+            }
     )
 
     if (transliterationContent != null && !transliterationContent.isEmpty) {
+        val transliterationText = transliterationContent.getText(backgroundContent)
         LineTextView(
-            plainText = transliterationContent.getText(backgroundContent),
+            plainText = transliterationText,
             syllables = transliterationContent.getSyllables(backgroundContent),
             enableSyllable = enableSyllable,
             enableKaraokeStyle = enableKaraokeStyle,
@@ -479,9 +526,11 @@ fun LyricsLineContentView(
                 fontWeight = FontWeight.Normal
             ),
             align = align,
-            modifier = modifier.graphicsLayer {
-                renderEffect = blurEffect
-            }
+            modifier = modifier
+                .lineGestures(transliterationText)
+                .graphicsLayer {
+                    renderEffect = blurEffect
+                }
         )
     }
 
@@ -489,8 +538,9 @@ fun LyricsLineContentView(
         val fontSizeDivider =
             if (transliterationContent != null && !transliterationContent.isEmpty) 1.60f else 1.40f
 
+        val translatedText = translatedContent.getText(backgroundContent)
         LineTextView(
-            plainText = translatedContent.getText(backgroundContent),
+            plainText = translatedText,
             syllables = translatedContent.getSyllables(backgroundContent),
             enableSyllable = enableSyllable,
             enableKaraokeStyle = enableKaraokeStyle,
@@ -506,9 +556,11 @@ fun LyricsLineContentView(
                 fontWeight = FontWeight.Normal
             ),
             align = align,
-            modifier = modifier.graphicsLayer {
-                renderEffect = blurEffect
-            }
+            modifier = modifier
+                .lineGestures(translatedText)
+                .graphicsLayer {
+                    renderEffect = blurEffect
+                }
         )
     }
 }

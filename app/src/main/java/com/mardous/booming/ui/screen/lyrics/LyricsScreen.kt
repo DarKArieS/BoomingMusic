@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -420,13 +421,16 @@ private fun LyricsSurface(
                         .verticalScroll(scrollState)
                         .padding(contentPadding)
                 ) {
-                    Text(
-                        text = uiState.lyrics,
-                        color = contentColor,
-                        textAlign = textAlign,
-                        style = settings.unsyncedStyle,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    // Long-press to select and copy
+                    SelectionContainer {
+                        Text(
+                            text = uiState.lyrics,
+                            color = contentColor,
+                            textAlign = textAlign,
+                            style = settings.unsyncedStyle,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
 

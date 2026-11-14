@@ -891,6 +891,7 @@
     <string name="lyrics_show_translation_summary">如有翻譯歌詞則顯示。</string>
     <string name="lyrics_show_transliteration_title">顯示音譯</string>
     <string name="lyrics_show_transliteration_summary">如有音譯歌詞則顯示。</string>
+    <string name="lyrics_copied_to_clipboard">已複製歌詞到剪貼簿。</string>
     <string name="lyrics_bold_synced_title">粗體同步歌詞</string>
     <string name="lyrics_bold_synced_summary">以粗體顯示同步歌詞。</string>
     <string name="lyrics_resume_on_seek_title">用歌詞跳轉後繼續播放</string>
