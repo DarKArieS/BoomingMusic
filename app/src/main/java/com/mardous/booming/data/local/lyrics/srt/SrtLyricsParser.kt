@@ -116,6 +116,30 @@ class SrtLyricsParser : LyricsParser {
         return SyncedLyrics(lines = syncedLines, offset = userOffset)
     }
 
+    /**
+     * Attaches [translation] lines to [original] lines as translations. Each original line
+     * takes the translated line whose time range overlaps it the most.
+     */
+    fun mergeTranslation(original: SyncedLyrics, translation: SyncedLyrics): SyncedLyrics {
+        val translatedLines = translation.lines.filterNot { it.isEmpty }
+        if (translatedLines.isEmpty()) return original
+
+        val mergedLines = original.lines.map { line ->
+            if (line.isEmpty) return@map line
+            val match = translatedLines
+                .map { it to (minOf(line.end, it.end) - maxOf(line.start, it.start)) }
+                .filter { (_, overlap) -> overlap > 0 }
+                .maxByOrNull { (_, overlap) -> overlap }
+                ?.first
+            if (match == null || match.content.content == line.content.content) {
+                line
+            } else {
+                line.copy(translation = match.content)
+            }
+        }
+        return original.copy(lines = mergedLines)
+    }
+
     // groupOffset: 1-based index of the first capture group for this timestamp
     private fun parseTime(match: MatchResult, groupOffset: Int): Long {
         return try {

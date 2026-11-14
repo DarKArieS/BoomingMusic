@@ -75,7 +75,7 @@ class RealLyricsRepository(
         try {
             return when (rawLyrics) {
                 is RawLyrics.File -> {
-                    parseTextLyrics(
+                    val parsed = parseTextLyrics(
                         song = song,
                         lyrics = rawLyrics.lyrics,
                         ignoreBlankLines = ignoreBlankLines,
@@ -88,6 +88,11 @@ class RealLyricsRepository(
                             }
                         )
                     )
+                    if (rawLyrics.file.format == LyricsFile.Format.SRT && parsed is ParsedLyrics.Synced) {
+                        withSrtOriginal(song, rawLyrics.file, parsed, ignoreBlankLines)
+                    } else {
+                        parsed
+                    }
                 }
 
                 is RawLyrics.Embedded -> {
@@ -141,6 +146,42 @@ class RealLyricsRepository(
             Log.e(TAG, "Couldn't parse lyrics for song ${song.data}", e)
         }
         return ParsedLyrics.Empty
+    }
+
+    /**
+     * If a file with the same name exists in a `rawSRT` folder next to the SRT file, that file
+     * holds the original lyrics: it becomes the main content and the SRT file's lines are
+     * shown as its translation.
+     */
+    private fun withSrtOriginal(
+        song: Song,
+        file: LyricsFile,
+        translated: ParsedLyrics.Synced,
+        ignoreBlankLines: Boolean
+    ): ParsedLyrics {
+        val srtFile = File(file.path)
+        val originalFile = srtFile.parentFile
+            ?.listFiles { dir -> dir.isDirectory && dir.name.equals("rawSRT", ignoreCase = true) }
+            ?.firstNotNullOfOrNull { dir ->
+                dir.listFiles { f -> f.isFile && f.name.equals(srtFile.name, ignoreCase = true) }?.firstOrNull()
+            } ?: return translated
+
+        val originalText = runCatching {
+            originalFile.inputStream().buffered().use { stream ->
+                val charset = detectEncoding(stream)
+                stream.reader(charset).use { it.readText() }
+            }
+        }.getOrNull()
+        if (originalText.isNullOrBlank()) return translated
+
+        val original = srtLyricsParser.parse(
+            originalText,
+            song.duration,
+            translated.lyrics.offset,
+            ignoreBlankLines
+        ) ?: return translated
+
+        return ParsedLyrics.Synced(srtLyricsParser.mergeTranslation(original, translated.lyrics))
     }
 
     private suspend fun getUserOffset(songId: Long): Long? {
