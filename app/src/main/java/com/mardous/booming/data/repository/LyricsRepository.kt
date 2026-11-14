@@ -67,7 +67,9 @@ class RealLyricsRepository(
     private val ttmlLyricsParser = TtmlLyricsParser()
     private val srtLyricsParser = SrtLyricsParser()
 
-    private val lyricsParsers = listOf(lrcLyricsParser, ttmlLyricsParser, srtLyricsParser)
+    // SRT goes first: its "-->" timing lines are unambiguous, while the LRC parser would
+    // otherwise accept SRT text containing "[...]" (e.g. "[Music]") as plain LRC lyrics.
+    private val lyricsParsers = listOf(srtLyricsParser, lrcLyricsParser, ttmlLyricsParser)
 
     override suspend fun parseRawLyrics(song: Song, rawLyrics: RawLyrics): ParsedLyrics {
         val ignoreBlankLines = preferences.getBoolean(IGNORE_BLANK_LINES, false)

@@ -1,5 +1,6 @@
 package com.mardous.booming.data.local.lyrics.srt
 
+import android.util.Log
 import com.mardous.booming.data.local.lyrics.LyricsInfo
 import com.mardous.booming.data.local.lyrics.LyricsParser
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
@@ -8,19 +9,15 @@ import java.io.Reader
 class SrtLyricsParser : LyricsParser {
 
     override fun getInfo(lyrics: String): LyricsInfo {
-        // Skip blank lines and sequence number, then check for a timestamp line
-        val isSrt = lyrics.lineSequence()
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .dropWhile { it.matches(SEQUENCE_PATTERN) }
-            .firstOrNull()
-            ?.let { TIMESTAMP_PATTERN.containsMatchIn(it) } == true
+        // An SRT cue timing line ("00:00:01,000 --> 00:00:02,000") is distinctive enough
+        // that finding one anywhere is a reliable signal.
+        val isSrt = lyrics.lineSequence().any { TIMESTAMP_PATTERN.containsMatchIn(it.clean()) }
         return if (isSrt) LyricsInfo.Valid(actuallySynced = true) else LyricsInfo.Invalid
     }
 
     override fun parseAsPlain(input: String): String? {
         val text = input.lineSequence()
-            .map { it.trim() }
+            .map { it.clean() }
             .filterNot { it.isEmpty() || it.matches(SEQUENCE_PATTERN) || TIMESTAMP_PATTERN.containsMatchIn(it) }
             .joinToString("\n") { it.stripHtmlTags() }
         return text.ifBlank { null }
@@ -34,48 +31,42 @@ class SrtLyricsParser : LyricsParser {
         userOffset: Long,
         ignoreBlankLines: Boolean
     ): SyncedLyrics? {
-        data class Block(val start: Long, val end: Long, val lines: List<String>)
+        data class Block(val start: Long, val end: Long, val text: String)
 
         val blocks = mutableListOf<Block>()
         try {
-            reader.buffered().use { br ->
-                val rawLines = br.readLines()
-                var i = 0
+            val rawLines = reader.buffered().use { it.readLines() }.map { it.clean() }
+            var i = 0
+            while (i < rawLines.size) {
+                val timeMatch = TIMESTAMP_PATTERN.find(rawLines[i++]) ?: continue
+                val start = parseTime(timeMatch, groupOffset = 1)
+                val end = parseTime(timeMatch, groupOffset = 5)
+
+                val textLines = mutableListOf<String>()
                 while (i < rawLines.size) {
-                    val line = rawLines[i].trim()
+                    val textLine = rawLines[i]
+                    // A cue ends at a blank line, or at the next cue (sequence number + timing line,
+                    // or a timing line alone when the file has no blank separators).
+                    if (textLine.isEmpty() || TIMESTAMP_PATTERN.containsMatchIn(textLine)) break
+                    if (textLine.matches(SEQUENCE_PATTERN) &&
+                        rawLines.getOrNull(i + 1)?.let { TIMESTAMP_PATTERN.containsMatchIn(it) } == true
+                    ) break
+                    textLines.add(textLine.stripHtmlTags())
                     i++
-
-                    // Skip blank lines and sequence numbers
-                    if (line.isEmpty() || line.matches(Regex("\\d+"))) continue
-
-                    val timeMatch = TIMESTAMP_PATTERN.find(line) ?: continue
-                    val start = parseTime(timeMatch, groupOffset = 1)
-                    val end = parseTime(timeMatch, groupOffset = 5)
-                    if (start < 0 || end < 0 || end <= start) continue
-
-                    val textLines = mutableListOf<String>()
-                    while (i < rawLines.size) {
-                        val textLine = rawLines[i].trim()
-                        i++
-                        if (textLine.isEmpty()) break
-                        // Skip if next sequence number
-                        if (textLine.matches(Regex("\\d+")) &&
-                            i < rawLines.size && TIMESTAMP_PATTERN.containsMatchIn(rawLines[i].trim())
-                        ) break
-                        textLines.add(textLine.stripHtmlTags())
-                    }
-
-                    if (textLines.isNotEmpty() || !ignoreBlankLines) {
-                        blocks.add(Block(start, end, textLines))
-                    }
                 }
+
+                if (start < 0 || end <= start) continue
+                val text = textLines.joinToString("\n").trim()
+                if (text.isEmpty() && ignoreBlankLines) continue
+                blocks.add(Block(start, end, text))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Couldn't parse SRT lyrics", e)
             return null
         }
 
         if (blocks.isEmpty()) return null
+        blocks.sortBy { it.start }
 
         val syncedLines = mutableListOf<SyncedLyrics.Line>()
 
@@ -93,17 +84,14 @@ class SrtLyricsParser : LyricsParser {
         }
 
         for (block in blocks) {
-            val text = block.lines.joinToString("\n")
-            if (text.isBlank() && ignoreBlankLines) continue
-
             syncedLines.add(
                 SyncedLyrics.Line(
                     start = block.start,
                     end = block.end,
                     content = SyncedLyrics.TextContent(
-                        content = text,
+                        content = block.text,
                         backgroundContent = null,
-                        rawContent = text,
+                        rawContent = block.text,
                         syllables = emptyList()
                     ),
                     transliteration = null,
@@ -140,27 +128,37 @@ class SrtLyricsParser : LyricsParser {
         return original.copy(lines = mergedLines)
     }
 
-    // groupOffset: 1-based index of the first capture group for this timestamp
+    // groupOffset: 1-based index of the first capture group (hours) for this timestamp
     private fun parseTime(match: MatchResult, groupOffset: Int): Long {
         return try {
-            val h = match.groupValues[groupOffset].toLong()
+            val h = match.groupValues[groupOffset].ifEmpty { "0" }.toLong()
             val m = match.groupValues[groupOffset + 1].toLong()
             val s = match.groupValues[groupOffset + 2].toLong()
-            val ms = match.groupValues[groupOffset + 3].toLong()
+            // Fraction digits: "5" means 500ms, "05" means 50ms
+            val ms = match.groupValues[groupOffset + 3].padEnd(3, '0').toLong()
             h * 3_600_000L + m * 60_000L + s * 1_000L + ms
         } catch (_: Exception) {
             -1L
         }
     }
 
-    private fun String.stripHtmlTags() = replace(Regex("<[^>]+>"), "")
+    /** Trims whitespace plus BOM / zero-width characters that `trim()` keeps. */
+    private fun String.clean() = trim { it.isWhitespace() || it in INVISIBLE_CHARS }
+
+    private fun String.stripHtmlTags() = replace(HTML_TAG_PATTERN, "").replace(ASS_TAG_PATTERN, "")
 
     companion object {
-        private val SEQUENCE_PATTERN = Regex("\\d+")
+        private const val TAG = "SrtLyricsParser"
 
-        // HH:MM:SS,mmm --> HH:MM:SS,mmm
-        private val TIMESTAMP_PATTERN = Regex(
-            "(\\d{2}):(\\d{2}):(\\d{2})[,\\.](\\d{3})\\s*-->\\s*(\\d{2}):(\\d{2}):(\\d{2})[,\\.](\\d{3})"
-        )
+        private const val INVISIBLE_CHARS = "﻿​‌‍⁠"
+
+        private val SEQUENCE_PATTERN = Regex("\\d+")
+        private val HTML_TAG_PATTERN = Regex("<[^>]+>")
+        private val ASS_TAG_PATTERN = Regex("\\{\\\\[^\\}]*\\}")
+
+        // [H]H:MM:SS,mmm --> [H]H:MM:SS,mmm (hours optional, ',' or '.' before 1-3 fraction digits;
+        // trailing cue settings such as "X1:… Y1:…" are allowed)
+        private const val TIME = "(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})[,.](\\d{1,3})"
+        private val TIMESTAMP_PATTERN = Regex("^$TIME\\s*-->\\s*$TIME")
     }
 }
