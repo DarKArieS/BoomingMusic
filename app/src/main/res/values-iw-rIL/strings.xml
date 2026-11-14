@@ -64,7 +64,7 @@
     <string name="add_playlist_title">הוסף לרשימת ההשמעה</string>
     <string name="rename_playlist_title">שנה שם לרשימת ההשמעה</string>
     <string name="action_edit_playlist">ערוך רשימת השמעה</string>
-    <string name="action_delete">מחיקת רשימת השמעה</string>
+    <string name="action_delete_playlist">מחיקת רשימת השמעה</string>
     <string name="action_export_playlist">ייצוא לקובץ</string>
     <string name="action_clear_history">ניקוי היסטוריה</string>
     <string name="history_cleared">היסטוריה נוקתה</string>
@@ -124,18 +124,14 @@
     <string name="permission_external_storage_denied">עליך להעניק הרשאת גישה לאחסון חיצוני.</string>
     <string name="permission_bluetooth_title">מכשירים בקרבת מקום</string>
     <string name="permission_bluetooth_description">האפליקציה זקוקה להרשאה מכשירים בקרבת מקום כדי לבדוק אם יש מכשירי בלוטות\'</string>
-    <string name="permission_bluetooth_denied">הרשאת הגישה למכשירים בקרבת מקום נדחתה.</string>
     <string name="permission_read_images_title">קריאת תמונות (אופציונלי)</string>
     <string name="permission_read_images_summary">הרשאה זו נדרשת כדי ש־Booming Music תוכל למצוא קובצי עטיפות אלבומים בתיקיות המוזיקה שלך. אם אינך מתכנן להשתמש בפונקציה זו, אפשר לבחור לא לאשר אותה.</string>
     <string name="permission_read_images_denied">עליך להעניק הרשאה לקריאת תמונות מהמכשיר.</string>
-    <string name="permission_exact_alarms_title">תזמון התראות מדויקות (אופציונלי)</string>
-    <string name="permission_exact_alarms_description">נדרשת הרשאה לתזמן התראות מדויקות כדי שטיימר השינה יפעל כראוי</string>
     <string name="permissions_denied">הרשאות נדחו</string>
     <string name="permissions_needed">הרשאות נדרשות</string>
     <string name="grant_access_action">הענק גישה</string>
     <string name="action_grant">הענק</string>
     <string name="granted">הוענק</string>
-    <string name="hello_there">שלום לך!</string>
     <string name="welcome_to_x">ברוך הבא ל-%s</string>
     <string name="get_started">בא נתחיל</string>
     <string name="select_storage_title">בחר אחסון</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">גודל הרשת</string>
     <string name="action_grid_size_land">גודל הרשת (קרקע)</string>
     <string name="action_sort_order">מיון לפי</string>
-    <string name="sort_order_az">א-ת</string>
     <string name="sort_order_artist">אומן</string>
     <string name="sort_order_album">אלבום</string>
     <string name="sort_order_year">שנה</string>
@@ -246,15 +241,6 @@
     <string name="download_image">הורדת תמונה</string>
     <string name="pick_from_local_storage">בחר מאחסון מקומי</string>
     <string name="about_x_title">‮אודות ‭%s</string>
-    <string name="listeners_label">מאזינים</string>
-    <string name="scrobbles_label">סקרובלינגס</string>
-    <string name="save_cover">שמור עטיפת אלבום</string>
-    <string name="saving_cover_please_wait">שומר עטיפה, המתן…</string>
-    <string name="save_artwork_error">שמירת העטיפה באחסון המקומי נכשלה</string>
-    <string name="save_artwork_success">עטיפת אלבום נשמרה</string>
-    <string name="save_artwork_view_action">הצג</string>
-    <string name="save_artwork_copyright_info_title">הודעת זכויות יוצרים</string>
-    <string name="save_artwork_copyright_info_message">ייתכן שחלק מעטיפות האלבומים (או כולן) מוגנות על ידי חוקי זכויות היוצרים. אין לך רשות להשתמש בתמונות אלה למטרות מסחריות או פרסומיות.\n\nהאחריות המלאה על השימוש בעטיפות האלבומים השמורות חלה עליך בלבד.</string>
     <string name="yes">כן</string>
     <string name="no">לא</string>
     <string name="keyboard">מקלדת</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">פורמט</string>
     <string name="file_label">קובץ</string>
     <string name="metadata_label">נתוני על</string>
-    <string name="title_and_artist">כותרת ואומן</string>
     <string name="song">שיר</string>
     <string name="title">כותרת</string>
     <string name="album">אלבום</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">החיבור אינו זמין.</string>
     <string name="you_have_to_select_at_least_one_category">עליך לבחור לפחות קטגוריה אחת</string>
     <string name="you_cannot_select_more_than_five_categories">לא ניתן לבחור יותר מחמש קטגוריות.</string>
-    <string name="backup_settings">הגדרות</string>
-    <string name="backup_synced_lyrics">סנכרון מילים</string>
-    <string name="backup_artist_images">תמונות אומנים</string>
-    <string name="backup_playlists">רשימות השמעה</string>
     <string name="backup_successful">הגיבוי הצליח!</string>
     <string name="backup_failed">הגיבוי נכשל.</string>
     <string name="select_content_to_restore">בחר תוכן לשחזור:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">רשימת ההשמעה ננעלה</string>
     <string name="playlist_unlocked">רשימת ההשמעה נפתחה</string>
     <string name="action_toggle_queue_lock">נעל/פתח תור השמעה</string>
-    <string name="queue_locked">תור ההשמעה ננעל</string>
-    <string name="queue_unlocked">תור ההשמעה נפתח</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Aux Line</string>
     <string name="audio_device_bluetooth_a2dp">בלוטות׳ A2DP</string>
@@ -369,7 +348,7 @@
     <string name="top_albums">אלבומים מובילים</string>
     <string name="recent_artists">אומנים אחרונים</string>
     <string name="recent_albums">אלבומים אחרונים</string>
-    <string name="no_suggestions">אין הצעות עבורך</string>
+
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">אקראי טהור</string>
     <string name="shuffle_mode_most_played">המושמע ביותר</string>
@@ -511,11 +490,8 @@
     <string name="author">יוצר</string>
     <string name="mardous_summary">מפתח ראשי</string>
     <string name="contributors">תורמים</string>
-    <string name="acknowledgments_title">הכרה</string>
     <string name="translators_title">מתרגמים</string>
     <string name="translators_summary">תודה לאלו שעוזרים להפוך את Booming Music לזמין בשפות רבות.</string>
-    <string name="contributors_title">תורמים</string>
-    <string name="contributors_summary">רשימת משתמשים שתרמו למיזם בדרך כלשהי.</string>
     <string name="view_profile_on_github">צפה בפרופיל ב-GitHub</string>
     <string name="write_an_email">כתוב אימייל</string>
     <string name="support_development">תמיכה בפיתוח</string>
@@ -528,7 +504,6 @@
     <string name="send_invitation_message">שלח הודעת הזמנה</string>
     <string name="invitation_message_content">אהלן. למה לא לבדוק את Booming Music! זה היישום הכי טוב להאזנה למוזיקה מקומית במכשירי אנדרואיד. אפשר להוריד אותו מכאן: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">תועברו לאתר האינטרנט למעקב הבעיות.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">נדרש גישה לאחסון</string>
     <string name="saf_access_required_message">האפליקציה Booming Music דורשת הרשאה לגישה לקבצים אלו. אנא בחר את התיקייה הראשית שבה מאוחסנים קבצי המוזיקה שלך.</string>
@@ -565,7 +540,6 @@
     <string name="audio_focus_header">מיקוד שמע</string>
     <string name="shuffle_mode_header">מצב ערבוב</string>
     <string name="display_header">תצוגה</string>
-    <string name="backup_restore_header">גיבוי / שחזור</string>
     <string name="visuals_header">ויזואליים</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">ערכת נושא כללית</string>
@@ -612,10 +586,10 @@
     <string name="synced_font_size_full_summary">התאם את גודל הגופן למילות שיר מסונכרנות במסך מילות השיר המלא.</string>
     <string name="unsynced_font_size_full_title">גודל גופן למילות שיר לא מסונכרנות (תצוגה מלאה)</string>
     <string name="unsynced_font_size_full_summary">התאם את גודל הגופן למילות שיר לא מסונכרנות במסך מילות השיר המלא.</string>
-    <string name="instrumental_tracks_identifiers_title">זיהוי רצועות אינסטרומנטליות</string>
-    <string name="instrumental_tracks_identifiers_summary">אם מילות השיר מורכבות אך ורק מאחד או יותר מהסמנים האלה, השיר יסומן כרצועה אינסטרומנטלית (מופרדים בפסיק).</string>
-    <string name="instrumental_tracks_mark_by_title_title">סמן לפי שם</string>
-    <string name="instrumental_tracks_mark_by_title_summary">שם השיר יילקח גם הוא בחשבון בעת חיפוש אחר הסמנים.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">התעלמות משורות ריקות</string>
     <string name="ignore_blank_lines_summary">Ignore empty lines in LRC files instead of showing animated bubbles.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">התייחס לכל קובצי מילות השירים כ־UTF-8</string>
@@ -637,8 +611,6 @@
     <string name="circle_button_title">כפתור ניגון עגול</string>
     <string name="swipe_album_cover_title">החלק על עטיפת האלבום</string>
     <string name="swipe_album_cover_summary">החלק שמאלה או ימינה על עטיפת האלבום כדי לדלג בין שירים.</string>
-    <string name="queue_height_title">גובה תור חצי-מסך</string>
-    <string name="queue_height_summary">קבע את גובה רשימת ההשמעה לחצי מגובה המסך.</string>
     <string name="single_tap_on_album_cover_title">הקשה אחת על העטיפה</string>
     <string name="double_tap_on_album_cover_title">הקשה כפולה על העטיפה</string>
     <string name="double_tap_on_left_album_cover_title">לחיצה כפולה בקצה השמאלי של עטיפת האלבום</string>
@@ -749,10 +721,6 @@
     <string name="min_song_duration_summary">כמה שניות (לפחות) שיר חייב להימשך כדי שיוצג בספרייה שלך.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">שפת האפליקציה</string>
-    <string name="backup_data_title">גיבוי נתוני האפליקציה</string>
-    <string name="backup_app_data_summary">צור קובץ המכיל נתוני אפליקציה חיוניים ושמור אותו באחסון החיצוני.</string>
-    <string name="restore_backup_title">שחזר גיבוי</string>
-    <string name="restore_backup_summary">שחזר נתוני אפליקציה (ומצב) מגיבוי קודם.</string>
     <string name="stop_when_closed_from_recents_title">עצור כאשר נסגר מהאחרונים</string>
     <string name="stop_when_closed_from_recents_summary">הניגון ייעצר אם האפליקציה תיסגר מרשימת האחרונים.</string>
     <string name="stop_when_closed_from_recents_note">הערה: במכשירים מסוימים עם ניהול זיכרון או סוללה אגרסיבי, ייתכן שהגדרה זו תתעלם והאפליקציה תיעצר תמיד כאשר מסירים אותה מהרשימה האחרונה.</string>
@@ -842,11 +810,8 @@
     <string name="uncaught_error_restart_app">הפעל מחדש את האפליקציה</string>
     <string name="uncaught_error_github">פתח דיווח בעיות ב‑GitHub</string>
     <string name="uncaught_error_send">שלח דוח</string>
-    <string name="app_widget_responsive">גמיש</string>
-    <string name="app_widget_responsive_desc">יישומון שפריסתו מתגמשת לפי גדלים שונים</string>
     <string name="app_widget_card">כרטיס</string>
     <string name="app_widget_card_desc">סגנון מינימליסטי ופשוט</string>
-    <string name="app_widget_full">מלא</string>
     <string name="search_playlists">חיפוש ברשימות ההשמעה</string>
     <string name="select_playlists_title">בחירת רשימות השמעה</string>
     <string name="songs_added_to_playlists">השירים נוספו לרשימות ההשמעה.</string>

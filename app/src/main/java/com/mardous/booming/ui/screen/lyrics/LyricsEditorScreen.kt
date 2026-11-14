@@ -36,11 +36,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -66,9 +71,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,6 +105,7 @@ import com.mardous.booming.data.model.lyrics.LyricsMode
 import com.mardous.booming.data.model.lyrics.LyricsSource
 import com.mardous.booming.data.model.lyrics.RawLyrics
 import com.mardous.booming.data.model.network.NetworkFeature
+import com.mardous.booming.data.remote.lyrics.api.LyricsProvider
 import com.mardous.booming.extensions.hasR
 import com.mardous.booming.extensions.media.displayArtistName
 import com.mardous.booming.extensions.media.isArtistNameUnknown
@@ -107,8 +113,10 @@ import com.mardous.booming.extensions.openUrl
 import com.mardous.booming.extensions.showToast
 import com.mardous.booming.extensions.webSearch
 import com.mardous.booming.ui.component.compose.ButtonGroup
+import com.mardous.booming.ui.component.compose.DialogListItemWithCheckBox
 import com.mardous.booming.ui.component.compose.DialogListItemWithRadio
 import com.mardous.booming.ui.component.compose.MediaImage
+import com.mardous.booming.ui.component.compose.ObserveAsEvent
 import com.mardous.booming.ui.component.compose.menu.MenuItem
 import com.mardous.booming.ui.component.compose.menu.OverflowMenu
 import com.mardous.booming.ui.component.compose.menu.TopAppBarMenu
@@ -212,29 +220,47 @@ fun LyricsEditorScreen(
     var showLyricsSearchDialog by remember { mutableStateOf(false) }
     var downloadedLyricsForSelector by rememberSaveable { mutableStateOf<RawLyrics.Remote?>(null) }
 
-    val saveEvent by viewModel.saveEvent.collectAsState(null)
-    LaunchedEffect(saveEvent) {
-        saveEvent?.let {
-            val toastMessage = when (it) {
-                LyricsEditorResult.NoChanges -> context.getString(R.string.there_are_no_changes_to_save)
-                LyricsEditorResult.Failed -> context.getString(R.string.could_not_save_some_changes)
-                LyricsEditorResult.Success -> context.getString(R.string.changes_saved_successfully)
-            }
-            context.showToast(toastMessage)
+    ObserveAsEvent(viewModel.saveEvent) { saveResult ->
+        val toastMessage = when (saveResult) {
+            LyricsEditorResult.NoChanges -> context.getString(R.string.there_are_no_changes_to_save)
+            LyricsEditorResult.Failed -> context.getString(R.string.could_not_save_some_changes)
+            LyricsEditorResult.Success -> context.getString(R.string.changes_saved_successfully)
+        }
+        context.showToast(toastMessage)
+    }
+
+    val uiState by viewModel.lyricsEditorUiState.collectAsStateWithLifecycle()
+    val editedContent = rememberSaveable(saver = SnapshotMapSaver) { mutableStateMapOf() }
+    var selectedSource by rememberSaveable { mutableStateOf(LyricsSource.File) }
+    val isFileSource by remember { derivedStateOf { selectedSource == LyricsSource.File } }
+
+    fun setLyricsContent(content: String?) {
+        val text = content.orEmpty()
+        editedContent[selectedSource] = text
+        textFieldState.setContent(text)
+    }
+
+    ObserveAsEvent(viewModel.downloadEvent) { downloadedLyrics ->
+        if (downloadedLyrics.hasBoth) {
+            downloadedLyricsForSelector = downloadedLyrics
+        } else if (downloadedLyrics.hasPlain) {
+            setLyricsContent(downloadedLyrics.plain?.lyrics)
+        } else if (downloadedLyrics.hasSynced) {
+            setLyricsContent(downloadedLyrics.synced?.lyrics)
+        } else {
+            showManualSearchDialog = true
         }
     }
 
-    val downloadEvent by viewModel.downloadEvent.collectAsState(null)
-    LaunchedEffect(downloadEvent) {
-        downloadEvent?.let {
-            if (it.hasBoth) {
-                downloadedLyricsForSelector = it
-            } else if (it.hasPlain) {
-                textFieldState.setContent(it.plain?.lyrics)
-            } else if (it.hasSynced) {
-                textFieldState.setContent(it.synced?.lyrics)
-            } else {
-                showManualSearchDialog = true
+    var pendingPermissionUris by remember { mutableStateOf<List<Uri>?>(null) }
+    ObserveAsEvent(viewModel.permissionRequestEvent) { uris ->
+        pendingPermissionUris = uris
+    }
+    LaunchedEffect(pendingPermissionUris, selectedSource) {
+        if (selectedSource == LyricsSource.Embedded) {
+            pendingPermissionUris?.let {
+                pendingPermissionUris = null
+                requestWritePermissions(it)
             }
         }
     }
@@ -243,31 +269,13 @@ fun LyricsEditorScreen(
         viewModel.loadEditorContent(song)
     }
 
-    val isLyricsDownloadEnabled by viewModel.lyricsDownloadEnabled.collectAsStateWithLifecycle()
-
-    val uiState by viewModel.lyricsEditorUiState.collectAsStateWithLifecycle()
-    val editedContent = rememberSaveable(saver = SnapshotMapSaver) { mutableStateMapOf() }
-    var selectedSource by rememberSaveable { mutableStateOf(LyricsSource.File) }
-    val isFileSource by remember { derivedStateOf { selectedSource == LyricsSource.File } }
-
-    val permissionRequestEvent by viewModel.permissionRequestEvent.collectAsState(null)
-    LaunchedEffect(permissionRequestEvent, selectedSource) {
-        if (selectedSource == LyricsSource.Embedded) {
-            permissionRequestEvent?.let {
-                requestWritePermissions(it)
+    val visibleLyrics = (uiState as? LyricsEditorUiState.Visible)
+    LaunchedEffect(visibleLyrics?.lyrics, selectedSource) {
+        if (!visibleLyrics?.lyrics.isNullOrEmpty()) {
+            val content = editedContent.getOrPut(selectedSource) {
+                visibleLyrics.getLyricsContent(selectedSource)
             }
-        }
-    }
-
-    LaunchedEffect(uiState, selectedSource) {
-        uiState.let {
-            if (it is LyricsEditorUiState.Visible && it.lyrics.isNotEmpty()) {
-                textFieldState.setContent(
-                    editedContent.getOrPut(selectedSource) {
-                        it.getLyricsContent(selectedSource)
-                    }
-                )
-            }
+            textFieldState.setContent(content)
         }
     }
 
@@ -282,15 +290,12 @@ fun LyricsEditorScreen(
             onDismissRequest = {
                 downloadedLyricsForSelector = null
             },
-            onModeSelected = {
-                when (it) {
-                    LyricsMode.Plain -> {
-                        textFieldState.setContent(downloadedLyricsForSelector?.plain?.lyrics)
-                    }
-                    LyricsMode.Synced -> {
-                        textFieldState.setContent(downloadedLyricsForSelector?.synced?.lyrics)
-                    }
+            onModeSelected = { mode ->
+                val content = when (mode) {
+                    LyricsMode.Plain -> downloadedLyricsForSelector?.plain?.lyrics
+                    LyricsMode.Synced -> downloadedLyricsForSelector?.synced?.lyrics
                 }
+                setLyricsContent(content)
                 downloadedLyricsForSelector = null
             }
         )
@@ -334,8 +339,9 @@ fun LyricsEditorScreen(
         LyricsSearchDialog(
             song = song,
             title = stringResource(R.string.download_lyrics),
-            onSearchClick = { title, artist ->
-                viewModel.downloadLyrics(song, title, artist)
+            showProviders = true,
+            onSearchClick = { title, artist, providers ->
+                viewModel.downloadLyrics(song, title, artist, providers)
                 showLyricsDownloadDialog = false
             },
             onDismissRequest = { showLyricsDownloadDialog = false }
@@ -346,7 +352,8 @@ fun LyricsEditorScreen(
         LyricsSearchDialog(
             song = song,
             title = stringResource(R.string.search_lyrics),
-            onSearchClick = { title, artist ->
+            showProviders = false,
+            onSearchClick = { title, artist, _ ->
                 val searchSuffix = context.getString(R.string.lyrics).lowercase()
                 if (artist.isArtistNameUnknown()) {
                     context.webSearch(title, searchSuffix)
@@ -364,7 +371,7 @@ fun LyricsEditorScreen(
     }
 
     fun downloadLyrics() {
-        if (NetworkFeature.isOnline(context)) {
+        if (NetworkFeature.isOnline(ignoreWifiSetting = true)) {
             showLyricsDownloadDialog = true
         } else {
             showNoConnectionDialog =  true
@@ -372,10 +379,8 @@ fun LyricsEditorScreen(
     }
 
     fun undoChanges() {
-        uiState.let {
-            if (it is LyricsEditorUiState.Visible) {
-                textFieldState.setContent(it.getLyricsContent(selectedSource))
-            }
+        (uiState as? LyricsEditorUiState.Visible)?.let { visibleState ->
+            setLyricsContent(visibleState.getLyricsContent(selectedSource))
         }
     }
 
@@ -430,7 +435,6 @@ fun LyricsEditorScreen(
                                     text = stringResource(R.string.download_lyrics),
                                     icon = painterResource(R.drawable.ic_download_24dp),
                                     enabled = !uiState.isLoading && !isFileSource,
-                                    visible = isLyricsDownloadEnabled,
                                     onClick = { downloadLyrics() }
                                 ),
                                 MenuItem.Button.DropDown(
@@ -464,7 +468,6 @@ fun LyricsEditorScreen(
             if (!isLandscape) {
                 LyricsEditorBottomBar(
                     enabled = !uiState.isLoading && !isFileSource,
-                    downloadEnabled = isLyricsDownloadEnabled,
                     onSearchClick = { showLyricsSearchDialog = true },
                     onDownloadClick = { downloadLyrics() },
                     onSelectAllClick = { selectAllText() },
@@ -638,40 +641,83 @@ fun LyricsSelectorDialog(
 private fun LyricsSearchDialog(
     song: Song,
     title: String,
-    onSearchClick: (title: String, artist: String) -> Unit,
+    showProviders: Boolean,
+    onSearchClick: (title: String, artist: String, providers: List<LyricsProvider>) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     var searchTitle by remember { mutableStateOf(song.title) }
     var searchArtist by remember { mutableStateOf(song.artistName) }
 
+    val allProviders = remember { LyricsProvider.AvailableProviders }
+    val selectedProviders = remember {
+        mutableStateListOf<LyricsProvider>().apply {
+            addAll(allProviders.filter { it.isEnabled })
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(title) },
         text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = searchTitle,
-                    onValueChange = { searchTitle = it },
-                    label = { Text(stringResource(R.string.title)) },
-                    placeholder = { Text(song.title) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                item {
+                    OutlinedTextField(
+                        value = searchTitle,
+                        onValueChange = { searchTitle = it },
+                        label = { Text(stringResource(R.string.title)) },
+                        placeholder = { Text(song.title) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                OutlinedTextField(
-                    value = searchArtist,
-                    onValueChange = { searchArtist = it },
-                    label = { Text(stringResource(R.string.artist)) },
-                    placeholder = { Text(song.artistName) },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words
-                    ),
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                item { Spacer(Modifier.height(16.dp)) }
+
+                item {
+                    OutlinedTextField(
+                        value = searchArtist,
+                        onValueChange = { searchArtist = it },
+                        label = { Text(stringResource(R.string.artist)) },
+                        placeholder = { Text(song.artistName) },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words
+                        ),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                if (showProviders) {
+                    item { Spacer(Modifier.height(16.dp)) }
+
+                    item {
+                        Text(
+                            text = stringResource(R.string.allow_lyrics_download_from),
+                            style = MaterialTheme.typography.labelMedium,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .padding(bottom = 4.dp)
+                        )
+                    }
+
+                    items(allProviders, key = { it.name }) {
+                        DialogListItemWithCheckBox(
+                            title = it.displayName,
+                            isSelected = it in selectedProviders,
+                            onClick = {
+                                if (it in selectedProviders) {
+                                    selectedProviders.remove(it)
+                                } else {
+                                    selectedProviders.add(it)
+                                }
+                            },
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp),
+                            modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                        )
+                    }
+                }
             }
         },
         confirmButton = {
@@ -679,9 +725,11 @@ private fun LyricsSearchDialog(
                 onClick = {
                     onSearchClick(
                         searchTitle.ifEmpty { song.title },
-                        searchArtist.ifEmpty { song.artistName }
+                        searchArtist.ifEmpty { song.artistName },
+                        selectedProviders
                     )
-                }
+                },
+                enabled = !showProviders || selectedProviders.isNotEmpty()
             ) {
                 Text(stringResource(R.string.continue_action))
             }
@@ -807,7 +855,6 @@ private fun LyricsEditorHeader(
 @Composable
 private fun LyricsEditorBottomBar(
     enabled: Boolean,
-    downloadEnabled: Boolean,
     onSearchClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onPasteClick: () -> Unit,
@@ -827,7 +874,7 @@ private fun LyricsEditorBottomBar(
         }
         IconButton(
             onClick = onDownloadClick,
-            enabled = enabled && downloadEnabled
+            enabled = enabled
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_download_24dp),

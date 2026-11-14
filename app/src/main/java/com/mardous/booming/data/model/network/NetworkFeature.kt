@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import androidx.core.content.getSystemService
 import com.mardous.booming.R
 import com.mardous.booming.util.Preferences
+import com.mardous.booming.util.Preferences.requireString
 import com.mardous.booming.util.UpdateSearchMode
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -20,14 +21,20 @@ sealed class NetworkFeature(
 
     protected val preferences: SharedPreferences by inject()
 
-    open fun isAvailable(context: Context, requireBeOnline: Boolean = true): Boolean {
-        val networkFeaturesEnabled = context.resources.getBoolean(R.bool.network_features_enabled_by_default)
-        if (preferences.getBoolean(NETWORK_FEATURES_KEY, networkFeaturesEnabled)) {
-            if (isOnline(context) || !requireBeOnline) {
-                return preferences.getBoolean(preferenceKey, isOnByDefault)
-            }
+    open val isEnabled: Boolean
+        get() {
+            val networkEnabledByDefault = boolResource(R.bool.network_features_enabled_by_default)
+            return preferences.getBoolean(NETWORK_FEATURES_KEY, networkEnabledByDefault) &&
+                    preferences.getBoolean(preferenceKey, isOnByDefault)
         }
-        return false
+
+    open val isAvailable: Boolean
+        get() = if (isAvailableForCurrentPolicy && isEnabled) isOnline() else false
+
+    open val isAvailableForCurrentPolicy: Boolean get() = true
+
+    protected fun boolResource(id: Int): Boolean {
+        return get<Context>().resources.getBoolean(id)
     }
 
     sealed class Images(preferenceKey: String, isOnByDefault: Boolean) :
@@ -38,14 +45,12 @@ sealed class NetworkFeature(
 
     sealed class Lyrics(preferenceKey: String, isOnByDefault: Boolean) :
         NetworkFeature(preferenceKey, isOnByDefault) {
+        object LRCLib : Lyrics(LRCLIB_ENABLED_KEY, true)
         object BetterLyrics : Lyrics(BETTERLYRICS_ENABLED_KEY, false)
         object Lyrically : Lyrics(LYRICALLY_ENABLED_KEY, false) {
-            override fun isAvailable(context: Context, requireBeOnline: Boolean): Boolean {
-                val isProviderEnabled = context.resources.getBoolean(R.bool.enable_lyrically_provider)
-                return isProviderEnabled && super.isAvailable(context, requireBeOnline)
-            }
+            override val isAvailableForCurrentPolicy: Boolean
+                get() = boolResource(R.bool.enable_lyrically_provider)
         }
-        object LRCLib : Lyrics(LRCLIB_ENABLED_KEY, true)
     }
 
     sealed class Lastfm(preferenceKey: String, isOnByDefault: Boolean) :
@@ -53,11 +58,8 @@ sealed class NetworkFeature(
         object Scrobbling : Lastfm(LASTFM_SCROBBLING_ENABLED_KEY, false)
         object NowPlaying : Lastfm(LASTFM_NOW_PLAYING_ENABLED_KEY, false)
         object Biographies : Lastfm(LASTFM_INFO_ENABLED_KEY, true)
-
-        override fun isAvailable(context: Context, requireBeOnline: Boolean): Boolean {
-            val isIntegrationEnabled = context.resources.getBoolean(R.bool.enable_lastfm_integration)
-            return isIntegrationEnabled && super.isAvailable(context, requireBeOnline)
-        }
+        override val isAvailableForCurrentPolicy: Boolean
+            get() = boolResource(R.bool.enable_lastfm_integration)
     }
 
     sealed class ListenBrainz(preferenceKey: String, isOnByDefault: Boolean) :
@@ -67,24 +69,26 @@ sealed class NetworkFeature(
     }
 
     data object Updater : NetworkFeature(UPDATE_SEARCH_MODE_KEY, false) {
-        override fun isAvailable(context: Context, requireBeOnline: Boolean): Boolean {
-            if (!context.resources.getBoolean(R.bool.enable_builtin_updater))
-                return false
+        override val isAvailableForCurrentPolicy: Boolean
+            get() = boolResource(R.bool.enable_builtin_updater)
 
-            val updateMode = preferences.getString(preferenceKey, UpdateSearchMode.WEEKLY)
-            val minElapsedMillis = when (updateMode) {
-                UpdateSearchMode.EVERY_DAY -> TimeUnit.DAYS.toMillis(1)
-                UpdateSearchMode.EVERY_FIFTEEN_DAYS -> TimeUnit.DAYS.toMillis(15)
-                UpdateSearchMode.WEEKLY -> TimeUnit.DAYS.toMillis(7)
-                UpdateSearchMode.MONTHLY -> TimeUnit.DAYS.toMillis(30)
-                else -> -1
+        override val isEnabled: Boolean
+            get() {
+                val networkEnabledByDefault = boolResource(R.bool.network_features_enabled_by_default)
+                val networkEnabled = preferences.getBoolean(NETWORK_FEATURES_KEY, networkEnabledByDefault)
+                if (!networkEnabled) return false
+
+                val updateMode = preferences.requireString(preferenceKey, UpdateSearchMode.WEEKLY)
+                val minElapsedMillis = when (updateMode) {
+                    UpdateSearchMode.EVERY_DAY -> TimeUnit.DAYS.toMillis(1)
+                    UpdateSearchMode.EVERY_FIFTEEN_DAYS -> TimeUnit.DAYS.toMillis(15)
+                    UpdateSearchMode.WEEKLY -> TimeUnit.DAYS.toMillis(7)
+                    UpdateSearchMode.MONTHLY -> TimeUnit.DAYS.toMillis(30)
+                    else -> -1
+                }
+                val elapsedMillis = System.currentTimeMillis() - Preferences.lastUpdateSearch
+                return ((minElapsedMillis > -1) && elapsedMillis >= minElapsedMillis)
             }
-            val elapsedMillis = System.currentTimeMillis() - Preferences.lastUpdateSearch
-            if ((minElapsedMillis > -1) && elapsedMillis >= minElapsedMillis) {
-                return isOnline(context)
-            }
-            return false
-        }
     }
 
     companion object : KoinComponent {
@@ -102,7 +106,8 @@ sealed class NetworkFeature(
         const val LISTENBRAINZ_NOW_PLAYING_ENABLED_KEY = "listenbrainz_now_playing_enabled"
         const val UPDATE_SEARCH_MODE_KEY = "update_search_mode"
 
-        fun isOnline(context: Context, ignoreWifiSetting: Boolean = false): Boolean {
+        fun isOnline(ignoreWifiSetting: Boolean = false): Boolean {
+            val context = get<Context>()
             val cm = context.getSystemService<ConnectivityManager>() ?: return false
             val requireWifi = !ignoreWifiSetting && get<SharedPreferences>()
                 .getBoolean(ONLY_WIFI_NETWORK_KEY, true)

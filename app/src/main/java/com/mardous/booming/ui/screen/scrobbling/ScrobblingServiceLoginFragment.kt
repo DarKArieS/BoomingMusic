@@ -10,6 +10,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -41,11 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +62,6 @@ import com.mardous.booming.data.model.network.canLogIn
 import com.mardous.booming.data.model.network.isFailure
 import com.mardous.booming.data.model.network.isLoading
 import com.mardous.booming.extensions.extraNotNull
-import com.mardous.booming.extensions.isLandscape
 import com.mardous.booming.extensions.openUrl
 import com.mardous.booming.extensions.withArgs
 import com.mardous.booming.ui.component.compose.BottomSheetDialogSurface
@@ -125,77 +121,63 @@ class ScrobblingServiceLoginFragment : BottomSheetDialogFragment() {
             }
         }
 
-        BottomSheetDialogSurface {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .nestedScroll(rememberNestedScrollInteropConnection())
-            ) {
-                BottomSheetDefaults.DragHandle(
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Text(
-                    text = stringResource(R.string.sign_in_to_x_title, serviceName),
-                    style = MaterialTheme.typography.headlineSmallEmphasized,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-
-                Crossfade(uiState) { loginState ->
-                    when (loginState) {
-                        is LoginState.Empty,
-                        is LoginState.LoggingIn,
-                        is LoginState.Failure -> {
-                            when (service) {
-                                ScrobblingService.Lastfm -> {
-                                    LastFmForm(
-                                        loginState = loginState,
-                                        onLoginClick = { params ->
-                                            viewModel.logInToService(service, params)
-                                        }
-                                    )
-                                }
-
-                                ScrobblingService.ListenBrainz -> {
-                                    ListenBrainzForm(
-                                        loginState = loginState,
-                                        onLoginClick = { params ->
-                                            viewModel.logInToService(service, params)
-                                        }
-                                    )
-                                }
-                            }
-
-                        }
-
-                        is LoginState.LoggedIn -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier
-                                    .padding(horizontal = 24.dp, vertical = 16.dp)
-                            ) {
-                                ConnectedUserCard(
-                                    loggedInState = loginState,
-                                    modifier = Modifier.fillMaxWidth()
+        BottomSheetDialogSurface(
+            title = { Text(stringResource(R.string.sign_in_to_x_title, serviceName)) },
+            headingContentPadding = PaddingValues(horizontal = 24.dp)
+        ) {
+            Crossfade(uiState) { loginState ->
+                when (loginState) {
+                    is LoginState.Empty,
+                    is LoginState.LoggingIn,
+                    is LoginState.Failure -> {
+                        when (service) {
+                            ScrobblingService.Lastfm -> {
+                                LastFmForm(
+                                    loginState = loginState,
+                                    onLoginClick = { params ->
+                                        viewModel.logInToService(service, params)
+                                    }
                                 )
+                            }
 
-                                Button(onClick = { viewModel.logoutFromService(service) }) {
-                                    Text(stringResource(R.string.logout_action))
-                                }
+                            ScrobblingService.ListenBrainz -> {
+                                ListenBrainzForm(
+                                    loginState = loginState,
+                                    onLoginClick = { params ->
+                                        viewModel.logInToService(service, params)
+                                    }
+                                )
                             }
                         }
 
-                        else -> {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 24.dp, vertical = 48.dp)
-                            ) {
-                                CircularWavyProgressIndicator()
+                    }
+
+                    is LoginState.LoggedIn -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 24.dp, vertical = 16.dp)
+                        ) {
+                            ConnectedUserCard(
+                                loggedInState = loginState,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Button(onClick = { viewModel.logoutFromService(service) }) {
+                                Text(stringResource(R.string.logout_action))
                             }
+                        }
+                    }
+
+                    else -> {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 48.dp)
+                        ) {
+                            CircularWavyProgressIndicator()
                         }
                     }
                 }
@@ -313,6 +295,7 @@ class ScrobblingServiceLoginFragment : BottomSheetDialogFragment() {
         modifier: Modifier = Modifier
     ) {
         var token by remember { mutableStateOf("") }
+        var tokenVisible by remember { mutableStateOf(false) }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -327,7 +310,7 @@ class ScrobblingServiceLoginFragment : BottomSheetDialogFragment() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 8.dp)
             )
 
             OutlinedTextField(
@@ -340,10 +323,25 @@ class ScrobblingServiceLoginFragment : BottomSheetDialogFragment() {
                         contentDescription = null
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    val icon = if (tokenVisible) {
+                        painterResource(R.drawable.ic_visibility_off_24dp)
+                    } else {
+                        painterResource(R.drawable.ic_visibility_24dp)
+                    }
+                    IconButton(onClick = { tokenVisible = !tokenVisible }) {
+                        Icon(
+                            painter = icon,
+                            contentDescription = stringResource(R.string.listenbrainz_toggle_token_visibility)
+                        )
+                    }
+                },
+                visualTransformation = if (tokenVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
                 enabled = loginState.canLogIn,
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -64,7 +64,7 @@
     <string name="add_playlist_title">Добавить в плейлист</string>
     <string name="rename_playlist_title">Переименовать плейлист</string>
     <string name="action_edit_playlist">Редактировать плейлист</string>
-    <string name="action_delete">Удалить плейлист</string>
+    <string name="action_delete_playlist">Удалить плейлист</string>
     <string name="action_export_playlist">Экспортировать в файл</string>
     <string name="action_clear_history">Очистить историю</string>
     <string name="history_cleared">История очищена</string>
@@ -122,20 +122,16 @@
     <string name="permission_external_storage_title">Доступ к хранилищу</string>
     <string name="permission_external_storage_description">Приложению требуется разрешение на доступ к хранилищу вашего устройства для воспроизведения музыки</string>
     <string name="permission_external_storage_denied">Вы должны предоставить разрешение на доступ к внешнему хранилищу.</string>
-    <string name="permission_bluetooth_title">Устройства поблизости</string>
+    <string name="permission_bluetooth_title">Устройства поблизости (необязательно)</string>
     <string name="permission_bluetooth_description">Приложению требуется разрешение на доступ к устройствам поблизости для проверки Bluetooth-устройств</string>
-    <string name="permission_bluetooth_denied">Разрешение на доступ к устройствам поблизости отклонено.</string>
     <string name="permission_read_images_title">Чтение изображений (необязательно)</string>
     <string name="permission_read_images_summary">Это разрешение необходимо Booming Music для поиска обложек альбомов в ваших музыкальных папках. Если вы не планируете использовать эту функцию, вы можете не предоставлять его.</string>
     <string name="permission_read_images_denied">Вы должны предоставить разрешение на чтение изображений с устройства.</string>
-    <string name="permission_exact_alarms_title">Планировать точные сигналы тревоги (необязательно)</string>
-    <string name="permission_exact_alarms_description">Разрешение на планирование точных сигналов тревоги необходимо для корректной работы таймера сна</string>
     <string name="permissions_denied">Разрешения отклонены</string>
     <string name="permissions_needed">Требуются разрешения</string>
     <string name="grant_access_action">Предоставить доступ</string>
     <string name="action_grant">Предоставить</string>
     <string name="granted">Предоставлено</string>
-    <string name="hello_there">Привет!</string>
     <string name="welcome_to_x">Добро пожаловать в %s</string>
     <string name="get_started">Начать</string>
     <string name="select_storage_title">Выберите хранилище</string>
@@ -194,7 +190,7 @@
     <string name="last_added_label">Последние добавленные</string>
     <string name="top_tracks_label">Лучшие треки</string>
     <string name="history_label">История</string>
-    <string name="not_recently_played">Недавние прослушивания</string>
+    <string name="not_recently_played">Давно не прослушивалось</string>
     <string name="play_info">Информация о воспроизведении</string>
     <string name="track_play_counts">Количество воспроизведений трека</string>
     <string name="song_stat_never_label">никогда не проигрывалось</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">Размер сетки</string>
     <string name="action_grid_size_land">Размер сетки (ландшафт)</string>
     <string name="action_sort_order">Сортировать по</string>
-    <string name="sort_order_az">А-Я</string>
     <string name="sort_order_artist">Исполнитель</string>
     <string name="sort_order_album">Альбом</string>
     <string name="sort_order_year">Год</string>
@@ -246,15 +241,6 @@
     <string name="download_image">Загрузить изображение</string>
     <string name="pick_from_local_storage">Выбрать из локального хранилища</string>
     <string name="about_x_title">О программе %s</string>
-    <string name="listeners_label">Слушатели</string>
-    <string name="scrobbles_label">Скробблинги</string>
-    <string name="save_cover">Сохранить обложку альбома</string>
-    <string name="saving_cover_please_wait">Сохранение обложки, подождите…</string>
-    <string name="save_artwork_error">Не удалось сохранить обложку в локальное хранилище</string>
-    <string name="save_artwork_success">Обложка альбома сохранена</string>
-    <string name="save_artwork_view_action">Посмотреть</string>
-    <string name="save_artwork_copyright_info_title">Уведомление об авторских правах</string>
-    <string name="save_artwork_copyright_info_message">Некоторые обложки альбомов (или все) могут быть защищены авторскими правами. Вы не можете использовать такие изображения в коммерческих или рекламных целях.\n\nВы несете полную ответственность за использование сохраненных обложек альбомов.</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="keyboard">Клавиатура</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">Формат</string>
     <string name="file_label">Файл</string>
     <string name="metadata_label">Метаданные</string>
-    <string name="title_and_artist">Заголовок и исполнитель</string>
     <string name="song">Песня</string>
     <string name="title">Название</string>
     <string name="album">Альбом</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">Соединение недоступно.</string>
     <string name="you_have_to_select_at_least_one_category">Вы должны выбрать хотя бы одну категорию</string>
     <string name="you_cannot_select_more_than_five_categories">Вы не можете выбрать более пяти категорий.</string>
-    <string name="backup_settings">Настройки</string>
-    <string name="backup_synced_lyrics">Синхронизированные тексты песен</string>
-    <string name="backup_artist_images">Изображения исполнителей</string>
-    <string name="backup_playlists">Плейлисты</string>
     <string name="backup_successful">Резервное копирование выполнено успешно!</string>
     <string name="backup_failed">Ошибка резервного копирования.</string>
     <string name="select_content_to_restore">Выберите контент для восстановления:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">Плейлист заблокирован</string>
     <string name="playlist_unlocked">Плейлист разблокирован</string>
     <string name="action_toggle_queue_lock">Заблокировать/разблокировать очередь</string>
-    <string name="queue_locked">Очередь заблокирована</string>
-    <string name="queue_unlocked">Очередь разблокирована</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Строка Aux</string>
     <string name="audio_device_bluetooth_a2dp">A2DP Bluetooth</string>
@@ -377,7 +356,6 @@
     <string name="top_albums">Лучшие альбомы</string>
     <string name="recent_artists">Недавние исполнители</string>
     <string name="recent_albums">Недавние альбомы</string>
-    <string name="no_suggestions">Предложений для вас нет</string>
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">Полная случайность</string>
     <string name="shuffle_mode_most_played">Часто прослушиваемые</string>
@@ -423,8 +401,8 @@
     <string name="imported_x_profiles">Импортировано профилей: %d.</string>
     <string name="no_profile_imported">Ни один профиль не импортирован.</string>
     <string name="import_autoeq_profile">Импортировать профиль AutoEq</string>
-    <string name="select_a_file_containing_autoeq_params">Выберите файл с параметрами AutoEq (GraphicEq).</string>
-    <string name="no_autoeq_profiles">Нет импортированных профилей AutoEq.</string>
+    <string name="select_a_file_containing_autoeq_params">Выберите файл с параметрами AutoEq (GraphicEq)</string>
+    <string name="no_autoeq_profiles">Нет импортированных профилей AutoEq</string>
     <string name="reset_equalizer">Сбросить эквалайзер</string>
     <string name="are_you_sure_you_want_to_reset_the_equalizer">Вы уверены, что хотите сбросить настройки эквалайзера? \n\nЭто удалит все ваши профили.</string>
     <string name="not_supported">Не поддерживается</string>
@@ -519,11 +497,8 @@
     <string name="author">Автор</string>
     <string name="mardous_summary">Ведущий разработчик</string>
     <string name="contributors">Участники</string>
-    <string name="acknowledgments_title">Благодарности</string>
     <string name="translators_title">Переводчики</string>
     <string name="translators_summary">Спасибо всем, кто помогает переводить Booming Music на разные языки.</string>
-    <string name="contributors_title">Участники</string>
-    <string name="contributors_summary">Список пользователей, которые внесли вклад в проект тем или иным образом.</string>
     <string name="view_profile_on_github">Посмотреть профиль на GitHub</string>
     <string name="write_an_email">Написать письмо</string>
     <string name="support_development">Поддержка разработки</string>
@@ -536,7 +511,6 @@
     <string name="send_invitation_message">Отправить приглашение</string>
     <string name="invitation_message_content">Привет. Попробуй Booming Music! Лучшее приложение для прослушивания локальной музыки на Android. Ты можешь скачать его здесь: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">Вы будете перенаправлены на веб-сайт трекера проблем.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">Требуется доступ к хранилищу</string>
     <string name="saf_access_required_message">Booming Music требует разрешения на доступ к этим файлам. Пожалуйста, выберите корневую папку, в которой хранятся ваши музыкальные файлы.</string>
@@ -560,7 +534,7 @@
     <string name="advanced_summary">Язык приложения и другие настройки для опытных пользователей.</string>
     <string name="update_title">Обновление</string>
     <string name="about_title">О программе</string>
-    <string name="about_summary">Booming Music %s, коснитесь для получения дополнительной информации.</string>
+    <string name="about_summary">Booming Music %s, нажмите для получения дополнительной информации.</string>
     <!-- Preference headers -->
     <string name="general_header">Общие положения</string>
     <string name="library_header">Библиотека</string>
@@ -573,7 +547,6 @@
     <string name="audio_focus_header">Фокус аудио</string>
     <string name="shuffle_mode_header">Режим перемешивания</string>
     <string name="display_header">Отображение</string>
-    <string name="backup_restore_header">Резервное копирование/восстановление</string>
     <string name="visuals_header">Визуальные эффекты</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">Общая тема</string>
@@ -620,10 +593,10 @@
     <string name="synced_font_size_full_summary">Размер шрифта синхронизированного текста на отдельном экране текста.</string>
     <string name="unsynced_font_size_full_title">Размер обычного текста (полный экран)</string>
     <string name="unsynced_font_size_full_summary">Размер шрифта несинхронизированного текста на отдельном экране текста.</string>
-    <string name="instrumental_tracks_identifiers_title">Маркеры инструментальных треков</string>
-    <string name="instrumental_tracks_identifiers_summary">Если текст песни состоит только из одного или нескольких таких индикаторов, трек будет помечен как инструментальный (перечисляются через запятую).</string>
-    <string name="instrumental_tracks_mark_by_title_title">Определять по названию</string>
-    <string name="instrumental_tracks_mark_by_title_summary">Название трека также будет учитываться при поиске маркеров.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">Игнорировать пустые строки</string>
     <string name="ignore_blank_lines_summary">Игнорировать пустые строки в LRC файлах вместо отображения анимированных пузырьков.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">Считать все файлы текстов в UTF-8</string>
@@ -645,8 +618,6 @@
     <string name="circle_button_title">Круглая кнопка воспроизведения</string>
     <string name="swipe_album_cover_title">Свайп по обложке</string>
     <string name="swipe_album_cover_summary">Свайп влево или вправо по обложке для переключения песен.</string>
-    <string name="queue_height_title">Очередь на пол-экрана</string>
-    <string name="queue_height_summary">Зафиксировать высоту очереди воспроизведения на половину экрана.</string>
     <string name="single_tap_on_album_cover_title">Однократное нажатие на обложку</string>
     <string name="double_tap_on_album_cover_title">Двойное нажатие на обложку</string>
     <string name="double_tap_on_left_album_cover_title">Двойное нажатие по левому краю обложки</string>
@@ -757,10 +728,6 @@
     <string name="min_song_duration_summary">Минимальная длительность песни в секундах, чтобы она отображалась в вашей библиотеке.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">Язык приложения</string>
-    <string name="backup_data_title">Резервное копирование данных приложения</string>
-    <string name="backup_app_data_summary">Создает файл с основными данными приложения и сохраняет его на внешнее хранилище.</string>
-    <string name="restore_backup_title">Восстановить резервную копию</string>
-    <string name="restore_backup_summary">Восстановить данные приложения (и состояние) из предыдущей резервной копии.</string>
     <string name="stop_when_closed_from_recents_title">Останавливать при закрытии из недавних</string>
     <string name="stop_when_closed_from_recents_summary">Воспроизведение прекращается, если смахнуть приложение из списка недавних задач.</string>
     <string name="stop_when_closed_from_recents_note">Примечание: некоторые устройства с агрессивным управлением памяти или энергопотреблением могут игнорировать эту настройку и всегда останавливать приложение при удалении из недавних.</string>
@@ -898,25 +865,13 @@
     <string name="lyrics_center_horizontally_summary">Выровнять каждую строку текста песни по горизонтали по центру экрана.</string>
     <string name="bit_perfect_title">Bit-perfect аудио</string>
     <string name="bit_perfect_info">Bit-Perfect: %1$s | %2$s</string>
-    <string name="app_widget_responsive">Адаптивный</string>
-    <string name="app_widget_responsive_desc">Виджет, адаптирующий свой макет под разные размеры</string>
     <string name="app_widget_card">Карточка</string>
     <string name="app_widget_card_desc">Минималистичный и упрощённый стиль</string>
-    <string name="app_widget_full">Полноразмерный</string>
-    <string name="app_widget_full_desc">Экран проигрывателя прямо на рабочем столе</string>
     <string name="advanced_settings">Расширенные настройки</string>
     <string name="bit_perfect_is_active">Bit-perfect активен</string>
     <string name="bit_perfect_description">Прямой вывод звука на USB DAC (ЦАП) без изменения частоты дискретизации.</string>
-    <string name="widgets_header">Виджеты приложения</string>
-    <string name="widget_small_layout_style_title">Компактный стиль макета</string>
-    <string name="widget_small_layout_classic">Классический</string>
-    <string name="widget_small_layout_simplified">Упрощенный</string>
     <string name="widget_dynamic_colors_title">Динамичные цвета</string>
     <string name="widget_dynamic_colors_summary">Адаптировать цветовую схему виджета к обложке текущего трека.</string>
-    <string name="widget_image_corner_radius_title">Радиус скругления углов изображения</string>
-    <string name="widget_image_corner_radius_summary">Изменить скругление углов обложки альбома.</string>
-    <string name="widget_third_line_summary">Выберите данные для отображения в третьей строке.</string>
-    <string name="widget_third_line_title">Данные в третьей строке</string>
     <string name="sleep_timer_x_secs">%d с</string>
     <string name="search_playlists">Искать плейлисты</string>
     <string name="select_playlists_title">Выбрать плейлисты</string>
@@ -962,4 +917,105 @@
     <string name="eq_pro_mode">Режим Эксперта</string>
     <string name="compressor_label">Компрессор</string>
     <string name="limiter_label">Ограничитель</string>
+    <string name="eq_release_time">Восстановление</string>
+    <string name="eq_threshold">Порог</string>
+    <string name="eq_ratio">Соотношение</string>
+    <string name="eq_expander_ratio">Соотношение экспандера</string>
+    <string name="eq_knee_width">Ширина колена</string>
+    <string name="eq_noise_gate">Шумовой гейт</string>
+    <string name="eq_pre_gain">Входное усиление</string>
+    <string name="eq_post_gain">Выходное усиление</string>
+    <string name="rg_with_tag">По тегам</string>
+    <string name="rg_without_tag">Без тегов</string>
+    <string name="app_version_x">Версия %s</string>
+    <string name="lyrics_resume_on_seek_summary">Автоматически возобновлять воспроизведение при нажатии на строку.</string>
+    <string name="eq_attack_time">Время атаки</string>
+    <string name="app_description">Современный дизайн. Чистый звук. Полностью ваш.</string>
+    <string name="more_contributors_title">Другие участники</string>
+    <string name="more_contributors_summary">Полный список участников можно посмотреть на GitHub.</string>
+    <string name="lyrics_karaoke_style_title">Текст в стиле караоке</string>
+    <string name="lyrics_karaoke_style_summary">Включает эффект караоке для текста с пословесной синхронизацией. Обратите внимание, что это экспериментальная функция.</string>
+    <string name="lyrics_show_translation_title">Отображать перевод</string>
+    <string name="lyrics_show_translation_summary">Показывать перевод текста, если он доступен.</string>
+    <string name="lyrics_show_transliteration_title">Отображать транслитерацию</string>
+    <string name="lyrics_show_transliteration_summary">Показывать транслитерацию текста, если она доступна.</string>
+    <string name="lyrics_bold_synced_title">Жирный шрифт для синхронизированного текста</string>
+    <string name="lyrics_bold_synced_summary">Отображать синхронизированный текст жирным шрифтом.</string>
+    <string name="lyrics_resume_on_seek_title">Возобновление при перемотке текста</string>
+    <string name="up_next">Далее</string>
+    <string name="reorder_action">Изменить порядок</string>
+    <string name="go_to_current_track">Перейти к текущему треку</string>
+    <string name="contributor_dawid_description">Один из основных разработчиков и проектировщик ряда ключевых функций приложения.</string>
+    <string name="contributor_ray_description">Внёс вклад в реализацию ряда важных и интересных функций.</string>
+    <string name="contributor_ttop_description">Самый первый участник и тестировщик проекта.</string>
+    <string name="contributor_lenard_description">Разработчик сайта приложения и участник проекта.</string>
+    <string name="contributor_alex_description">Давний друг проекта, предоставивший доступ к важным API.</string>
+    <string name="play_all_songs_when_searching_title">Воспроизводить все песни при поиске</string>
+    <string name="play_all_songs_when_searching_summary">Если эта функция включена, выбор найденной композиции ставит в очередь всю медиатеку. Действие функции зависит от настройки, определяющей поведение при выборе композиции.</string>
+    <string name="action_auto_fill_from_musicbrainz">Автоматическое заполнение из MusicBrainz</string>
+    <string name="searching">Поиск…</string>
+    <string name="musicbrainz_search_title">MusicBrainz поиск</string>
+    <string name="musicbrainz_search_message">Найти метаданные песни на MusicBrainz, используя название и исполнителя.</string>
+    <string name="musicbrainz_no_results">Ничего не найдено на MusicBrainz.</string>
+    <string name="musicbrainz_select_recording">Выберите запись</string>
+    <string name="sort_order_name">Имя</string>
+    <string name="website">Сайт</string>
+    <string name="terms_of_service">Условия предоставления услуг</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="legal">Правовое</string>
+    <string name="app_widget_grid">Сетка</string>
+    <string name="backup_app_version">Создано в</string>
+    <string name="backup_warning_database_ver">Некоторые данные из этой резервной копии, такие как плейлисты и тексты песен, несовместимы и не могут быть восстановлены.</string>
+    <string name="app_widget_library">Библиотека</string>
+    <string name="app_widget_nothing_playing">Ничего не играет</string>
+    <string name="app_widget_tap_to_play">Нажмите, чтобы открыть Booming Music</string>
+    <string name="action_play_x">Воспроизвести %s</string>
+    <string name="restore_from_backup">Восстановить из резервной копии</string>
+    <string name="home_artists_title">Рекомендуемые исполнители</string>
+    <string name="widget_settings_title">Настройки виджета</string>
+    <string name="create_new_backup">Создать резервную копию</string>
+    <string name="open_backup">Открыть резервную копию</string>
+    <string name="share_backup">Поделиться резервной копией</string>
+    <string name="cannot_share_this_backup">Невозможно поделиться этой резервной копией.</string>
+    <string name="confirm_delete_backup">Удалить эту резервную копию?</string>
+    <string name="backup_deleted_successfully">Резервная копия успешно удалена.</string>
+    <string name="could_not_delete_backup">Не удалось удалить резервную копию.</string>
+    <string name="widget_leading_action_title">Левая кнопка</string>
+    <string name="widget_trailing_action_title">Правая кнопка</string>
+    <string name="widget_side_buttons_title">Боковые кнопки</string>
+    <string name="widget_page_previous">Предыдущие песни</string>
+    <string name="widget_page_next">Следующие песни</string>
+    <string name="backup_content_settings">Настройки приложения</string>
+    <string name="backup_content_lyrics">Синхронизированные тексты песен</string>
+    <string name="backup_content_playlists">Плейлисты</string>
+    <string name="app_widget_circle">Круг</string>
+    <string name="initial_configuration_note">Вы всегда можете изменить эти настройки позже.</string>
+    <string name="invalid_search_params">Не удалось обработать параметры поиска.</string>
+    <string name="home_albums_subtitle">Лучшие и недавние альбомы</string>
+    <string name="autoeq_sync_failed">Не удалось синхронизировать профили AutoEq.</string>
+    <string name="permissions_subtitle">Предоставьте доступ к музыкальным файлам и устройствам поблизости, чтобы обеспечить наилучший опыт взаимодействия.</string>
+    <string name="initial_configuration_title">Первоначальная настройка</string>
+    <string name="home_empty_title">Рекомендовать нечего</string>
+    <string name="home_empty_subtitle">Сначала послушайте музыку</string>
+    <string name="home_for_you_title">Для Вас</string>
+    <string name="app_widget_circle_desc">Круглый плеер с элементами управления вокруг него</string>
+    <string name="app_widget_cookie">Печенье</string>
+    <string name="app_widget_cookie_desc">Обложка похожа на одно большое печенье, вокруг которого расположены элементы управления</string>
+    <string name="home_albums_title">Послушайте сейчас</string>
+    <string name="home_forgotten_tracks_title">Заново</string>
+    <string name="home_forgotten_tracks_subtitle_3">Песни, которые вы давно не слышали</string>
+    <string name="allow_lyrics_download_from">Разрешить скачивание из:</string>
+    <string name="no_backups_found">Резервные копии не найдены в этой папке.</string>
+    <string name="backup_recent_list">Недавние резервные копии</string>
+    <string name="backup_file_name">Имя файла (необязательно)</string>
+    <string name="restoring_data">Восстановление ваших данных…</string>
+    <string name="restart_app_message">Приложение перезапустится для завершения процесса.</string>
+    <string name="home_artists_subtitle">Исполнители, которых вы слушаете чаще всего</string>
+    <string name="app_widget_grid_desc">Обложка, воспроизведение и кнопки переключения в четырёх ячейках</string>
+    <string name="app_widget_library_desc">Сетка обложек из выбранного вами списка</string>
+    <string name="permission_notifications_title">Уведомления (необязательно)</string>
+    <string name="backup_content_play_info">Статистика воспроизведения</string>
+    <string name="home_albums_subtitle_2">Погрузитесь в мир ваших последних коллекций</string>
+    <string name="backup_restore_title">Резервное копирование и восстановление</string>
+    <string name="backup_restore_summary">Управление резервным копированием и восстановлением данных приложения.</string>
 </resources>

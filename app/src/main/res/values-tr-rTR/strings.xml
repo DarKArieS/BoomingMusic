@@ -64,7 +64,7 @@
     <string name="add_playlist_title">Çalma listesine ekle</string>
     <string name="rename_playlist_title">Çalma listesini yeniden adlandır</string>
     <string name="action_edit_playlist">Çalma listesini düzenle</string>
-    <string name="action_delete">Çalma listesini sil</string>
+    <string name="action_delete_playlist">Çalma listesini sil</string>
     <string name="action_export_playlist">Dosyaya aktar</string>
     <string name="action_clear_history">Geçmişi temizle</string>
     <string name="history_cleared">Geçmiş temizlendi</string>
@@ -124,18 +124,14 @@
     <string name="permission_external_storage_denied">Harici depolama alanına erişim izni vermelisiniz.</string>
     <string name="permission_bluetooth_title">Yakındaki Cihazlar</string>
     <string name="permission_bluetooth_description">Uygulamanın bluetooth cihazlarını kontrol etmek için yakındaki cihazlar iznine ihtiyacı var</string>
-    <string name="permission_bluetooth_denied">Yakındaki cihazlar izni reddedildi.</string>
     <string name="permission_read_images_title">Görselleri okuma (isteğe bağlı)</string>
     <string name="permission_read_images_summary">Booming Music\'in müzik klasörlerinizdeki albüm kapağı dosyalarını bulabilmesi için bu izin gereklidir. Bu özelliği kullanmayı planlamıyorsanız, izin vermemeyi seçebilirsiniz.</string>
     <string name="permission_read_images_denied">Cihazdan görselleri okuma izni vermelisiniz.</string>
-    <string name="permission_exact_alarms_title">Tam zamanlı alarmları planla (isteğe bağlı)</string>
-    <string name="permission_exact_alarms_description">Uyku zamanlayıcısının düzgün çalışması için tam zamanlı alarmları planlama izni gereklidir</string>
     <string name="permissions_denied">İzinler reddedildi</string>
     <string name="permissions_needed">İzinler gerekli</string>
     <string name="grant_access_action">Erişim izni ver</string>
     <string name="action_grant">İzin ver</string>
     <string name="granted">İzin verildi</string>
-    <string name="hello_there">Merhaba!</string>
     <string name="welcome_to_x">%s\'a hoş geldiniz</string>
     <string name="get_started">Başlayın</string>
     <string name="select_storage_title">Depolama birimi seç</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">Izgara boyutu</string>
     <string name="action_grid_size_land">Izgara boyutu (yatay)</string>
     <string name="action_sort_order">Sıralama ölçütü</string>
-    <string name="sort_order_az">A-Z</string>
     <string name="sort_order_artist">Sanatçı</string>
     <string name="sort_order_album">Albüm</string>
     <string name="sort_order_year">Yıl</string>
@@ -246,15 +241,6 @@
     <string name="download_image">Görseli indir</string>
     <string name="pick_from_local_storage">Yerel depolamadan seç</string>
     <string name="about_x_title">%s Hakkında</string>
-    <string name="listeners_label">Dinleyiciler</string>
-    <string name="scrobbles_label">Scrobble\'lar</string>
-    <string name="save_cover">Albüm kapağını kaydet</string>
-    <string name="saving_cover_please_wait">Kapak kaydediliyor, bekleyin…</string>
-    <string name="save_artwork_error">Kapak yerel depolamaya kaydedilemedi</string>
-    <string name="save_artwork_success">Albüm kapağı kaydedildi</string>
-    <string name="save_artwork_view_action">Görüntüle</string>
-    <string name="save_artwork_copyright_info_title">Telif hakkı uyarısı</string>
-    <string name="save_artwork_copyright_info_message">Bazı albüm kapakları (veya tamamı) Telif Hakkı yasalarıyla korunuyor olabilir. Bu tür görselleri ticari veya reklam amaçlı kullanamazsınız. \n\nKaydedilen albüm kapaklarının kullanımına ilişkin tüm sorumluluk yalnızca size aittir.</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="keyboard">Klavye</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">Biçim</string>
     <string name="file_label">File</string>
     <string name="metadata_label">Metadata</string>
-    <string name="title_and_artist">Başlık ve Sanatçı</string>
     <string name="song">Şarkı</string>
     <string name="title">Başlık</string>
     <string name="album">Albüm</string>
@@ -278,7 +263,7 @@
     <string name="length">Uzunluk</string>
     <string name="label_last_modified">Son değiştirilme</string>
     <string name="label_channels">Kanallar</string>
-    <string name="label_variable_bitrate">Değişken Bit Hızı</string>
+    <string name="label_variable_bitrate">D[eğişken] B[it] H[ızı] DBH</string>
     <string name="label_loss_less">Kayıpsız</string>
     <string name="label_bit_rate">Bit hızı</string>
     <string name="label_sampling_rate">Örnekleme hızı</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">Bağlantı yok.</string>
     <string name="you_have_to_select_at_least_one_category">En az bir kategori seçmelisiniz</string>
     <string name="you_cannot_select_more_than_five_categories">Beşten fazla kategori seçemezsiniz.</string>
-    <string name="backup_settings">Ayarlar</string>
-    <string name="backup_synced_lyrics">Senkronize edilmiş şarkı sözleri</string>
-    <string name="backup_artist_images">Sanatçı resimleri</string>
-    <string name="backup_playlists">Çalma listeleri</string>
     <string name="backup_successful">Yedekleme başarılı!</string>
     <string name="backup_failed">Yedekleme başarısız.</string>
     <string name="select_content_to_restore">Geri yüklenecek içeriği seçin:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">Çalma listesi kilitlendi</string>
     <string name="playlist_unlocked">Çalma listesinin kilidi açıldı</string>
     <string name="action_toggle_queue_lock">Sırayı kilitle/aç</string>
-    <string name="queue_locked">Sıra kilitlendi</string>
-    <string name="queue_unlocked">Sıra kilidi açıldı</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Aux Kablosu</string>
     <string name="audio_device_bluetooth_a2dp">Bluetooth A2DP</string>
@@ -332,18 +311,18 @@
     </plurals>
     <plurals name="x_songs">
         <item quantity="one">%d şarkı</item>
-        <item quantity="other">%d şarkı</item>
+        <item quantity="other">%d şarkılar</item>
     </plurals>
     <plurals name="x_albums">
         <item quantity="one">%d albüm</item>
-        <item quantity="other">%d albüm</item>
+        <item quantity="other">%d albümler</item>
     </plurals>
     <plurals name="x_artists">
         <item quantity="one">%d sanatçı</item>
-        <item quantity="other">%d sanatçı</item>
+        <item quantity="other">%d sanatçılar</item>
     </plurals>
     <plurals name="x_times">
-        <item quantity="one">%d kez</item>
+        <item quantity="one">%d\'uncu kez</item>
         <item quantity="other">%d kez</item>
     </plurals>
     <plurals name="x_plays">
@@ -361,7 +340,7 @@
     <string name="top_albums">En iyi albümler</string>
     <string name="recent_artists">Son dinlenen sanatçılar</string>
     <string name="recent_albums">Son dinlenen albümler</string>
-    <string name="no_suggestions">Sizin için öneri yok</string>
+
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">Tamamen rastgele</string>
     <string name="shuffle_mode_most_played">En çok çalınanlar</string>
@@ -503,11 +482,8 @@
     <string name="author">Geliştirici</string>
     <string name="mardous_summary">Lead Developer</string>
     <string name="contributors">Destekçiler</string>
-    <string name="acknowledgments_title">Teşekkür</string>
     <string name="translators_title">Çevirmenler</string>
     <string name="translators_summary">Booming Music\'i birçok dilde kullanılabilir hale getirenlere teşekkürler.</string>
-    <string name="contributors_title">Contributors</string>
-    <string name="contributors_summary">A list of users who have contributed to the project in some way.</string>
     <string name="view_profile_on_github">GitHub\'da profili görüntüle</string>
     <string name="write_an_email">E-posta yaz</string>
     <string name="support_development">Geliştirmeyi destekle</string>
@@ -520,7 +496,6 @@
     <string name="send_invitation_message">Davet mesajı gönder</string>
     <string name="invitation_message_content">Merhaba. Booming Music\'e bir göz at! Android\'de yerel müzik dinlemek için en iyi uygulama. Buradan indirebilirsin: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">Sorun izleyici web sitesine yönlendirileceksiniz.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">Depolama Erişimi Gerekli</string>
     <string name="saf_access_required_message">Booming Music\'in bu dosyalara erişmek için izne ihtiyacı var. Lütfen müzik dosyalarınızın depolandığı kök klasörü seçin.</string>
@@ -557,7 +532,6 @@
     <string name="audio_focus_header">Ses odağı</string>
     <string name="shuffle_mode_header">Karıştırma modu</string>
     <string name="display_header">Ekran</string>
-    <string name="backup_restore_header">Yedekle/Geri Yükle</string>
     <string name="visuals_header">Visuals</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">Genel tema</string>
@@ -604,10 +578,10 @@
     <string name="synced_font_size_full_summary">Tam şarkı sözleri ekranında senkronize şarkı sözlerinin yazı tipi boyutunu ayarla.</string>
     <string name="unsynced_font_size_full_title">Tam ekran görünümde senkronize olmayan şarkı sözleri yazı tipi boyutu</string>
     <string name="unsynced_font_size_full_summary">Tam şarkı sözleri ekranında senkronize olmayan şarkı sözlerinin yazı tipi boyutunu ayarla.</string>
-    <string name="instrumental_tracks_identifiers_title">Instrumental track identifiers</string>
-    <string name="instrumental_tracks_identifiers_summary">If a song\'s lyrics consist of only one or more of these indicators, it will be marked as an instrumental track (separated by comma).</string>
-    <string name="instrumental_tracks_mark_by_title_title">Mark by title</string>
-    <string name="instrumental_tracks_mark_by_title_summary">The track title will also be taken into account when searching for identifiers.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">Ignore blank lines</string>
     <string name="ignore_blank_lines_summary">Ignore empty lines in LRC files instead of showing animated bubbles.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">Treat all lyrics files as UTF-8</string>
@@ -629,8 +603,6 @@
     <string name="circle_button_title">Dairesel oynatma düğmesi</string>
     <string name="swipe_album_cover_title">Albüm kapağında kaydırın</string>
     <string name="swipe_album_cover_summary">Şarkılar arasında geçiş yapmak için albüm kapağını sola veya sağa kaydırın.</string>
-    <string name="queue_height_title">Yarım ekran sıra yüksekliği</string>
-    <string name="queue_height_summary">Çalma sırasının yüksekliğini ekranın yarısına sabitleyin.</string>
     <string name="single_tap_on_album_cover_title">Kapağa tek dokun</string>
     <string name="double_tap_on_album_cover_title">Kapağa çift dokunun</string>
     <string name="double_tap_on_left_album_cover_title">Albüm kapağının sol kenarına çift dokunma</string>
@@ -741,10 +713,6 @@
     <string name="min_song_duration_summary">Bir şarkının kütüphanenizde gösterilmesi için en az kaç saniye sürmesi gerekir.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">Uygulama dili</string>
-    <string name="backup_data_title">Uygulama verilerini yedekle</string>
-    <string name="backup_app_data_summary">Temel uygulama verilerini içeren bir dosya oluşturun ve harici depolamaya kaydedin.</string>
-    <string name="restore_backup_title">Yedekten geri yükle</string>
-    <string name="restore_backup_summary">Uygulama verilerini (ve durumunu) önceki bir yedekten geri yükleyin.</string>
     <string name="stop_when_closed_from_recents_title">Son uygulamalardan kapatılınca durdur</string>
     <string name="stop_when_closed_from_recents_summary">Uygulama son uygulamalar listesinden kapatılırsa oynatma durur.</string>
     <string name="stop_when_closed_from_recents_note">Not: Agresif bellek veya pil yönetimine sahip bazı cihazlar bu ayarı yoksayabilir ve son uygulamalardan kaldırıldığında uygulamayı her zaman durdurabilir.</string>
@@ -841,4 +809,22 @@
     <string name="channel_stereo">Stereo</string>
     <string name="error_lastfm_auth">Oturumunuzun süresi doldu veya kimlik bilgileriniz geçersiz. Lütfen tekrar giriş yapın.</string>
     <string name="channel_stereo_2_1">2.1 Stereo</string>
+    <string name="app_widget_card">Kart</string>
+    <string name="app_widget_card_desc">Minimalist ve basitleştirilmiş tarz</string>
+    <string name="select_playlists_title">Oynatma listelerini seç</string>
+    <string name="no_playlists_that_match_x">\"%#\" adında bir oynatma listeniz yok.</string>
+    <string name="songs_added_to_playlists">Oynatma listelerine şarkılar eklendi.</string>
+    <string name="no_playlists_label">Oynatma listesi yok</string>
+    <string name="channel_surround_7_1">7.1 Uzamsal</string>
+    <string name="channel_surround_9_1">9.1 Uzamsal</string>
+    <string name="channel_surround_11_1">11.1 Uzamsal</string>
+    <string name="channel_surround_13_1">13.1 Uzamsal</string>
+    <string name="search_playlists">Oynatma listelerini ara</string>
+    <string name="new_playlist_action">Yeni bir çalma listesi oluştururken kullanılır. ( Yeni)</string>
+    <string name="no_playlists_create_new">Yeni bir çalma listesi oluşturmak için \'Yeni\' düğmesine tıklayın</string>
+    <string name="arranger">Düzenleyici</string>
+    <string name="channel_quadraphonic">Kuadrafonik</string>
+    <string name="channel_surround_5_0">5.0 Çevresel Ses</string>
+    <string name="channel_surround_5_1">5.1 Çevresel Ses.</string>
+    <string name="channel_surround_6_1">6.1 Çevresel Ses</string>
 </resources>

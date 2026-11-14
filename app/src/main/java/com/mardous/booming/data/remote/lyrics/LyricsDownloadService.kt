@@ -17,10 +17,11 @@
 
 package com.mardous.booming.data.remote.lyrics
 
-import android.content.Context
 import android.util.Log
 import com.mardous.booming.data.model.Song
 import com.mardous.booming.data.model.lyrics.RawLyrics
+import com.mardous.booming.data.model.network.NetworkFeature
+import com.mardous.booming.data.remote.lyrics.api.LyricsProvider
 import com.mardous.booming.data.remote.lyrics.api.betterlyrics.BetterLyricsApi
 import com.mardous.booming.data.remote.lyrics.api.lrclib.LrcLibApi
 import com.mardous.booming.data.remote.lyrics.api.lyrically.LyricallyApi
@@ -29,31 +30,41 @@ import com.mardous.booming.extensions.media.extractMainArtistName
 import io.ktor.client.HttpClient
 import java.io.IOException
 
-class LyricsDownloadService(private val context: Context, client: HttpClient) {
+class LyricsProviderParams(
+    val providers: List<LyricsProvider> = LyricsProvider.AvailableProviders,
+    val ignoreWifiSetting: Boolean = false,
+    val ignoreProviderSetting: Boolean = false
+)
 
-    private val lyricsApi = listOf(
-        LyricallyApi(client),
-        BetterLyricsApi(client),
-        LrcLibApi(client)
+class LyricsDownloadService(client: HttpClient) {
+
+    private val apiByProvider = mapOf(
+        LyricsProvider.Lyrically to LyricallyApi(client),
+        LyricsProvider.BetterLyrics to BetterLyricsApi(client),
+        LyricsProvider.LRCLib to LrcLibApi(client)
     )
 
     @Throws(IOException::class)
     suspend fun remoteLyrics(
         song: Song,
         title: String = song.title,
-        artist: String = song.albumArtistName()
+        artist: String = song.albumArtistName(),
+        providerParams: LyricsProviderParams = LyricsProviderParams()
     ): RawLyrics.Remote {
-        var result = RawLyrics.Remote()
+        check(providerParams.providers.isNotEmpty()) { "No providers configured" }
 
-        if (song == Song.emptySong) return result
+        var result = RawLyrics.Remote()
+        if (song == Song.emptySong || !NetworkFeature.isOnline(ignoreWifiSetting = providerParams.ignoreWifiSetting))
+            return result
 
         try {
             val cleanedTitle = cleanTitle(title)
             val cleanedArtist = artist.extractMainArtistName()
-            for (api in lyricsApi) {
-                if (!api.networkFeature.isAvailable(context))
-                    continue
+            for (provider in providerParams.providers) {
+                if (!provider.isAvailableForCurrentPolicy ||
+                    (!provider.isEnabled && !providerParams.ignoreProviderSetting)) continue
 
+                val api = apiByProvider.getValue(provider)
                 val apiResult = runCatching { api.downloadLyrics(song, cleanedTitle, cleanedArtist) }
                 if (apiResult.isFailure) {
                     Log.e(TAG, "Error during lyrics request", apiResult.exceptionOrNull())
@@ -85,17 +96,19 @@ class LyricsDownloadService(private val context: Context, client: HttpClient) {
     companion object {
         private const val TAG = "LyricsDownloadService"
 
+        private const val KEYWORDS = "official|video|audio|lyrics|lyric|visualizer|hd|hq|4k|remaster|remix|live|acoustic|version|edit|extended|radio|clean|explicit"
+
         private val TITLE_CLEANUP_PATTERNS = listOf(
-            Regex("""\s*\(.*?(official|video|audio|lyrics|lyric|visualizer|hd|hq|4k|remaster|remix|live|acoustic|version|edit|extended|radio|clean|explicit).*?\)""", RegexOption.IGNORE_CASE),
-            Regex("""\s*\[.*?(official|video|audio|lyrics|lyric|visualizer|hd|hq|4k|remaster|remix|live|acoustic|version|edit|extended|radio|clean|explicit).*?\]""", RegexOption.IGNORE_CASE),
-            Regex("""\s*【.*?】"""),
+            Regex("""\s*\((?>[^)]*?(?:$KEYWORDS)[^)]*?)\)""", RegexOption.IGNORE_CASE),
+            Regex("""\s*\[(?>[^\]]*?(?:$KEYWORDS)[^\]]*?)\]""", RegexOption.IGNORE_CASE),
+            Regex("""\s*【(?>[^】]*?)】"""),
             Regex("""\s*\|.*$"""),
-            Regex("""\s*-\s*(official|video|audio|lyrics|lyric|visualizer).*$""", RegexOption.IGNORE_CASE),
-            Regex("""\s*\(feat\..*?\)""", RegexOption.IGNORE_CASE),
-            Regex("""\s*\(ft\..*?\)""", RegexOption.IGNORE_CASE),
+            Regex("""\s*-\s*(?:official|video|audio|lyrics|lyric|visualizer).*$""", RegexOption.IGNORE_CASE),
+            Regex("""\s*\((?>feat\.[^)]*?)\)""", RegexOption.IGNORE_CASE),
+            Regex("""\s*\((?>ft\.[^)]*?)\)""", RegexOption.IGNORE_CASE),
             Regex("""\s*feat\..*$""", RegexOption.IGNORE_CASE),
             Regex("""\s*ft\..*$""", RegexOption.IGNORE_CASE),
-            Regex("""\s*\([^)]*\d{4}[^)]*\)""", RegexOption.IGNORE_CASE),
+            Regex("""\s*\((?>[^)]*?\d{4}[^)]*?)\)""", RegexOption.IGNORE_CASE),
         )
     }
 }

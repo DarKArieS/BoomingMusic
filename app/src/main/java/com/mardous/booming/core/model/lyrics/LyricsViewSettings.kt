@@ -1,9 +1,7 @@
 package com.mardous.booming.core.model.lyrics
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
 
 @Immutable
 class LyricsViewSettings(
@@ -16,15 +14,13 @@ class LyricsViewSettings(
     val backgroundEffect: BackgroundEffect,
     val blurEffect: Boolean,
     val shadowEffect: Boolean,
+    val showTranslation: Boolean,
+    val showTransliteration: Boolean,
+    val resumeOnSeek: Boolean,
     val syncedStyle: TextStyle,
     val unsyncedStyle: TextStyle,
     val lineSpacing: Int
 ) {
-
-    val contentPadding: PaddingValues = when (mode) {
-        Mode.Full -> PaddingValues(vertical = 96.dp, horizontal = 16.dp)
-        Mode.Player -> PaddingValues(vertical = 72.dp, horizontal = 8.dp)
-    }
 
     enum class Mode {
         Player, Full;
@@ -53,6 +49,9 @@ class LyricsViewSettings(
             const val LINE_SPACING = "lyrics_line_spacing"
             const val PROGRESSIVE_COLORING = "lyrics_progressive_coloring"
             const val BACKGROUND_EFFECT = "lyrics_background_effect"
+            const val SHOW_TRANSLATION = "lyrics_show_translation"
+            const val SHOW_TRANSLITERATION = "lyrics_show_transliteration"
+            const val RESUME_ON_SEEK = "lyrics_resume_on_seek"
             const val BLUR_EFFECT = "lyrics_text_blur"
             const val SHADOW_EFFECT = "lyrics_text_shadow"
             const val SYNCED_BOLD_FONT = "synced_lyrics_bold_font"

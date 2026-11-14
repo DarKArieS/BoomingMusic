@@ -64,7 +64,7 @@
     <string name="add_playlist_title">Adicionar à playlist</string>
     <string name="rename_playlist_title">Renomear playlist</string>
     <string name="action_edit_playlist">Editar seleção musical</string>
-    <string name="action_delete">Excluir playlist</string>
+    <string name="action_delete_playlist">Excluir playlist</string>
     <string name="action_export_playlist">Exportar para arquivo</string>
     <string name="action_clear_history">Limpar Histórico</string>
     <string name="history_cleared">Histórico apagado</string>
@@ -124,18 +124,14 @@
     <string name="permission_external_storage_denied">Você deve conceder permissão para acessar o armazenamento externo.</string>
     <string name="permission_bluetooth_title">Dispositivos próximos</string>
     <string name="permission_bluetooth_description">O aplicativo precisa de permissão de dispositivos próximos para verificar por dispositivos bluetooth</string>
-    <string name="permission_bluetooth_denied">Permissão de dispositivos próximos negada.</string>
     <string name="permission_read_images_title">Ler imagens (opcional)</string>
     <string name="permission_read_images_summary">Esta permissão é necessária para que o Booming Music encontre ficheiros de capas de álbuns nas suas pastas de música. Se não pretende usar este recurso, pode optar por não conceder a permissão.</string>
     <string name="permission_read_images_denied">Precisa conceder permissão para ler imagens do dispositivo.</string>
-    <string name="permission_exact_alarms_title">Programar alarmes exatos (opcional)</string>
-    <string name="permission_exact_alarms_description">Permissão para agendar alarmes exatos é necessária para que o temporizador da suspensão funcione corretamente</string>
     <string name="permissions_denied">Permissão negada</string>
     <string name="permissions_needed">Permissões necessárias</string>
     <string name="grant_access_action">Conceder acesso</string>
     <string name="action_grant">Conceder</string>
     <string name="granted">Concedido</string>
-    <string name="hello_there">Olá!</string>
     <string name="welcome_to_x">Bem-vindo à %s</string>
     <string name="get_started">Comece Agora</string>
     <string name="select_storage_title">Selecionar armazenamento</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">Tamanho da grade</string>
     <string name="action_grid_size_land">Tamanho da grade (horizontal)</string>
     <string name="action_sort_order">Classificar por</string>
-    <string name="sort_order_az">A-Z</string>
     <string name="sort_order_artist">Artista</string>
     <string name="sort_order_album">Álbum</string>
     <string name="sort_order_year">ano</string>
@@ -246,15 +241,6 @@
     <string name="download_image">Baixar imagem</string>
     <string name="pick_from_local_storage">Escolher do armazenamento local</string>
     <string name="about_x_title">Sobre %s</string>
-    <string name="listeners_label">Ouvintes</string>
-    <string name="scrobbles_label">Deslocamentos</string>
-    <string name="save_cover">Salvar capa do álbum</string>
-    <string name="saving_cover_please_wait">Salvando capa, aguarde…</string>
-    <string name="save_artwork_error">Não foi possível salvar a capa no armazenamento local</string>
-    <string name="save_artwork_success">Capa do álbum salva</string>
-    <string name="save_artwork_view_action">Visualizar</string>
-    <string name="save_artwork_copyright_info_title">Aviso de direitos autorais</string>
-    <string name="save_artwork_copyright_info_message">Algumas capas de álbuns (ou todas) podem ser protegidas por leis de direitos autorais. Não é possível usar tais imagens para fins comerciais e publicitários. \n\n Somente você tem total responsabilidade sobre o uso das capas de álbuns salvas.</string>
     <string name="yes">sim</string>
     <string name="no">Não</string>
     <string name="keyboard">Teclado</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">Formato</string>
     <string name="file_label">File</string>
     <string name="metadata_label">Metadata</string>
-    <string name="title_and_artist">Título e Artista</string>
     <string name="song">Música</string>
     <string name="title">Título</string>
     <string name="album">Álbum</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">Conexão indisponível.</string>
     <string name="you_have_to_select_at_least_one_category">Você deve selecionar pelo menos uma categoria</string>
     <string name="you_cannot_select_more_than_five_categories">Você não pode selecionar mais de cinco categorias.</string>
-    <string name="backup_settings">Confirgurações</string>
-    <string name="backup_synced_lyrics">Letras sincronizadas</string>
-    <string name="backup_artist_images">Imagens do artista</string>
-    <string name="backup_playlists">Listas de reprodução</string>
     <string name="backup_successful">Backup bem-sucedido!</string>
     <string name="backup_failed">Backup falhou.</string>
     <string name="select_content_to_restore">Selecione o conteúdo para restaurar:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">Playlist Bloqueada</string>
     <string name="playlist_unlocked">Playlist Desbloqueada</string>
     <string name="action_toggle_queue_lock">Bloquear/desbloquear fila</string>
-    <string name="queue_locked">Fila bloqueada</string>
-    <string name="queue_unlocked">Fila desbloqueada</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Linha de Aux</string>
     <string name="audio_device_bluetooth_a2dp">Bluetooth A2DP</string>
@@ -369,7 +348,7 @@
     <string name="top_albums">Álbuns mais populares</string>
     <string name="recent_artists">Artistas recentes</string>
     <string name="recent_albums">Álbuns recentes</string>
-    <string name="no_suggestions">Não há sugestões para você</string>
+
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">Totalmente aleatório</string>
     <string name="shuffle_mode_most_played">Mais reproduzidas</string>
@@ -511,11 +490,8 @@
     <string name="author">Autor</string>
     <string name="mardous_summary">Programador Líder</string>
     <string name="contributors">Colaboradores</string>
-    <string name="acknowledgments_title">Reconhecimento</string>
     <string name="translators_title">Tradutores</string>
     <string name="translators_summary">Obrigado a todos que fazem Booming Music disponível em vários idiomas.</string>
-    <string name="contributors_title">Colaboradores</string>
-    <string name="contributors_summary">Uma lista de utilizadores que contribuíram para o projeto de alguma forma.</string>
     <string name="view_profile_on_github">Ver perfil no GitHub</string>
     <string name="write_an_email">Escreva um e-mail</string>
     <string name="support_development">Apoie o desenvolvimento</string>
@@ -528,7 +504,6 @@
     <string name="send_invitation_message">Enviar mensagem de convite</string>
     <string name="invitation_message_content">Oi. Confira o Booming Music! O melhor aplicativo para ouvir música local no Android. Você pode baixá-lo aqui: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">Você será encaminhado para o site de registro de erros.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">Acesso ao armazenamento necessário</string>
     <string name="saf_access_required_message">O Booming Music requer permissão para acessar esses arquivos. Por favor, selecione a pasta onde os seus arquivos de música são armazenados.</string>
@@ -565,7 +540,6 @@
     <string name="audio_focus_header">Foco em áudio</string>
     <string name="shuffle_mode_header">Modo aleatório</string>
     <string name="display_header">Visualização</string>
-    <string name="backup_restore_header">Backup/Restauração</string>
     <string name="visuals_header">Visuais</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">Tema geral</string>
@@ -611,10 +585,10 @@
     <string name="synced_font_size_full_summary">Ajusta o tamanho da fonte das letras sincronizadas em ecrã cheio.</string>
     <string name="unsynced_font_size_full_title">Tamanho da fonte das letras não sincronizadas (ecrã cheio)</string>
     <string name="unsynced_font_size_full_summary">Ajusta o tamanho da fonte das letras não sincronizadas no ecrã cheio.</string>
-    <string name="instrumental_tracks_identifiers_title">Identificadores de faixas instrumentais</string>
-    <string name="instrumental_tracks_identifiers_summary">Se a letra de uma música contiver apenas um ou mais desses indicadores, ela será marcada como faixa instrumental (separados por vírgula).</string>
-    <string name="instrumental_tracks_mark_by_title_title">Marcar pelo título</string>
-    <string name="instrumental_tracks_mark_by_title_summary">O título da faixa também será levado em conta na pesquisa por identificadores.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">Ignore linhas em branco</string>
     <string name="ignore_blank_lines_summary">Ignore linhas vazias em ficheiros LRC em vez de mostrar bolhas animadas.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">Tratar todos os ficheiros de letras como UTF-8</string>
@@ -636,8 +610,6 @@
     <string name="circle_button_title">Botão circular play</string>
     <string name="swipe_album_cover_title">Deslize sobre a capa do álbum</string>
     <string name="swipe_album_cover_summary">Deslize para a esquerda ou para a direita na capa do álbum para mudar de música.</string>
-    <string name="queue_height_title">Altura da fila em meio-ecrã</string>
-    <string name="queue_height_summary">Define a altura da fila de reprodução para metade do ecrã.</string>
     <string name="single_tap_on_album_cover_title">Toque único na capa</string>
     <string name="double_tap_on_album_cover_title">Toque duplo na capa</string>
     <string name="double_tap_on_left_album_cover_title">Toque duplo na borda esquerda da capa</string>
@@ -748,10 +720,6 @@
     <string name="min_song_duration_summary">Quantos segundos (pelo menos) devem durar uma música para ser exibida em sua biblioteca.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">Idioma do aplicativo</string>
-    <string name="backup_data_title">Backup de dados</string>
-    <string name="backup_app_data_summary">Criar um arquivo contendo dados essenciais do aplicativo e salvá-lo no armazenamento externo.</string>
-    <string name="restore_backup_title">Restaurar backup</string>
-    <string name="restore_backup_summary">Restaurar dados (e estado) de um backup anterior.</string>
     <string name="stop_when_closed_from_recents_title">Parar ao ser fechado a partir das apps recentes</string>
     <string name="stop_when_closed_from_recents_summary">A reprodução é interrompida se a app for fechada a partir das apps recentes.</string>
     <string name="stop_when_closed_from_recents_note">Nota: Alguns dispositivos com gestão agressiva de memória ou pilha podem ignorar esta configuração e sempre encerrar a app ao removê-lo da lista de recentes.</string>
@@ -841,12 +809,8 @@
     <string name="uncaught_error_restart_app">Reiniciar aplicativo</string>
     <string name="uncaught_error_github">Reportar problema no GitHub</string>
     <string name="uncaught_error_send">Send report</string>
-    <string name="app_widget_responsive">Responsivo</string>
-    <string name="app_widget_responsive_desc">Um widget que se adapta a diferentes tamanhos</string>
     <string name="app_widget_card">Cartão</string>
     <string name="app_widget_card_desc">Estilo minimalista e simplificado</string>
-    <string name="app_widget_full">Cheio</string>
-    <string name="app_widget_full_desc">O ecrã de reprodução diretamente no seu computador</string>
     <string name="search_playlists">Pesquisar playlists</string>
     <string name="select_playlists_title">Selecionar playlists</string>
     <string name="new_playlist_action">Nova</string>
@@ -899,19 +863,11 @@
     <string name="support_my_work">Apoie o meu trabalho</string>
     <string name="network_title">Rede</string>
     <string name="network_summary">Gira recursos de internet como integração Last.fm, provedores de letras e downloads de metadados.</string>
-    <string name="widgets_header">Widgets da app</string>
     <string name="images_title">Imagens</string>
     <string name="lastfm_title">Last.fm</string>
     <string name="hold_tab_to_search_title">Pressione sobre a guia para pesquisar</string>
-    <string name="widget_small_layout_style_title">Estilo de layout pequeno</string>
-    <string name="widget_small_layout_classic">Clássico</string>
-    <string name="widget_small_layout_simplified">Simplificado</string>
     <string name="widget_dynamic_colors_title">Cores dinâmicas</string>
     <string name="widget_dynamic_colors_summary">Adapte as cores do widget de acordo com a arte da faixa atual.</string>
-    <string name="widget_image_corner_radius_title">Raio de arredondamento da imagem</string>
-    <string name="widget_image_corner_radius_summary">Mude o arredondamento para a arte do álbum.</string>
-    <string name="widget_third_line_title">Terceira linha de informação</string>
-    <string name="widget_third_line_summary">Selecione o que exibir na terceira linha de texto.</string>
     <string name="lyrics_center_horizontally_title">Centralize as letras de música horizontalmente</string>
     <string name="lyrics_center_horizontally_summary">Alinhe cada linha de letras ao centro horizontal do ecrã.</string>
     <string name="network_features_title">Ative recursos de rede</string>
@@ -950,4 +906,22 @@
     <string name="mini_player_swipe_to_skip_title">Deslize o mini reprodutor para pular</string>
     <string name="mini_player_swipe_to_skip_summary">Deslize o dedo para a esquerda ou para a direita no mini reprodutor para pular entre as músicas.</string>
     <string name="arranger">Arranjador</string>
+    <string name="eq_pro_mode">Modo Avançado</string>
+    <string name="compressor_label">Compressor</string>
+    <string name="limiter_label">Limitador</string>
+    <string name="eq_attack_time">Atacar</string>
+    <string name="eq_release_time">Libertar</string>
+    <string name="eq_threshold">Limite</string>
+    <string name="eq_ratio">Rácio</string>
+    <string name="eq_expander_ratio">Expansor de rácio</string>
+    <string name="eq_knee_width">Largura do joelho</string>
+    <string name="eq_noise_gate">Porta de ruído</string>
+    <string name="eq_pre_gain">Pré-ganho</string>
+    <string name="eq_post_gain">Pós-ganho</string>
+    <string name="rg_with_tag">Com etiqueta</string>
+    <string name="rg_without_tag">Sem etiqueta</string>
+    <string name="lyrics_karaoke_style_title">Letra em estilo karaoke</string>
+    <string name="lyrics_karaoke_style_summary">Ativa um efeito estilo Karaoke para letra sincronizada palavra a palavra. Por favor note que isto é uma funcionalidade experimental.</string>
+    <string name="lyrics_bold_synced_title">Fonte em negrito para letra sincronizada</string>
+    <string name="lyrics_bold_synced_summary">Exibir letra sincronizada em fonte de negrito.</string>
 </resources>

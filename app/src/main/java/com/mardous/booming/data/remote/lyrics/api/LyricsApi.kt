@@ -19,10 +19,8 @@ package com.mardous.booming.data.remote.lyrics.api
 
 import com.mardous.booming.data.model.Song
 import com.mardous.booming.data.model.lyrics.RawLyrics
-import com.mardous.booming.data.model.network.NetworkFeature
 
 interface LyricsApi {
-    val name: String
-    val networkFeature: NetworkFeature.Lyrics
+    val provider: LyricsProvider
     suspend fun downloadLyrics(song: Song, title: String, artist: String): RawLyrics.Remote?
 }

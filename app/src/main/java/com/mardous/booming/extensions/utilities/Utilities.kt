@@ -38,6 +38,9 @@ private val arabicBlocks: Set<Character.UnicodeBlock> by lazy {
         }
     }
 }
+
+fun String?.isWhitespace() = this != null && this.length == 1 && this[0] == ' '
+
 fun String.collapseSpaces() = trim().replace(SPACES_REGEX, " ")
 
 fun String.normalize(): String =
@@ -57,6 +60,15 @@ fun CharSequence.sanitize(): String {
         .replace("|", "_")
         .replace("\\", "_")
         .replace("&", "_")
+}
+
+fun String.capitalize(): String {
+    return this.split(" ")
+        .joinToString(" ") { word ->
+            word.lowercase().replaceFirstChar { char ->
+                if (char.isLowerCase()) char.titlecase() else char.toString()
+            }
+        }
 }
 
 fun Char.isArabic(): Boolean {

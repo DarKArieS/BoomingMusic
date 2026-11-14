@@ -70,11 +70,10 @@ sealed class Version(
         }
 }
 
-val currentVersion: Version = Version.Beta(
+val currentVersion: Version = Version.Stable(
     versionMajor = 1,
-    versionMinor = 3,
-    versionPatch = 1,
-    versionBuild = 2
+    versionMinor = 4,
+    versionPatch = 2
 )
 val currentVersionCode = currentVersion.code
 
@@ -87,14 +86,14 @@ android {
         targetSdk = 36
 
         applicationId = namespace
-        versionCode = 1310102
+        versionCode = 1420300
         versionName = currentVersion.name
         check(versionCode == currentVersionCode)
     }
 
     flavorDimensions += "version"
     productFlavors {
-        create("normal") {
+        create("github") {
             dimension = "version"
 
             resValue("bool", "network_features_enabled_by_default", "true")
@@ -111,14 +110,14 @@ android {
         create("playstore") {
             dimension = "version"
 
-            resValue("bool", "network_features_enabled_by_default", "false")
+            resValue("bool", "network_features_enabled_by_default", "true")
             resValue("bool", "enable_builtin_updater", "false")
             resValue("bool", "enable_lyrically_provider", "false")
         }
     }
 
     sourceSets {
-        named("normal") {
+        named("github") {
             kotlin.directories.add("src/shared/java")
         }
         named("fdroid") {
@@ -128,7 +127,14 @@ android {
 
     val signingProperties = getProperties("keystore.properties")
 
-    val releaseSigning = if (signingProperties != null) {
+    val releaseSigning = if (System.getenv("KEYSTORE_FILE") != null) {
+        signingConfigs.create("release") {
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+            storePassword = System.getenv("STORE_PASSWORD")
+            storeFile = file(System.getenv("KEYSTORE_FILE"))
+        }
+    } else if (signingProperties != null) {
         signingConfigs.create("release") {
             keyAlias = signingProperties.property("keyAlias")
             keyPassword = signingProperties.property("keyPassword")
@@ -147,8 +153,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
-            versionNameSuffix = " DEBUG"
-            signingConfig = releaseSigning
+            versionNameSuffix = ".debug"
         }
     }
     buildFeatures {
@@ -169,10 +174,11 @@ android {
 
             // AppBundle tasks usually contain "bundle" in their name
             //noinspection WrongGradleMethod
+            val isCI = System.getenv("RELEASE_TYPE") == "CI"
             val isBuildingBundle = gradle.startParameter.taskNames.any { it.lowercase().contains("bundle") }
 
             // Disable split abis when building app bundle
-            isEnable = !isBuildingBundle
+            isEnable = !isCI && !isBuildingBundle
 
             reset()
             include("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
@@ -200,15 +206,26 @@ android {
 
 androidComponents {
     onVariants { variant ->
-        val flavorProps = loadFlavorProperties(variant.flavorName)
-        flavorProps.forEach { (key, value) ->
-            variant.buildConfigFields?.put(
-                key.toString(),
-                BuildConfigField("String", "\"$value\"", "Property from ${variant.flavorName ?: "base"}")
-            )
+        val gitHash = runGitCommand("git rev-parse --short=7 HEAD")
+
+        val isCI = System.getenv("RELEASE_TYPE") == "CI"
+        if (isCI && variant.buildType == "release" && gitHash.isNotEmpty()) {
+            variant.outputs.forEach { output ->
+                val currentVersionName = output.versionName.get().substringBefore("-")
+                output.versionName.set("$currentVersionName.$gitHash")
+            }
         }
 
-        val canUseLastFm = variant.flavorName == "normal" || variant.flavorName == "playstore"
+        variant.buildConfigFields?.putAll(
+            mapOf("IS_CI_BUILD" to BuildConfigField("boolean", isCI, null))
+        )
+
+        val flavorProps = loadFlavorProperties(variant.flavorName)
+        flavorProps.forEach { (key, value) ->
+            variant.buildConfigFields?.put(key.toString(), BuildConfigField("String", "\"$value\"", null))
+        }
+
+        val canUseLastFm = variant.flavorName == "github" || variant.flavorName == "playstore"
 
         val localProperties = if (canUseLastFm) getProperties("local.properties") else null
         val lastFmKey = if (canUseLastFm) {
@@ -247,27 +264,6 @@ kotlin {
     jvmToolchain(21)
 }
 
-fun getProperties(fileName: String): Properties? {
-    val file = rootProject.file(fileName)
-    return if (file.exists()) {
-        Properties().also { properties ->
-            file.inputStream().use { properties.load(it) }
-        }
-    } else null
-}
-
-fun loadFlavorProperties(flavorName: String?): Properties {
-    val props = Properties()
-    getProperties("properties/base.properties")?.let { props.putAll(it) }
-    if (!flavorName.isNullOrEmpty()) {
-        getProperties("properties/$flavorName.properties")?.let { props.putAll(it) }
-    }
-    return props
-}
-
-fun Properties.property(key: String) =
-    this.getProperty(key) ?: "$key missing"
-
 dependencies {
     implementation(libs.material.components)
     implementation(libs.androidx.core)
@@ -284,6 +280,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.viewpager)
+    implementation(libs.androidx.shapes)
+    implementation(libs.accompanist.permissions)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.runtime.livedata)
@@ -309,6 +307,8 @@ dependencies {
     implementation(libs.coil.transformations)
 
     implementation(libs.balloon)
+    implementation(libs.scrollbar)
+    implementation(libs.reorderable)
     implementation(libs.compose.markdown)
     implementation(libs.aboutlibraries)
 
@@ -327,4 +327,44 @@ dependencies {
     implementation(libs.versioncompare)
     implementation(libs.commons.text)
     implementation(libs.juniversalchardet)
+}
+
+fun getProperties(fileName: String): Properties? {
+    val file = rootProject.file(fileName)
+    return if (file.exists()) {
+        Properties().also { properties ->
+            file.inputStream().use { properties.load(it) }
+        }
+    } else null
+}
+
+fun Properties.property(key: String) =
+    this.getProperty(key) ?: "$key missing"
+
+fun loadFlavorProperties(flavorName: String?): Properties {
+    val finalProps = Properties()
+    val publicProperties = getProperties("public.properties")
+    if (publicProperties != null) {
+        for ((key, value) in publicProperties.entries) {
+            val keySplit = key.toString().split(".")
+            if (keySplit.size == 2) {
+                if (keySplit[0].equals(flavorName, ignoreCase = true)) {
+                    finalProps[keySplit[1]] = value
+                }
+            } else {
+                finalProps[key] = value
+            }
+        }
+    }
+    return finalProps
+}
+
+fun runGitCommand(command: String): String {
+    return try {
+        providers.exec {
+            commandLine(command.split(" "))
+        }.standardOutput.asText.get().trim()
+    } catch (e: Exception) {
+        ""
+    }
 }

@@ -17,13 +17,20 @@
 
 package com.mardous.booming
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.res.Resources
+import android.os.Process
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import coil3.ImageLoader
@@ -49,24 +56,38 @@ import com.mardous.booming.coil.store.PlaylistMapper
 import com.mardous.booming.coil.store.SongMapper
 import com.mardous.booming.coil.store.YearMapper
 import com.mardous.booming.data.local.ReplayGainTagExtractor
-import com.mardous.booming.ui.screen.MainActivity
 import com.mardous.booming.ui.screen.error.ErrorActivity
 import com.mardous.booming.ui.screen.settings.SettingsScreen
+import com.mardous.booming.util.AUTO_LANGUAGE
 import com.mardous.booming.util.EXPERIMENTAL_UPDATES
+import com.mardous.booming.util.LANGUAGE_NAME
 import com.mardous.booming.util.Preferences.getDayNightMode
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import kotlin.system.exitProcess
+
+// Migration map of language Tags
+private val legacyLanguageTags = mapOf(
+    "es-419" to "es-US",
+    "pt" to "pt-PT",
+    "ar" to "ar-SA",
+    "pl-SP" to "szl",
+)
 
 class App : Application(), SingletonImageLoader.Factory {
 
-    override fun onCreate() {
-        super.onCreate()
+    // ContentProviders are installed and can already be queried before Application.onCreate() runs
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
         startKoin {
             androidContext(this@App)
             modules(appModules)
         }
+    }
 
+    override fun onCreate() {
+        super.onCreate()
         // if (BuildConfig.DEBUG) enableStrictMode()
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -81,6 +102,8 @@ class App : Application(), SingletonImageLoader.Factory {
             }
         }
 
+        migrateLanguageTag(prefs)
+
         // setting Error activity
         CaocConfig.Builder.create()
             .errorActivity(ErrorActivity::class.java)
@@ -88,6 +111,25 @@ class App : Application(), SingletonImageLoader.Factory {
             .apply()
 
         AppCompatDelegate.setDefaultNightMode(getDayNightMode())
+    }
+
+    private fun migrateLanguageTag(prefs: SharedPreferences) {
+        val current = prefs.getString(LANGUAGE_NAME, null)
+        val replacement = legacyLanguageTags[current]
+        if (replacement != null) {
+            prefs.edit { putString(LANGUAGE_NAME, replacement) }
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(replacement))
+        } else if ((current == null) || (current == AUTO_LANGUAGE)) {
+            if (AppCompatDelegate.getApplicationLocales().isEmpty) {
+                val primaryLocale = Resources.getSystem().configuration.locales.let { systemLocales ->
+                    if (systemLocales.isEmpty) null else systemLocales[0]
+                }
+                if (primaryLocale?.toLanguageTag() == "pl-SP") {
+                    prefs.edit { putString(LANGUAGE_NAME, "szl") }
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("szl"))
+                }
+            }
+        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
@@ -187,5 +229,15 @@ class App : Application(), SingletonImageLoader.Factory {
 
         fun isExperimentalBuild(): Boolean =
             BuildConfig.VERSION_NAME.contains("(alpha|beta|rc)".toRegex(RegexOption.IGNORE_CASE))
+
+        fun restart(activity: Activity) {
+            val intent = Intent(activity, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            activity.finish()
+            activity.startActivity(intent)
+
+            Process.killProcess(Process.myPid())
+            exitProcess(0)
+        }
     }
 }

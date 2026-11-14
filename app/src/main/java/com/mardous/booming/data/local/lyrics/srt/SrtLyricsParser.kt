@@ -1,27 +1,39 @@
 package com.mardous.booming.data.local.lyrics.srt
 
-import com.mardous.booming.data.LyricsParser
-import com.mardous.booming.data.model.lyrics.LyricsFile
+import com.mardous.booming.data.local.lyrics.LyricsInfo
+import com.mardous.booming.data.local.lyrics.LyricsParser
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
 import java.io.Reader
 
 class SrtLyricsParser : LyricsParser {
 
-    override fun handles(file: LyricsFile) = file.format == LyricsFile.Format.SRT
-
-    override fun handles(reader: Reader): Boolean {
-        return reader.buffered().use { br ->
-            // Skip blank lines and sequence number, then check for a timestamp line
-            br.lineSequence()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .dropWhile { it.matches(Regex("\\d+")) }
-                .firstOrNull()
-                ?.let { TIMESTAMP_PATTERN.containsMatchIn(it) } == true
-        }
+    override fun getInfo(lyrics: String): LyricsInfo {
+        // Skip blank lines and sequence number, then check for a timestamp line
+        val isSrt = lyrics.lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .dropWhile { it.matches(SEQUENCE_PATTERN) }
+            .firstOrNull()
+            ?.let { TIMESTAMP_PATTERN.containsMatchIn(it) } == true
+        return if (isSrt) LyricsInfo.Valid(actuallySynced = true) else LyricsInfo.Invalid
     }
 
-    override fun parse(reader: Reader, trackLength: Long, ignoreBlankLines: Boolean): SyncedLyrics? {
+    override fun parseAsPlain(input: String): String? {
+        val text = input.lineSequence()
+            .map { it.trim() }
+            .filterNot { it.isEmpty() || it.matches(SEQUENCE_PATTERN) || TIMESTAMP_PATTERN.containsMatchIn(it) }
+            .joinToString("\n") { it.stripHtmlTags() }
+        return text.ifBlank { null }
+    }
+
+    override fun parseAsPlain(reader: Reader): String? = parseAsPlain(reader.readText())
+
+    override fun parse(
+        reader: Reader,
+        trackLength: Long,
+        userOffset: Long,
+        ignoreBlankLines: Boolean
+    ): SyncedLyrics? {
         data class Block(val start: Long, val end: Long, val lines: List<String>)
 
         val blocks = mutableListOf<Block>()
@@ -73,6 +85,7 @@ class SrtLyricsParser : LyricsParser {
                     start = 0,
                     end = blocks.first().start,
                     content = SyncedLyrics.EmptyContent,
+                    transliteration = null,
                     translation = null,
                     actor = null
                 )
@@ -91,15 +104,16 @@ class SrtLyricsParser : LyricsParser {
                         content = text,
                         backgroundContent = null,
                         rawContent = text,
-                        words = emptyList()
+                        syllables = emptyList()
                     ),
+                    transliteration = null,
                     translation = null,
                     actor = null
                 )
             )
         }
 
-        return SyncedLyrics(lines = syncedLines)
+        return SyncedLyrics(lines = syncedLines, offset = userOffset)
     }
 
     // groupOffset: 1-based index of the first capture group for this timestamp
@@ -118,6 +132,8 @@ class SrtLyricsParser : LyricsParser {
     private fun String.stripHtmlTags() = replace(Regex("<[^>]+>"), "")
 
     companion object {
+        private val SEQUENCE_PATTERN = Regex("\\d+")
+
         // HH:MM:SS,mmm --> HH:MM:SS,mmm
         private val TIMESTAMP_PATTERN = Regex(
             "(\\d{2}):(\\d{2}):(\\d{2})[,\\.](\\d{3})\\s*-->\\s*(\\d{2}):(\\d{2}):(\\d{2})[,\\.](\\d{3})"

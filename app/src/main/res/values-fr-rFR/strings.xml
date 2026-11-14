@@ -64,7 +64,7 @@
     <string name="add_playlist_title">Ajouter à la liste de lecture</string>
     <string name="rename_playlist_title">Renommer la liste de lecture</string>
     <string name="action_edit_playlist">Modifier la liste de lecture</string>
-    <string name="action_delete">Supprimer la liste de lecture</string>
+    <string name="action_delete_playlist">Supprimer la liste de lecture</string>
     <string name="action_export_playlist">Exporter vers le fichier</string>
     <string name="action_clear_history">Effacer l\'historique</string>
     <string name="history_cleared">Historique effacé</string>
@@ -122,20 +122,16 @@
     <string name="permission_external_storage_title">Accès au stockage</string>
     <string name="permission_external_storage_description">L\'application a besoin d\'une autorisation pour accéder au stockage de votre appareil pour écouter de la musique</string>
     <string name="permission_external_storage_denied">Vous devez accorder l’autorisation d’accéder au stockage externe.</string>
-    <string name="permission_bluetooth_title">Appareils à proximité</string>
+    <string name="permission_bluetooth_title">Appareils à proximité (facultatif)</string>
     <string name="permission_bluetooth_description">L\'application a besoin de l\'autorisation des appareils à proximité pour vérifier les appareils Bluetooth</string>
-    <string name="permission_bluetooth_denied">Autorisation des appareils à proximité refusée.</string>
     <string name="permission_read_images_title">Lire les images (optionnel)</string>
     <string name="permission_read_images_summary">Cette permission est nécessaire pour que Booming Music puisse trouver les couvertures d\'albums dans vos dossiers musicaux. Si vous ne prévoyez pas d\'utiliser cette fonctionnalité, vous pouvez choisir de ne pas l\'accorder.</string>
     <string name="permission_read_images_denied">Vous devez accorder la permission de lire les images depuis l\'appareil.</string>
-    <string name="permission_exact_alarms_title">Planifier des alarmes exactes (facultatif)</string>
-    <string name="permission_exact_alarms_description">L\'autorisation de programmer des alarmes exactes est requise pour que la minuterie de mise en veille fonctionne correctement</string>
     <string name="permissions_denied">Autorisations refusées</string>
     <string name="permissions_needed">Autorisations requises</string>
     <string name="grant_access_action">Accorder l\'accès</string>
     <string name="action_grant">Accorder</string>
     <string name="granted">Accordé</string>
-    <string name="hello_there">Bonjour !</string>
     <string name="welcome_to_x">Bienvenue sur %s</string>
     <string name="get_started">Commencer</string>
     <string name="select_storage_title">Sélectionner un espace de stockage</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">Taille de la grille</string>
     <string name="action_grid_size_land">Taille de la grille (paysage)</string>
     <string name="action_sort_order">Trier par</string>
-    <string name="sort_order_az">A à Z</string>
     <string name="sort_order_artist">Artiste</string>
     <string name="sort_order_album">Album</string>
     <string name="sort_order_year">Année</string>
@@ -246,15 +241,6 @@
     <string name="download_image">Télécharger l\'image</string>
     <string name="pick_from_local_storage">Choisir depuis le stockage local</string>
     <string name="about_x_title">À propos de %s</string>
-    <string name="listeners_label">Écouteurs</string>
-    <string name="scrobbles_label">Scrobbles</string>
-    <string name="save_cover">Enregistrer la couverture de l\'album</string>
-    <string name="saving_cover_please_wait">Enregistrement de la couverture, attendez…</string>
-    <string name="save_artwork_error">Impossible d\'enregistrer la couverture dans le stockage local</string>
-    <string name="save_artwork_success">Couverture de l\'album enregistrée</string>
-    <string name="save_artwork_view_action">Voir</string>
-    <string name="save_artwork_copyright_info_title">Avis de droit d\'auteur</string>
-    <string name="save_artwork_copyright_info_message">Certaines couvertures d\'album (ou toutes) peuvent être protégées par le droit d\'auteur. Vous ne pouvez pas utiliser ces images à des fins commerciales ou publicitaires. \n\nL\'utilisation de la couverture est sous votre responsabilité.</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="keyboard">Clavier</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">Format</string>
     <string name="file_label">Fichier</string>
     <string name="metadata_label">Métadonnées</string>
-    <string name="title_and_artist">Titre et artiste</string>
     <string name="song">Musique</string>
     <string name="title">Titre</string>
     <string name="album">Album</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">Connexion indisponible.</string>
     <string name="you_have_to_select_at_least_one_category">Vous devez sélectionner au moins une catégorie</string>
     <string name="you_cannot_select_more_than_five_categories">Vous ne pouvez pas sélectionner plus de cinq catégories.</string>
-    <string name="backup_settings">Paramètres</string>
-    <string name="backup_synced_lyrics">Paroles synchronisées</string>
-    <string name="backup_artist_images">Images d\'artistes</string>
-    <string name="backup_playlists">Listes de lecture</string>
     <string name="backup_successful">Sauvegarde réussie !</string>
     <string name="backup_failed">Échec de la sauvegarde.</string>
     <string name="select_content_to_restore">Sélectionner le contenu à restaurer :</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">Liste de lecture verrouillée</string>
     <string name="playlist_unlocked">Liste de lecture déverrouillée</string>
     <string name="action_toggle_queue_lock">Verrouiller/Déverrouiller la file d\'attente</string>
-    <string name="queue_locked">File d\'attente verrouillée</string>
-    <string name="queue_unlocked">File d\'attente déverrouillée</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Ligne Aux</string>
     <string name="audio_device_bluetooth_a2dp">Bluetooth A2DP</string>
@@ -324,6 +303,7 @@
     <!-- Plurals -->
     <plurals name="songs">
         <item quantity="one">Titre</item>
+        <item quantity="many">Titres</item>
         <item quantity="other">Titres</item>
     </plurals>
     <plurals name="albums">
@@ -333,6 +313,7 @@
     </plurals>
     <plurals name="x_songs">
         <item quantity="one">%d titre</item>
+        <item quantity="many">%d titres</item>
         <item quantity="other">%d titres</item>
     </plurals>
     <plurals name="x_albums">
@@ -342,18 +323,22 @@
     </plurals>
     <plurals name="x_artists">
         <item quantity="one">%d artiste</item>
+        <item quantity="many">%d artistes</item>
         <item quantity="other">%d artistes</item>
     </plurals>
     <plurals name="x_times">
         <item quantity="one">%d fois</item>
+        <item quantity="many">%d fois</item>
         <item quantity="other">%d fois</item>
     </plurals>
     <plurals name="x_plays">
         <item quantity="one">%d lecture</item>
+        <item quantity="many">%d lectures</item>
         <item quantity="other">%d lectures</item>
     </plurals>
     <plurals name="x_items">
         <item quantity="one">%d élément</item>
+        <item quantity="many">%d éléments</item>
         <item quantity="other">%d éléments</item>
     </plurals>
     <!-- Home -->
@@ -363,7 +348,6 @@
     <string name="top_albums">Meilleurs albums</string>
     <string name="recent_artists">Artistes récents</string>
     <string name="recent_albums">Albums récents</string>
-    <string name="no_suggestions">Il n\'y a aucune suggestion pour vous</string>
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">Seulement en aléatoire</string>
     <string name="shuffle_mode_most_played">Les plus joués</string>
@@ -409,8 +393,8 @@
     <string name="imported_x_profiles">Profils importés %d.</string>
     <string name="no_profile_imported">Aucun profil importé.</string>
     <string name="import_autoeq_profile">Importer le profil AutoEq</string>
-    <string name="select_a_file_containing_autoeq_params">Sélectionnez un fichier contenant les paramètres AutoEq (GraphicEq).</string>
-    <string name="no_autoeq_profiles">Aucun profil AutoEq n\'a été importé.</string>
+    <string name="select_a_file_containing_autoeq_params">Sélectionnez un fichier contenant des paramètres AutoEq (GraphicEq)</string>
+    <string name="no_autoeq_profiles">Aucun profil AutoEq n\'a été importé</string>
     <string name="reset_equalizer">Réinitialiser l\'égaliseur</string>
     <string name="are_you_sure_you_want_to_reset_the_equalizer">Êtes-vous sûr de vouloir réinitialiser l\'égaliseur ? \n\nCette opération effacera tous vos profils.</string>
     <string name="not_supported">Non pris en charge</string>
@@ -505,11 +489,8 @@
     <string name="author">Auteur</string>
     <string name="mardous_summary">Développeur principal</string>
     <string name="contributors">Contributeurs</string>
-    <string name="acknowledgments_title">Reconnaissance</string>
     <string name="translators_title">Traducteurs</string>
     <string name="translators_summary">Merci à ceux qui rendent Booming Music disponible dans de nombreuses langues.</string>
-    <string name="contributors_title">Contributeurs</string>
-    <string name="contributors_summary">Liste des utilisateurs ayant contribué au projet d\'une manière ou d\'une autre.</string>
     <string name="view_profile_on_github">Voir le profil sur GitHub</string>
     <string name="write_an_email">Rédiger un courriel</string>
     <string name="support_development">Soutenir le développement</string>
@@ -522,7 +503,6 @@
     <string name="send_invitation_message">Envoyer un message d\'invitation</string>
     <string name="invitation_message_content">Bonjour. Découvrez Booming Music ! La meilleure application pour écouter de la musique locale sur Android. Vous pouvez la télécharger ici : %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">Vous serez redirigé vers le site Web de suivi des problèmes.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">Accès au stockage requis</string>
     <string name="saf_access_required_message">Booming Music nécessite une autorisation pour accéder à ces fichiers. Veuillez sélectionner le dossier racine où sont stockés vos fichiers musicaux.</string>
@@ -559,7 +539,6 @@
     <string name="audio_focus_header">Focus audio</string>
     <string name="shuffle_mode_header">Mode aléatoire</string>
     <string name="display_header">Afficher</string>
-    <string name="backup_restore_header">Sauvegarde/restauration</string>
     <string name="visuals_header">Visuels</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">Thème général</string>
@@ -606,14 +585,10 @@
     <string name="synced_font_size_full_summary">Ajuster la taille de la police pour les paroles synchronisées dans l\'écran des paroles complètes.</string>
     <string name="unsynced_font_size_full_title">Taille de police des paroles non synchronisées (vue complète)</string>
     <string name="unsynced_font_size_full_summary">Ajuster la taille de la police pour les paroles non synchronisées dans l\'écran des paroles complètes.</string>
-    <string name="instrumental_tracks_identifiers_title">Identifiants des pistes instrumentales</string>
-    <string name="instrumental_tracks_identifiers_summary">Si les paroles d\'une chanson ne contiennent qu\'un seul de ces indicateurs (un ou plusieurs), elle sera considérée comme un morceau instrumental (séparés par une virgule).</string>
-    <string name="instrumental_tracks_mark_by_title_title">Marquer par titre</string>
-    <string name="instrumental_tracks_mark_by_title_summary">Le titre du morceau sera également pris en compte lors de la recherche d\'identifiants.</string>
     <string name="ignore_blank_lines_title">Ignorer les lignes vides</string>
     <string name="ignore_blank_lines_summary">Ignorez les lignes vides dans les fichiers LRC au lieu d\'afficher des bulles animées.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">Traiter tous les fichiers de paroles comme UTF-8</string>
-    <string name="treat_all_lyrics_files_as_utf8_summary">Supposons que tous les fichiers utilisent l\'encodage UTF-8. Cela optimise l\'analyse des fichiers, mais peut parfois entraîner l\'apparition de caractères inhabituels dans les paroles des chansons. Un redémarrage de l\'application peut être nécessaire.</string>
+    <string name="treat_all_lyrics_files_as_utf8_summary">Partons du principe que tous les fichiers utilisent l\'encodage UTF-8. Cela optimise le processus d\'analyse des fichiers, mais peut, dans certains cas, entraîner l\'apparition de caractères inhabituels dans les paroles des chansons. Un redémarrage de l\'application peut s\'avérer nécessaire.</string>
     <!-- Now playing preferences -->
     <string name="now_playing_screen_title">Style</string>
     <string name="open_on_play_title">Ouvrir lors de la lecture</string>
@@ -631,8 +606,6 @@
     <string name="circle_button_title">Bouton de lecture circulaire</string>
     <string name="swipe_album_cover_title">Glisser la couverture de l\'album</string>
     <string name="swipe_album_cover_summary">Balayez vers la gauche ou vers la droite sur la couverture de l\'album pour passer d\'un titre à l\'autre.</string>
-    <string name="queue_height_title">Hauteur de la file d\'attente en demi-écran</string>
-    <string name="queue_height_summary">Changer la hauteur de la file de lecture en demi-écran.</string>
     <string name="single_tap_on_album_cover_title">Appuyez une fois sur la couverture</string>
     <string name="double_tap_on_album_cover_title">Appuyez deux fois sur la couverture</string>
     <string name="double_tap_on_left_album_cover_title">Double-clic sur le bord gauche de la pochette</string>
@@ -727,8 +700,8 @@
     <string name="trash_music_summary">Envoyer les fichiers supprimés à la corbeille.</string>
     <string name="recursive_folder_actions_title">Actions affectant les sous-dossiers</string>
     <string name="recursive_folder_actions_summary">Sélectionnez les actions qui doivent également s\'appliquer aux sous-dossiers lorsqu\'elles sont effectuées sur un dossier.</string>
-    <string name="enable_history_title">Activer l\'historique</string>
-    <string name="enable_history_summary">Permet à l\'application d\'enregistrer les chansons que vous avez écoutées. Si vous le désactivez, l\'ensemble de l\'historique sera effacé.</string>
+    <string name="enable_history_title">Enregistrer l\'historique d\'écoute</string>
+    <string name="enable_history_summary">Enregistre votre historique d\'écoute, vos morceaux préférés et les mises à jour vers les services de scrobbling. La désactivation de cette option met fin à tout scrobbling et à tout enregistrement de l\'historique.</string>
     <string name="history_interval_title">Intervalle de l\'historique</string>
     <string name="last_added_interval_title">Dernier intervalle ajouté</string>
     <string name="whitelist_title">Liste blanche</string>
@@ -743,11 +716,7 @@
     <string name="min_song_duration_summary">Combien de secondes (au moins) doit durer un titre pour être affiché dans votre bibliothèque.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">Langue de l\'application</string>
-    <string name="backup_data_title">Sauvegarder les données de l\'application</string>
-    <string name="backup_app_data_summary">Créez un fichier contenant les données essentielles de l\'application et enregistrez-le sur le stockage externe.</string>
-    <string name="restore_backup_title">Restaurer la sauvegarde</string>
-    <string name="restore_backup_summary">Restaurer les données (et l\'état) de l\'application à partir d\'une sauvegarde précédente.</string>
-    <string name="stop_when_closed_from_recents_title">Arrêter lorsque fermé depuis les récents</string>
+    <string name="stop_when_closed_from_recents_title">Arrêter l\'application lorsqu\'elle est fermée depuis l\'écran \"Actions récentes\" d\'Android</string>
     <string name="stop_when_closed_from_recents_summary">La lecture s\'arrête si l\'application est fermée à partir de la liste des applications récentes.</string>
     <string name="stop_when_closed_from_recents_note">Remarque : certains appareils dotés d\'une gestion agressive de la mémoire ou de la batterie peuvent ignorer ce paramètre et toujours arrêter l\'application lorsqu\'elle est supprimée des applications récentes.</string>
     <string name="rotation_lock_title">Verrouillage de rotation</string>
@@ -884,22 +853,10 @@
     <string name="lyrics_center_horizontally_summary">Alignez chaque ligne des paroles au centre horizontal de l\'écran.</string>
     <string name="bit_perfect_info">Bit-Perfect : %1$s | %2$s</string>
     <string name="bit_perfect_title">Audio sans perte</string>
-    <string name="app_widget_responsive">Adaptatif</string>
-    <string name="app_widget_responsive_desc">Un widget qui adapte sa mise en page à différentes tailles</string>
     <string name="app_widget_card">Carte</string>
     <string name="app_widget_card_desc">Style minimaliste et épuré</string>
-    <string name="app_widget_full">Complet</string>
-    <string name="app_widget_full_desc">L\'écran du lecteur directement sur votre bureau</string>
-    <string name="widgets_header">Widgets d\'application</string>
-    <string name="widget_small_layout_style_title">Style de mise en page compacte</string>
-    <string name="widget_small_layout_classic">Classique</string>
-    <string name="widget_small_layout_simplified">Simplifié</string>
     <string name="widget_dynamic_colors_title">Couleurs dynamiques</string>
     <string name="widget_dynamic_colors_summary">Adaptez les couleurs des widgets à la pochette du morceau en cours.</string>
-    <string name="widget_image_corner_radius_title">Rayon des coins de l\'image</string>
-    <string name="widget_image_corner_radius_summary">Modifiez l\'arrondi de la pochette de l\'album.</string>
-    <string name="widget_third_line_title">Troisième ligne d\'information</string>
-    <string name="widget_third_line_summary">Choisissez ce que vous souhaitez afficher dans la troisième ligne de texte.</string>
     <string name="advanced_settings">Paramètres avancés</string>
     <string name="bit_perfect_is_active">Bit-perfect est actif</string>
     <string name="bit_perfect_description">Transmettre le signal audio directement vers un DAC USB sans rééchantillonnage du système.</string>
@@ -908,8 +865,8 @@
     <string name="select_playlists_title">Sélectionner des listes de lecture</string>
     <string name="new_playlist_action">Nouvelle</string>
     <string name="no_playlists_create_new">Cliquez sur le bouton « Nouvelle » pour créer une liste de lecture</string>
-    <string name="no_playlists_that_match_x">Il n\'y a aucune liste de lecture correspondant à « %s ».</string>
-    <string name="songs_added_to_playlists">Titres ajoutés aux listes de lecture</string>
+    <string name="no_playlists_that_match_x">Il n\'y a aucune playlist correspondant à « %s ».</string>
+    <string name="songs_added_to_playlists">Titres ajoutés aux playlists</string>
     <string name="no_playlists_label">Aucune liste de lecture</string>
     <plurals name="x_playlists_selected">
         <item quantity="one">%d liste de lecture sélectionnée</item>
@@ -918,7 +875,7 @@
     </plurals>
     <string name="auto_theme_name">Auto</string>
     <string name="sign_in_to_x_title">Se connecter à %s</string>
-    <string name="connected_account_label">Compte associé :</string>
+    <string name="connected_account_label">Compte associé :</string>
     <string name="login_action">Connexion</string>
     <string name="logout_action">Déconnexion</string>
     <string name="listenbrainz_token_label">Jeton d\'utilisateur</string>
@@ -956,4 +913,137 @@
     <string name="eq_noise_gate">Porte de bruit</string>
     <string name="eq_pre_gain">Préamplification</string>
     <string name="eq_post_gain">Post-amplification</string>
+    <string name="rg_with_tag">Avec balise</string>
+    <string name="rg_without_tag">Sans balise</string>
+    <string name="lyrics_karaoke_style_title">Paroles en mode karaoké</string>
+    <string name="lyrics_karaoke_style_summary">Active un effet de type karaoké pour afficher les paroles synchronisées mot à mot. Veuillez noter qu\'il s\'agit d\'une fonctionnalité expérimentale.</string>
+    <string name="lyrics_bold_synced_title">Caractères en gras pour les paroles synchronisées</string>
+    <string name="lyrics_bold_synced_summary">Afficher les paroles synchronisées en caractères gras.</string>
+    <string name="lyrics_show_translation_title">Afficher la traduction</string>
+    <string name="lyrics_show_translation_summary">Afficher les paroles traduites si elles sont disponibles.</string>
+    <string name="lyrics_show_transliteration_title">Afficher la translittération</string>
+    <string name="lyrics_show_transliteration_summary">Afficher les paroles translittérées si elles sont disponibles.</string>
+    <string name="lyrics_resume_on_seek_title">Reprendre la recherche</string>
+    <string name="lyrics_resume_on_seek_summary">Reprendre automatiquement la lecture lorsque l\'on clique sur une ligne.</string>
+    <string name="app_version_x">Version %s</string>
+    <string name="app_description">Un design moderne. Un son pur. Entièrement à vous.</string>
+    <string name="more_contributors_title">D\'autres contributeurs</string>
+    <string name="more_contributors_summary">Vous pouvez consulter la liste complète des contributeurs sur GitHub.</string>
+    <string name="play_all_songs_when_searching_title">Lire tous les titres lors de la recherche</string>
+    <string name="play_all_songs_when_searching_summary">Lorsque cette option est activée, le fait de sélectionner un titre trouvé dans les résultats de recherche ajoute l\'intégralité de la bibliothèque à la file d\'attente. Sous réserve du paramètre « Lors de la sélection d\'un titre ».</string>
+    <string name="contributor_dawid_description">Contributeur principal et concepteur de plusieurs fonctionnalités clés de l\'application.</string>
+    <string name="contributor_ray_description">A apporté plusieurs fonctionnalités passionnantes et essentielles.</string>
+    <string name="contributor_ttop_description">Le tout premier contributeur et testeur du projet.</string>
+    <string name="contributor_lenard_description">Développeur du site web de l\'application et contributeur.</string>
+    <string name="contributor_alex_description">Un ami de longue date du projet qui nous a permis d\'accéder à des API essentielles.</string>
+    <string name="up_next">À suivre</string>
+    <string name="reorder_action">Réorganiser</string>
+    <string name="go_to_current_track">Aller à la piste en cours</string>
+    <string name="action_auto_fill_from_musicbrainz">Remplissage automatique à partir de MusicBrainz</string>
+    <string name="searching">Recherche en cours…</string>
+    <string name="musicbrainz_search_title">Recherche sur MusicBrainz</string>
+    <string name="musicbrainz_search_message">Recherchez les métadonnées d\'un morceau sur MusicBrainz à l\'aide du titre et du nom de l\'artiste.</string>
+    <string name="musicbrainz_no_results">Aucun résultat trouvé sur MusicBrainz.</string>
+    <string name="musicbrainz_select_recording">Sélectionnez un résultat</string>
+    <string name="sort_order_name">Nom</string>
+    <string name="website">Site web</string>
+    <string name="legal">Mentions légales</string>
+    <string name="terms_of_service">Conditions d\'utilisation</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="app_widget_circle">Cercle</string>
+    <string name="app_widget_circle_desc">Un lecteur rond autour duquel gravitent les commandes</string>
+    <string name="app_widget_cookie">Cookie</string>
+    <string name="app_widget_cookie_desc">La pochette forme un grand biscuit, avec des commandes tout autour</string>
+    <string name="app_widget_grid">Grille</string>
+    <string name="app_widget_grid_desc">Illustrations, lecture et commandes de saut dans quatre cases</string>
+    <string name="app_widget_library">Bibliothèque</string>
+    <string name="app_widget_library_desc">Une grille de pochettes issues d\'une liste de votre choix</string>
+    <string name="app_widget_nothing_playing">Aucun contenu en cours de lecture</string>
+    <string name="app_widget_tap_to_play">Appuyez pour ouvrir Booming Music</string>
+    <string name="widget_settings_title">Paramètres du widget</string>
+    <string name="widget_show_progress_title">Afficher la progression</string>
+    <string name="widget_show_progress_summary">Afficher la progression du morceau en cours.</string>
+    <string name="widget_show_controls_title">Afficher les commandes</string>
+    <string name="widget_show_controls_summary">Afficher les boutons de lecture.</string>
+    <string name="widget_show_artist_title">Afficher l\'artiste</string>
+    <string name="widget_show_artist_summary">Afficher le nom de l\'artiste sous le titre du morceau.</string>
+    <string name="widget_show_navigation_title">Afficher la navigation</string>
+    <string name="widget_show_navigation_summary">Afficher une barre permettant de parcourir la liste.</string>
+    <string name="widget_trailing_action_title">Bouton droit</string>
+    <string name="widget_leading_action_title">Bouton gauche</string>
+    <string name="widget_side_buttons_title">Boutons latéraux</string>
+    <string name="widget_side_buttons_skip">Précédent et suivant</string>
+    <string name="widget_action_favourite">Favoris</string>
+    <string name="widget_action_repeat">Répéter</string>
+    <string name="widget_source_title">Afficher</string>
+    <string name="widget_source_recent">Récents</string>
+    <string name="widget_page_previous">Titres précédents</string>
+    <string name="widget_page_next">Titres suivants</string>
+    <string name="restart_app_message">L\'application va redémarrer pour terminer le processus.</string>
+    <string name="permissions_subtitle">Autorisez l\'accès à vos fichiers musicaux et aux appareils à proximité pour profiter d\'une expérience d\'écoute optimale.</string>
+    <string name="initial_configuration_title">Configuration initiale</string>
+    <string name="initial_configuration_subtitle">Personnalisez « Booming Music » à votre goût avant de commencer.</string>
+    <string name="initial_configuration_note">Vous pourrez toujours modifier ces paramètres ultérieurement.</string>
+    <string name="restore_from_backup">Restaurer à partir d\'une sauvegarde</string>
+    <string name="network_features_summary">Permet le scrobbling ainsi que le téléchargement des pochettes d\'album et des paroles.</string>
+    <string name="listenbrainz_toggle_token_visibility">Activer/désactiver la visibilité du jeton</string>
+    <string name="backup_restore_title">Sauvegarde et restauration</string>
+    <string name="backup_restore_summary">Gérer la sauvegarde et la restauration des données de l\'application.</string>
+    <string name="no_backup_folder_selected">Aucun dossier de sauvegarde n\'a été sélectionné</string>
+    <string name="select_backup_folder">Sélectionner le dossier de sauvegarde</string>
+    <string name="no_backups_found">Aucune sauvegarde n\'a été trouvée dans ce dossier.</string>
+    <string name="backup_recent_list">Sauvegardes récentes</string>
+    <string name="backup_file_name">Nom du fichier (facultatif)</string>
+    <string name="create_new_backup">Créer une sauvegarde</string>
+    <string name="open_backup">Ouvrir la sauvegarde</string>
+    <string name="share_backup">Partager la sauvegarde</string>
+    <string name="cannot_share_this_backup">Impossible de partager cette sauvegarde.</string>
+    <string name="confirm_delete_backup">Supprimer cette sauvegarde ?</string>
+    <string name="backup_deleted_successfully">La sauvegarde a été effectuée avec succès.</string>
+    <string name="could_not_delete_backup">Impossible de supprimer la sauvegarde.</string>
+    <string name="select_content_to_backup">Sélectionnez le contenu à sauvegarder :</string>
+    <string name="backup_content_settings">Paramètres de l\'application</string>
+    <string name="backup_content_lyrics">Paroles synchronisées</string>
+    <string name="backup_content_play_info">Statistiques de lecture</string>
+    <string name="backup_content_playlists">Playlists</string>
+    <string name="backup_content_artist_images">Images d\'artistes</string>
+    <string name="backup_app_version">Créé en</string>
+    <string name="backup_warning_legacy_format">Ce format de sauvegarde est considéré comme obsolète. Pour l\'instant, vous pouvez encore restaurer vos données, mais il se peut que nous cessions de le prendre en charge à l\'avenir.</string>
+    <string name="backup_warning_ver_newer">Le format de sauvegarde est plus récent que celui pris en charge par cette version de Booming Music.</string>
+    <string name="backup_warning_app_ver_newer">Cette sauvegarde a été créée dans une version plus récente de Booming Music. Sa restauration dans cette version pourrait entraîner des erreurs ou une restauration incomplète des données.</string>
+    <string name="invalid_search_params">Les paramètres de recherche n\'ont pas pu être traités.</string>
+    <string name="restoring_data">Restauration de vos données…</string>
+    <string name="allow_lyrics_download_from">Autoriser le téléchargement depuis :</string>
+    <string name="action_play_x">Lire %s</string>
+    <string name="home_empty_title">Rien à recommander</string>
+    <string name="home_empty_subtitle">Écoute d\'abord un peu de musique</string>
+    <string name="home_shuffle_title">Écouter votre musique en mode aléatoire</string>
+    <string name="home_for_you_title">Pour vous</string>
+    <string name="home_for_you_subtitle">Tous vos coups de cœur réunis au même endroit</string>
+    <string name="home_for_you_subtitle_2">Des pépites sélectionnées avec soin, rien que pour vous</string>
+    <string name="home_for_you_subtitle_3">Votre dose quotidienne d\'inspiration musicale</string>
+    <string name="home_albums_title">Écoutez dès maintenant</string>
+    <string name="home_albums_subtitle">Les meilleurs albums et les dernières sorties</string>
+    <string name="home_albums_subtitle_2">Découvrez vos dernières collections</string>
+    <string name="home_albums_subtitle_3">Quelles sont les tendances dans votre bibliothèque ?</string>
+    <string name="home_artists_title">Artistes recommandés</string>
+    <string name="home_artists_subtitle">Les artistes que vous écoutez le plus</string>
+    <string name="home_artists_subtitle_2">De nouveaux visages et des valeurs sûres</string>
+    <string name="home_artists_subtitle_3">Les visages qui se cachent derrière la musique que vous aimez</string>
+    <string name="home_forgotten_tracks_title">Redécouvrir</string>
+    <string name="home_forgotten_tracks_subtitle">Remettez vos anciens coups de cœur à l\'honneur</string>
+    <string name="home_forgotten_tracks_subtitle_2">Dépoussiérez ces trésors cachés</string>
+    <string name="home_forgotten_tracks_subtitle_3">Des morceaux que vous n\'avez pas écoutés depuis longtemps</string>
+    <string name="import_or_sync_autoeq_database">Importez un profil ou synchronisez la base de données pour afficher les profils disponibles</string>
+    <string name="import_or_type_to_search_autoeq_profiles">Importez un profil ou recherchez le nom de votre appareil parmi %d profils</string>
+    <string name="autoeq_search_device_name">Rechercher un appareil ou un modèle</string>
+    <string name="autoeq_sync_success">%d profils AutoEq ont été synchronisés avec succès.</string>
+    <string name="autoeq_sync_failed">Échec de la synchronisation des profils AutoEq.</string>
+    <string name="sync_autoeq_database">Synchroniser la base de données AutoEq</string>
+    <string name="search_autoeq_placeholder">Rechercher un modèle de casque</string>
+    <string name="backup_warning_database_ver">Certaines données issues de cette sauvegarde, telles que les playlists et les paroles, ne sont pas compatibles et risquent de ne pas pouvoir être restaurées.</string>
+    <string name="permission_notifications_title">Notifications (facultatif)</string>
+    <string name="permission_notifications_summary">Cette autorisation permet à Booming Music d\'afficher les commandes de lecture dans votre volet de notifications et sur l\'écran de verrouillage.</string>
+    <string name="detect_instrumental_tracks_title">Détecter les morceaux instrumentaux à partir du titre</string>
+    <string name="detect_instrumental_tracks_summary">Identifier automatiquement les morceaux instrumentaux en fonction de leur titre.</string>
 </resources>

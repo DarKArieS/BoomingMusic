@@ -24,18 +24,21 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
+import android.util.Log
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import com.mardous.booming.BuildConfig
 import com.mardous.booming.R
 import com.mardous.booming.extensions.files.asReadableFileSize
 import com.mardous.booming.extensions.packageInfo
+import com.mardous.booming.extensions.utilities.sanitize
 import io.github.g00fy2.versioncompare.Version
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import java.io.File
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -57,6 +60,8 @@ class GitHubRelease(
 ) : Parcelable, KoinComponent {
 
     companion object {
+        private const val CI_BUILD_VERSION_PARTS = 4 // Major, Minor, Patch, Hash
+        private const val CI_BUILD_HASH_LENGTH = 7
         private const val IGNORED_RELEASE = "ignored_release"
     }
 
@@ -74,6 +79,17 @@ class GitHubRelease(
         return false
     }
 
+    private fun String.stripHashFromVersionName(): String {
+        val parts = this.split(".")
+        if (parts.size == CI_BUILD_VERSION_PARTS) {
+            val ciBuildHash = parts.last()
+            if (ciBuildHash.length == CI_BUILD_HASH_LENGTH) {
+                return parts.subList(0, CI_BUILD_VERSION_PARTS - 1).joinToString(".")
+            }
+        }
+        return this
+    }
+
     private fun isIgnored(): Boolean {
         return get<SharedPreferences>().getString(IGNORED_RELEASE, null) == tag
     }
@@ -85,13 +101,15 @@ class GitHubRelease(
     fun isNewer(context: Context): Boolean {
         try {
             val packageInfo = context.packageManager.packageInfo(context)
-            val installedVersionName = packageInfo?.versionName ?: return true
+            val installedVersionName = packageInfo?.versionName?.stripHashFromVersionName()
+                ?: return true
+
             var updateVersionName = this.tag
             if (updateVersionName.startsWith("v", ignoreCase = true)) {
                 updateVersionName = updateVersionName.substring(1)
             }
             return Version(updateVersionName) > Version(installedVersionName)
-        } catch (ignored: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
         }
         return true // assume true
     }
@@ -103,26 +121,21 @@ class GitHubRelease(
 
     fun getDownloadRequest(context: Context): DownloadManager.Request? {
         val apkAsset = getBestApkAsset()
-        if (apkAsset != null) {
-            return DownloadManager.Request(apkAsset.downloadUrl.toUri())
-                .setTitle(apkAsset.name)
-                .setDescription(context.getString(R.string.downloading_update))
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, apkAsset.name)
-                .setMimeType(ReleaseAsset.APK_MIME_TYPE)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        if (apkAsset == null) {
+            Log.w("GitHubService", "Cannot download update with no APK")
+            return null
         }
-        return null
-    }
-
-    @Suppress("DEPRECATION")
-    private fun getDevicePrimaryAbi(): String {
-        // Build.SUPPORTED_ABIS returns the list in priority order
-        val supportedAbis = Build.SUPPORTED_ABIS
-        if (supportedAbis.isNotEmpty()) {
-            return supportedAbis[0]
+        if (!apkAsset.hasTrustedUrl()) {
+            Log.w("GitHubService", "Refusing update asset from untrusted origin")
+            return null
         }
-        // Fallback for older devices
-        return Build.CPU_ABI
+        val apkName = File(apkAsset.name).name.sanitize().ifEmpty { "BoomingMusic-update.apk" }
+        return DownloadManager.Request(apkAsset.downloadUrl.toUri())
+            .setTitle(apkName)
+            .setDescription(context.getString(R.string.downloading_update))
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, apkName)
+            .setMimeType(ReleaseAsset.APK_MIME_TYPE)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
     }
 
     private fun getBestApkAsset(): ReleaseAsset? {
@@ -167,8 +180,19 @@ class GitHubRelease(
                 }
             }
 
+        fun hasTrustedUrl(): Boolean {
+            val uri = downloadUrl.toUri()
+            return uri.scheme.equals("https", ignoreCase = true) &&
+                    uri.host?.lowercase() in TRUSTED_HOSTS
+        }
+
         companion object {
             const val APK_MIME_TYPE = "application/vnd.android.package-archive"
+            private val TRUSTED_HOSTS = setOf(
+                "github.com",
+                "objects.githubusercontent.com",
+                "release-assets.githubusercontent.com"
+            )
         }
     }
 }

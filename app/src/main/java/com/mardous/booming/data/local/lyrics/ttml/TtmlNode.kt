@@ -1,5 +1,7 @@
 package com.mardous.booming.data.local.lyrics.ttml
 
+import com.mardous.booming.extensions.utilities.isWhitespace
+
 /**
  * Represents a single node in a TTML (Timed Text Markup Language) document.
  *
@@ -14,7 +16,7 @@ package com.mardous.booming.data.local.lyrics.ttml
  *
  * @author Christians Martínez A. (mardous)
  */
-internal data class TtmlNode(
+data class TtmlNode(
     val type: Int,
     val begin: Long,
     var end: Long,
@@ -63,7 +65,7 @@ internal data class TtmlNode(
                 this.text = text
                 return true
             } else {
-                if (text != null && text.length == 1 && text[0] == ' ') {
+                if (text.isWhitespace()) {
                     children[children.lastIndex].let { it.text = "${it.text} " }
                     return true
                 }
@@ -130,22 +132,28 @@ internal data class TtmlNode(
         const val NODE_LINE = 2
         const val NODE_WORD = 3
 
+        const val TAG_AUDIO = "audio"
         const val TAG_BODY = "body"
         const val TAG_DIV = "div"
         const val TAG_PARAGRAPH = "p"
         const val TAG_SPAN = "span"
+        const val TAG_TRANSLITERATION = "transliteration"
         const val TAG_TRANSLATION = "translation"
-        const val TAG_AGENT = "ttm:agent"
+        const val TAG_AGENT = "agent"
         const val TAG_TEXT = "text"
 
-        fun isSupportedTag(name: String?) =
-            name == TAG_BODY ||
-                    name == TAG_DIV ||
-                    name == TAG_PARAGRAPH ||
-                    name == TAG_SPAN ||
-                    name == TAG_TRANSLATION ||
-                    name == TAG_AGENT ||
-                    name == TAG_TEXT
+        fun isSupportedTag(name: String?): Boolean {
+            val localName = name?.lowercase()?.substringAfterLast(":") ?: return false
+            return localName == TAG_BODY ||
+                    localName == TAG_DIV ||
+                    localName == TAG_PARAGRAPH ||
+                    localName == TAG_SPAN ||
+                    localName == TAG_TRANSLITERATION ||
+                    localName == TAG_TRANSLATION ||
+                    localName == TAG_AGENT ||
+                    localName == TAG_AUDIO ||
+                    localName == TAG_TEXT
+        }
 
         fun buildBody(dur: Long): TtmlNode {
             return TtmlNode(type = NODE_BODY, begin = -1, end = -1, dur = dur)

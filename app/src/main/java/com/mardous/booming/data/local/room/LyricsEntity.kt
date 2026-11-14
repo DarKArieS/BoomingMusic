@@ -20,13 +20,17 @@ package com.mardous.booming.data.local.room
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity
-class LyricsEntity(
+data class LyricsEntity(
     @PrimaryKey
     val id: Long,
     val lyrics: String? = null,
     val provider: String? = null,
-    @ColumnInfo(name = "is_instrumental")
-    val instrumental: Boolean = false
+    @ColumnInfo(name = "is_instrumental", defaultValue = "0")
+    val instrumental: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val offset: Long = 0
 )

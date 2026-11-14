@@ -64,7 +64,7 @@
     <string name="add_playlist_title">재생목록에 추가</string>
     <string name="rename_playlist_title">재생목록 이름 변경</string>
     <string name="action_edit_playlist">재생목록 편집</string>
-    <string name="action_delete">재생목록 삭제</string>
+    <string name="action_delete_playlist">재생목록 삭제</string>
     <string name="action_export_playlist">파일로 내보내기</string>
     <string name="action_clear_history">기록 지우기</string>
     <string name="history_cleared">기록이 지워졌습니다</string>
@@ -124,18 +124,14 @@
     <string name="permission_external_storage_denied">외부 저장공간 액세스 권한을 허용해야 합니다.</string>
     <string name="permission_bluetooth_title">근처 기기</string>
     <string name="permission_bluetooth_description">블루투스 기기 확인을 위해 근처 기기 권한이 필요합니다</string>
-    <string name="permission_bluetooth_denied">근처 기기 권한이 거부되었습니다.</string>
     <string name="permission_read_images_title">이미지 읽기 (선택 사항)</string>
     <string name="permission_read_images_summary">음악 폴더에서 앨범 아트 파일을 찾기 위해 이 권한이 필요합니다. 이 기능을 사용하지 않으려면 허용하지 않아도 됩니다.</string>
     <string name="permission_read_images_denied">기기에서 이미지를 읽기 위한 권한을 허용해야 합니다.</string>
-    <string name="permission_exact_alarms_title">정확한 알람 예약 (선택 사항)</string>
-    <string name="permission_exact_alarms_description">취침 예약 기능이 올바르게 작동하려면 정확한 알람 예약 권한이 필요합니다</string>
     <string name="permissions_denied">권한 거부됨</string>
     <string name="permissions_needed">권한 필요</string>
     <string name="grant_access_action">액세스 허용</string>
     <string name="action_grant">허용</string>
     <string name="granted">허용됨</string>
-    <string name="hello_there">안녕하세요!</string>
     <string name="welcome_to_x">%s에 오신 것을 환영합니다</string>
     <string name="get_started">시작하기</string>
     <string name="select_storage_title">저장공간 선택</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">그리드 크기</string>
     <string name="action_grid_size_land">그리드 크기 (가로)</string>
     <string name="action_sort_order">정렬 기준</string>
-    <string name="sort_order_az">이름순</string>
     <string name="sort_order_artist">아티스트순</string>
     <string name="sort_order_album">앨범순</string>
     <string name="sort_order_year">연도순</string>
@@ -246,15 +241,6 @@
     <string name="download_image">이미지 다운로드</string>
     <string name="pick_from_local_storage">로컬 저장공간에서 선택</string>
     <string name="about_x_title">%s 정보</string>
-    <string name="listeners_label">청취자</string>
-    <string name="scrobbles_label">스크로블</string>
-    <string name="save_cover">앨범 커버 저장</string>
-    <string name="saving_cover_please_wait">커버 저장 중, 잠시만 기다려 주세요…</string>
-    <string name="save_artwork_error">로컬 저장공간에 커버를 저장하지 못했습니다</string>
-    <string name="save_artwork_success">앨범 커버가 저장되었습니다</string>
-    <string name="save_artwork_view_action">보기</string>
-    <string name="save_artwork_copyright_info_title">저작권 고지</string>
-    <string name="save_artwork_copyright_info_message">일부 또는 모든 앨범 커버는 저작권법의 보호를 받을 수 있습니다. 상업적 또는 광고 목적으로 사용할 수 없습니다.\n\n저장된 앨범 커버 사용에 대한 책임은 전적으로 사용자에게 있습니다.</string>
     <string name="yes">예</string>
     <string name="no">아니요</string>
     <string name="keyboard">키보드</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">형식</string>
     <string name="file_label">파일</string>
     <string name="metadata_label">메타데이터</string>
-    <string name="title_and_artist">제목 및 아티스트</string>
     <string name="song">곡</string>
     <string name="title">제목</string>
     <string name="album">앨범</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">연결을 사용할 수 없습니다.</string>
     <string name="you_have_to_select_at_least_one_category">최소 한 개의 카테고리를 선택해야 합니다</string>
     <string name="you_cannot_select_more_than_five_categories">5개 이상의 카테고리를 선택할 수 없습니다.</string>
-    <string name="backup_settings">설정</string>
-    <string name="backup_synced_lyrics">동기화된 가사</string>
-    <string name="backup_artist_images">아티스트 이미지</string>
-    <string name="backup_playlists">재생목록</string>
     <string name="backup_successful">백업 성공!</string>
     <string name="backup_failed">백업 실패.</string>
     <string name="select_content_to_restore">복원할 콘텐츠 선택:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">재생목록 잠김</string>
     <string name="playlist_unlocked">재생목록 잠금 해제</string>
     <string name="action_toggle_queue_lock">대기열 잠금/해제</string>
-    <string name="queue_locked">대기열 잠김</string>
-    <string name="queue_unlocked">대기열 잠금 해제</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Aux 라인</string>
     <string name="audio_device_bluetooth_a2dp">블루투스 A2DP</string>
@@ -353,7 +332,7 @@
     <string name="top_albums">인기 앨범</string>
     <string name="recent_artists">최근 아티스트</string>
     <string name="recent_albums">최근 앨범</string>
-    <string name="no_suggestions">추천 항목이 없습니다</string>
+
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">완전 랜덤</string>
     <string name="shuffle_mode_most_played">가장 많이 재생됨</string>
@@ -495,11 +474,8 @@
     <string name="author">작성자</string>
     <string name="mardous_summary">리드 개발자</string>
     <string name="contributors">기여자</string>
-    <string name="acknowledgments_title">감사의 말</string>
     <string name="translators_title">번역가</string>
     <string name="translators_summary">여러 언어로 번역해주신 분들께 감사드립니다.</string>
-    <string name="contributors_title">참여자</string>
-    <string name="contributors_summary">프로젝트에 기여해주신 사용자 목록입니다.</string>
     <string name="view_profile_on_github">GitHub 프로필 보기</string>
     <string name="write_an_email">이메일 쓰기</string>
     <string name="support_development">개발 지원</string>
@@ -512,7 +488,6 @@
     <string name="send_invitation_message">초대 메시지 보내기</string>
     <string name="invitation_message_content">안녕! 로컬 음악을 듣기에 최고의 앱인 Booming Music을 확인해봐. 여기서 다운로드할 수 있어: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">이슈 트래커 웹사이트로 이동합니다.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">저장공간 권한 필요</string>
     <string name="saf_access_required_message">파일 액세스 권한이 필요합니다. 음악 파일이 저장된 루트 폴더를 선택해 주세요.</string>
@@ -549,7 +524,6 @@
     <string name="audio_focus_header">오디오 포커스</string>
     <string name="shuffle_mode_header">셔플 모드</string>
     <string name="display_header">표시</string>
-    <string name="backup_restore_header">백업/복원</string>
     <string name="visuals_header">비주얼</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">일반 테마</string>
@@ -596,10 +570,10 @@
     <string name="synced_font_size_full_summary">전체 가사 화면의 동기 가사 크기를 조정합니다.</string>
     <string name="unsynced_font_size_full_title">일반 가사 크기 (전체 화면)</string>
     <string name="unsynced_font_size_full_summary">전체 가사 화면의 일반 가사 크기를 조정합니다.</string>
-    <string name="instrumental_tracks_identifiers_title">연주곡 식별자</string>
-    <string name="instrumental_tracks_identifiers_summary">가사가 이 단어들로만 구성된 경우 연주곡으로 표시합니다(쉼표로 구분).</string>
-    <string name="instrumental_tracks_mark_by_title_title">제목으로 표시</string>
-    <string name="instrumental_tracks_mark_by_title_summary">제목에서도 식별자를 검색합니다.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">빈 줄 무시</string>
     <string name="ignore_blank_lines_summary">LRC 파일의 빈 줄을 애니메이션 말풍선 대신 무시합니다.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">모든 가사 파일을 UTF-8로 처리</string>
@@ -621,8 +595,6 @@
     <string name="circle_button_title">원형 재생 버튼</string>
     <string name="swipe_album_cover_title">앨범 커버 스와이프</string>
     <string name="swipe_album_cover_summary">앨범 커버를 좌우로 밀어 곡을 변경합니다.</string>
-    <string name="queue_height_title">절반 높이 대기열</string>
-    <string name="queue_height_summary">대기열 높이를 화면의 절반으로 고정합니다.</string>
     <string name="single_tap_on_album_cover_title">커버 한 번 탭</string>
     <string name="double_tap_on_album_cover_title">커버 두 번 탭</string>
     <string name="double_tap_on_left_album_cover_title">커버 왼쪽 가장자리 두 번 탭</string>
@@ -733,10 +705,6 @@
     <string name="min_song_duration_summary">라이브러리에 표시할 최소 재생 시간(초)입니다.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">앱 언어</string>
-    <string name="backup_data_title">앱 데이터 백업</string>
-    <string name="backup_app_data_summary">주요 앱 데이터를 파일로 만들어 외부 저장공간에 저장합니다.</string>
-    <string name="restore_backup_title">백업 복원</string>
-    <string name="restore_backup_summary">이전 백업 파일로부터 데이터와 상태를 복원합니다.</string>
     <string name="stop_when_closed_from_recents_title">최근 앱 목록에서 닫을 때 중지</string>
     <string name="stop_when_closed_from_recents_summary">최근 앱 목록에서 앱을 종료하면 재생을 중지합니다.</string>
     <string name="stop_when_closed_from_recents_note">참고: 일부 기기에서는 설정과 무관하게 항상 중지될 수 있습니다.</string>
@@ -871,12 +839,8 @@
     <string name="sleep_timer_x_secs">%d 초</string>
     <string name="github">GitHub</string>
     <string name="telegram_community">텔레그램 커뮤니티</string>
-    <string name="app_widget_responsive">반응형</string>
-    <string name="app_widget_responsive_desc">다양한 크기에 맞춰 레이아웃이 조정되는 위젯</string>
     <string name="app_widget_card">카드</string>
     <string name="app_widget_card_desc">미니멀하고 간결한 스타일</string>
-    <string name="app_widget_full">가득한</string>
-    <string name="app_widget_full_desc">플레이어 화면이 데스크톱에 바로 표시됩니다</string>
     <string name="new_playlist_action">새로운</string>
     <string name="no_playlists_create_new">\"새로 만들기\" 버튼을 눌러 재생 목록을 만드세요</string>
 </resources>

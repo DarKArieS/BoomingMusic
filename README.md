@@ -2,7 +2,7 @@
 
 <img src="metadata/en-US/images/icon.png" width="160" height="160" alt="Booming Music icon">
 
-# 🎵 Booming Music
+# Booming Music
 
 ### Modern design. Pure sound. Fully yours.
 
@@ -13,9 +13,10 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor_Covenant-2.1-4baaaa.svg?style=for-the-badge&logo=contributorcovenant)](CODE_OF_CONDUCT.md)
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Join_Chat-blue?style=for-the-badge&logo=telegram)](https://t.me/mardousdev)
 
-<a href="https://github.com/mardous/BoomingMusic/releases"><img src="assets/badge-github.png" height="60" alt="GitHub Release"></a>
+<a href="https://play.google.com/store/apps/details?id=com.mardous.booming"><img src="assets/badge-playstore.png" height="60" alt="Play Store"></a>
 <a href="https://f-droid.org/packages/com.mardous.booming/"><img src="assets/badge-fdroid.png" height="60" alt="F-Droid"></a>
 <a href="https://apt.izzysoft.de/packages/com.mardous.booming/"><img src="assets/badge-izzyondroid.png" height="60" alt="IzzyOnDroid"></a>
+<a href="https://github.com/mardous/BoomingMusic/releases"><img src="assets/badge-github.png" height="60" alt="GitHub Release"></a>
 <a href="https://www.openapk.net/boomingmusic/com.mardous.booming/"><img src="assets/badge-openapk.png" height="60" alt="OpenAPK"></a>
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/mardous/BoomingMusic/"><img src="assets/badge-obtainium.png" height="60" alt="Obtainium"></a>
 
@@ -25,10 +26,10 @@
 
 - [✨ Key Features](#-key-features)
 - [📸 Screenshots](#-screenshots)
-- [💻 Tech Stack](#-tech-stack)
 - [🧩 Roadmap](#-roadmap)
-- [🔗 Useful Links](#-useful-links)
 - [🤝 Contributing](#-contributing)
+- [💖 Support Development](#-support-development)
+- [🔗 Useful Links](#-useful-links)
 - [🙌 Credits](#-credits)
 - [⚖️ License](#-license)
 
@@ -58,39 +59,25 @@
 <div align="center">
 <table>
 <tr>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/1.jpg" alt="For You" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/2.jpg" alt="Songs" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/3.jpg" alt="Albums" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/4.jpg" alt="Album View" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Home.jpg" alt="Home" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Player_Expressive.jpg" alt="Expressive Player" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Player_Gradient.jpg" alt="Gradient Player" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Favorites.jpg" alt="Favorites" width="180"/></td>
 </tr>
 <tr>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/5.jpg" alt="Search" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/6.jpg" alt="Normal" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/7.jpg" alt="Full" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/8.jpg" alt="Gradient" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Lyrics_Full.jpg" alt="Immersive Lyrics" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Lyrics_Player.jpg" alt="Player Lyrics" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Lyrics_Editor.jpg" alt="Lyrics Editor" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Tag_Editor.jpg" alt="Tag Editor" width="180"/></td>
 </tr>
 <tr>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/9.jpg" alt="Plain" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/10.jpg" alt="M3" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/11.jpg" alt="Expressive" width="180"/></td>
-<td align="center" width="25%"><img src="metadata/en-US/images/phoneScreenshots/12.jpg" alt="Peek" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/EQ.jpg" alt="EQ" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/AutoEq.jpg" alt="AutoEq" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Sound_Settings.jpg" alt="Sound Settings" width="180"/></td>
+<td align="center" width="25%"><img src="assets/screenshots/Info.jpg" alt="Info Sheet" width="180"/></td>
 </tr>
 </table>
 </div>
-
-### 💻 Tech Stack
-
-| Layer                   | Technology                                                     |
-|:------------------------|:---------------------------------------------------------------|
-| 🎧 Audio Engine         | [Media3 ExoPlayer](https://developer.android.com/media/media3) |
-| 🧱 Architecture         | MVVM + Repository Pattern                                      |
-| 💾 Persistence          | Room Database                                                  |
-| ⚙️ Dependency Injection | [Koin](https://insert-koin.io/)                                |
-| 🧵 Async                | Kotlin Coroutines & Flow                                       |
-| 🧩 UI                   | Android Views + Jetpack Compose (hybrid)                       |
-| 🖼️ Image Loading        | [Coil](https://coil-kt.github.io/coil/)                        |
-| 🎨 Design               | Material 3 / Material You                                      |
-| 🗣️ Language            | Kotlin                                                         |
 
 ## 🧩 Roadmap
 
@@ -100,26 +87,6 @@
 - [ ] 🔁 Last.fm integration (import/export playback data)
 - [ ] 💿 Enhanced artist pages (separate albums and singles visually)
 - [ ] 🌐 Jellyfin & Navidrome integration
-
-## 🔗 Useful Links
-
-- 🔐 **[Requested Permissions](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-permissions)**  
-  What the app needs and why
-
-- 🚘 **[Android Auto Setup](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-android-auto-setup)**  
-  How to enable and troubleshoot
-
-- 🎧 **[Supported Formats](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-supported-formats)**  
-  Compatible audio formats
-
-- 💬 **[Community](https://github.com/mardous/BoomingMusic/wiki/Community)**  
-  Users and contributors
-
-- 🌐 **[Translations](https://hosted.weblate.org/projects/booming-music/)**  
-  Help us translate Booming Music into your language
-
-- ❓ **[FAQ](https://github.com/mardous/BoomingMusic/wiki/FAQ)**  
-  Common questions
 
 ## 🤝 Contributing
 
@@ -150,27 +117,34 @@ Your support is greatly appreciated and keeps me motivated to continue improving
 <img src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_red.png" alt="Support me on Ko-fi" style="border: 0px; height: 40px;" />
 </a>
 
-### ❤️ Supporters
-
-**mbeezy** (first donor)
-<br/>
-**[KKTweex](https://github.com/Qoojoe)**
-<br/>
-**[FabiRich](https://github.com/FabiRich)**
-<br/>
-**[Bloodaxe](https://github.com/Bloodaxe95)**
-<br/>
-**Bernhard**
-<br/>
-**Andreas Hirth**
-
 </div>
+
+## 🔗 Useful Links
+
+- 🔐 **[Requested Permissions](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-permissions)**  
+  What the app needs and why
+
+- 🚘 **[Android Auto Setup](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-android-auto-setup)**  
+  How to enable and troubleshoot
+
+- 🎧 **[Supported Formats](https://github.com/mardous/BoomingMusic/wiki/Advanced-Info#-supported-formats)**  
+  Compatible audio formats
+
+- 💬 **[Community](https://github.com/mardous/BoomingMusic/wiki/Community)**  
+  Users and contributors
+
+- 🌐 **[Translations](https://hosted.weblate.org/projects/booming-music/)**  
+  Help us translate Booming Music into your language
+
+- ❓ **[FAQ](https://github.com/mardous/BoomingMusic/wiki/FAQ)**  
+  Common questions
 
 ## 🙌 Credits
 
-Inspired by [Retro Music Player](https://github.com/RetroMusicPlayer/RetroMusicPlayer).
-Also thanks to:
+Build upon the work of: [Retro Music Player](https://github.com/RetroMusicPlayer/RetroMusicPlayer). Also thanks to:
 
+- [Gramophone](https://github.com/FoedusProgramme/Gramophone)
+- [AutoEq](https://github.com/jaakkopasanen/AutoEq)
 - [AMLV](https://github.com/dokar3/amlv)
 - [LRCLib](https://lrclib.net/)
 - [Better Lyrics](https://better-lyrics.boidu.dev/)

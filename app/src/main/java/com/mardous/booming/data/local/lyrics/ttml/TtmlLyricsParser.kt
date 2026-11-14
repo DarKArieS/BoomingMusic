@@ -1,105 +1,231 @@
 package com.mardous.booming.data.local.lyrics.ttml
 
 import android.util.Log
-import com.mardous.booming.data.LyricsParser
+import com.mardous.booming.data.local.lyrics.LyricsInfo
+import com.mardous.booming.data.local.lyrics.LyricsParser
 import com.mardous.booming.data.model.lyrics.SyncedLyrics
-import com.mardous.booming.data.model.lyrics.LyricsFile
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.Reader
 import java.util.regex.Pattern
 
+/**
+ * Parser for TTML (Timed Text Markup Language) format.
+ *
+ * This parser is designed to handle Apple Music-style TTML lyrics, including:
+ * - Hierarchical structure: `<body>` -> `<div>` (sections) -> `<p>` (lines) -> `<span>` (words/background)
+ * - Word-level synchronization using `<span>` tags with `begin`, `end`, or `dur`.
+ * - Multiple agents (actors) defined in the `<head>` and referenced by `ttm:agent`.
+ * - Background vocals identified by `ttm:role="x-bg"`.
+ * - Translations and transliterations.
+ * - Various time expressions (clock time and offset time).
+ */
 class TtmlLyricsParser : LyricsParser {
 
-    override fun handles(file: LyricsFile): Boolean =
-        file.format == LyricsFile.Format.TTML
-
-    override fun handles(reader: Reader): Boolean {
+    override fun getInfo(reader: Reader): LyricsInfo {
         return try {
-            val parser = XmlPullParserFactory.newInstance().newPullParser().apply {
+            val parser = XmlPullParserFactory.newInstance().apply {
+                isNamespaceAware = true
+            }.newPullParser().apply {
                 setInput(reader)
             }
 
             var foundTt = false
-            var foundDivInBody = false
             var insideBody = false
+            var hasTime = false
+            var hasParagraphs = false
 
             var event = parser.eventType
             while (event != XmlPullParser.END_DOCUMENT) {
                 when (event) {
                     XmlPullParser.START_TAG -> {
-                        when (parser.name) {
+                        when (parser.name?.lowercase()?.substringAfterLast(":")) {
                             "tt" -> foundTt = true
-                            "body" -> insideBody = true
-                            "div" -> if (insideBody) {
-                                foundDivInBody = true
-                                break
+                            TtmlNode.TAG_BODY -> insideBody = true
+                            TtmlNode.TAG_PARAGRAPH -> {
+                                if (insideBody) {
+                                    hasParagraphs = true
+                                    if (hasTimeAttribute(parser)) {
+                                        hasTime = true
+                                    }
+                                }
+                            }
+                            TtmlNode.TAG_SPAN,
+                            TtmlNode.TAG_DIV -> {
+                                if (insideBody && !hasTime) {
+                                    if (hasTimeAttribute(parser)) {
+                                        hasTime = true
+                                    }
+                                }
                             }
                         }
                     }
                     XmlPullParser.END_TAG -> {
-                        if (parser.name == "body") {
+                        val tagName = parser.name?.lowercase()?.substringAfterLast(":")
+                        if (tagName == TtmlNode.TAG_BODY) {
                             insideBody = false
                         }
                     }
                 }
                 event = parser.next()
             }
-            foundTt && foundDivInBody
+
+            if (foundTt && hasParagraphs) {
+                LyricsInfo.Valid(actuallySynced = hasTime)
+            } else {
+                LyricsInfo.Invalid
+            }
         } catch (_: Exception) {
-            false
+            LyricsInfo.Invalid
         }
     }
 
-    override fun parse(reader: Reader, trackLength: Long, ignoreBlankLines: Boolean): SyncedLyrics? {
+    /**
+     * Performs a simple parsing of the TTML file to obtain lyrics in plain text format.
+     *
+     * This parsing method is faster because it doesn't require instantiating a [TtmlNodeTree];
+     * however, it can also be lenient and produce unpredictable results under certain circumstances.
+     * For this reason, it should only be used if [getInfo] reports that the TTML lyrics do not contain timestamps.
+     */
+    override fun parseAsPlain(reader: Reader): String? {
+        return try {
+            val parser = XmlPullParserFactory.newInstance().apply {
+                isNamespaceAware = true
+            }.newPullParser().apply {
+                setInput(reader)
+            }
+
+            val builder = StringBuilder()
+            var insideBody = false
+            var insideParagraph = false
+
+            var event = parser.eventType
+            while (event != XmlPullParser.END_DOCUMENT) {
+                when (event) {
+                    XmlPullParser.START_TAG -> {
+                        val tagName = parser.name?.lowercase()?.substringAfterLast(":")
+                        when (tagName) {
+                            TtmlNode.TAG_BODY -> insideBody = true
+                            TtmlNode.TAG_PARAGRAPH -> {
+                                if (insideBody) {
+                                    insideParagraph = true
+                                }
+                            }
+                        }
+                    }
+
+                    XmlPullParser.TEXT -> {
+                        if (insideBody && insideParagraph) {
+                            val text = parser.text?.trim()
+                            if (!text.isNullOrEmpty()) {
+                                builder.append(text)
+                            }
+                        }
+                    }
+
+                    XmlPullParser.END_TAG -> {
+                        val tagName = parser.name?.lowercase()?.substringAfterLast(":")
+                        when (tagName) {
+                            TtmlNode.TAG_PARAGRAPH -> {
+                                if (insideBody) {
+                                    insideParagraph = false
+                                    builder.appendLine()
+                                }
+                            }
+
+                            TtmlNode.TAG_DIV -> builder.appendLine()
+                            TtmlNode.TAG_BODY -> insideBody = false
+                        }
+                    }
+                }
+                event = parser.next()
+            }
+
+            parser.setInput(null)
+
+            val result = builder.toString().trim()
+            result.ifEmpty { null }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Main entry point for parsing TTML content using [XmlPullParser].
+     * It builds a [TtmlNodeTree] by processing start and end tags.
+     * The tree is then converted into [SyncedLyrics].
+     */
+    override fun parse(
+        reader: Reader,
+        trackLength: Long,
+        userOffset: Long,
+        ignoreBlankLines: Boolean
+    ): SyncedLyrics? {
         try {
-            val parser = XmlPullParserFactory.newInstance().newPullParser()
-            parser.setInput(reader)
+            val parser = XmlPullParserFactory.newInstance().apply {
+                isNamespaceAware = true
+            }.newPullParser().apply {
+                setInput(reader)
+            }
 
             val nodeTree = TtmlNodeTree()
             var eventType = parser.eventType
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 when (eventType) {
                     XmlPullParser.START_TAG -> {
-                        val name = parser.name
+                        val name = parser.name?.lowercase()?.substringAfterLast(":")
                         if (!isSupportedTag(name)) {
                             eventType = parser.next()
                             continue
                         }
                         when (name) {
                             TtmlNode.TAG_AGENT -> {
-                                nodeTree.addAgent(
-                                    id = parser.getAttributeValue(null, "xml:id"),
-                                    type = parser.getAttributeValue(null, "type")
-                                )
+                                // Agents define the performers of the lyrics
+                                val id = getAttribute(parser, NS_XML, "id")
+                                val type = getAttribute(parser, null, "type").orEmpty()
+                                if (id != null) {
+                                    nodeTree.addAgent(id, type)
+                                }
+                            }
+
+                            TtmlNode.TAG_AUDIO -> {
+                                nodeTree.setOffset(parser.getTimeAttribute("lyricsOffset"))
+                            }
+
+                            TtmlNode.TAG_TRANSLITERATION -> {
+                                val lang = getAttribute(parser, NS_XML, "lang")
+                                if (nodeTree.createTransliteration(lang) == null) {
+                                    throw XmlPullParserException("transliteration format isn't valid")
+                                }
                             }
 
                             TtmlNode.TAG_TRANSLATION -> {
-                                val newTranslation = nodeTree.createNewTranslation(
-                                    type = parser.getAttributeValue(null, "type"),
-                                    language = parser.getAttributeValue(null, "xml:lang")
-                                )
-                                if (newTranslation == null) break
+                                val type = getAttribute(parser, null, "type")
+                                if (type != "subtitle") {
+                                    throw XmlPullParserException("unknown translation type: $type")
+                                }
+                                val lang = getAttribute(parser, NS_XML, "lang")
+                                if (lang == null || nodeTree.createTranslation(lang) == null) {
+                                    throw XmlPullParserException("translation format isn't valid")
+                                }
                             }
 
                             TtmlNode.TAG_TEXT -> {
-                                val preparedTranslation = nodeTree.prepareTranslation(
-                                    key = parser.getAttributeValue(null, "for")
-                                )
-                                if (!preparedTranslation) break
+                                // Associated with accompaniment (translation/transliteration)
+                                val key = getAttribute(parser, null, "for")
+                                if (key != null && !nodeTree.prepareAccompanimentText(key)) break
                             }
 
                             TtmlNode.TAG_BODY -> {
                                 val hasRoot = nodeTree.addRoot(
-                                    TtmlNode.buildBody(
-                                        dur = parser.getTimeAttribute("dur")
-                                    )
+                                    TtmlNode.buildBody(parser.getTimeAttribute("dur"))
                                 )
                                 if (!hasRoot) break
                             }
 
                             TtmlNode.TAG_DIV -> {
+                                // Sections (div) group multiple lines together
                                 val openSection = nodeTree.openSection(
                                     TtmlNode.buildSection(
                                         begin = parser.getTimeAttribute("begin"),
@@ -111,13 +237,14 @@ class TtmlLyricsParser : LyricsParser {
                             }
 
                             TtmlNode.TAG_PARAGRAPH -> {
-                                val agentAttribute = parser.getAttributeValue(null, "ttm:agent")
+                                // Paragraphs (p) represent a single line of lyrics
+                                val agentAttribute = getAttribute(parser, NS_METADATA, "agent")
                                 val openLine = nodeTree.openLine(
                                     TtmlNode.buildLine(
                                         begin = parser.getTimeAttribute("begin"),
                                         end = parser.getTimeAttribute("end"),
                                         dur = parser.getTimeAttribute("dur"),
-                                        key = parser.getAttributeValue(null, "itunes:key"),
+                                        key = getAttribute(parser, NS_APPLE, "key"),
                                         agent = agentAttribute?.let { nodeTree.getAgent(it) }
                                     )
                                 )
@@ -125,9 +252,11 @@ class TtmlLyricsParser : LyricsParser {
                             }
 
                             TtmlNode.TAG_SPAN -> {
-                                val role = parser.getAttributeValue(null, "ttm:role")
-                                val lang = parser.getAttributeValue(null, "xml:lang")
+                                // Spans can be words (timed), background vocals, or inline translations
+                                val role = getAttribute(parser, NS_METADATA, "role")
+                                val lang = getAttribute(parser, NS_XML, "lang")
                                 if (role == null) {
+                                    // Default span is treated as a word
                                     val openWord = nodeTree.openWord(
                                         TtmlNode.buildWord(
                                             begin = parser.getTimeAttribute("begin"),
@@ -151,14 +280,15 @@ class TtmlLyricsParser : LyricsParser {
                     }
 
                     XmlPullParser.END_TAG -> {
-                        val name = parser.name
+                        val name = parser.name?.lowercase()?.substringAfterLast(":")
                         if (!isSupportedTag(name)) {
                             eventType = parser.next()
                             continue
                         }
                         when (name) {
-                            TtmlNode.TAG_TRANSLATION -> if (!nodeTree.closeCurrentTranslation()) break
-                            TtmlNode.TAG_TEXT -> if (!nodeTree.finishTranslation()) break
+                            TtmlNode.TAG_TRANSLITERATION,
+                            TtmlNode.TAG_TRANSLATION -> if (!nodeTree.closeAccompaniment()) break
+                            TtmlNode.TAG_TEXT -> if (!nodeTree.finishAccompanimentText()) break
                             TtmlNode.TAG_BODY -> if (!nodeTree.closeNode(TtmlNode.NODE_BODY)) break
                             TtmlNode.TAG_DIV -> if (!nodeTree.closeNode(TtmlNode.NODE_SECTION)) break
                             TtmlNode.TAG_PARAGRAPH -> if (!nodeTree.closeNode(TtmlNode.NODE_LINE)) break
@@ -174,13 +304,14 @@ class TtmlLyricsParser : LyricsParser {
                     }
 
                     XmlPullParser.TEXT -> {
-                        nodeTree.setText(parser.text)
+                        parser.text?.let { nodeTree.setText(it) }
                     }
                 }
                 eventType = parser.next()
             }
             nodeTree.close()
-            return nodeTree.toLyrics(trackLength)
+            parser.setInput(null)
+            return nodeTree.toLyrics(trackLength, userOffset)
         } catch (e: Exception) {
             Log.e("TtmlLyricsParser", "Couldn't parse TTML lyrics", e)
         }
@@ -189,9 +320,37 @@ class TtmlLyricsParser : LyricsParser {
 
     private fun isSupportedTag(name: String?) = TtmlNode.isSupportedTag(name)
 
+    private fun hasTimeAttribute(parser: XmlPullParser): Boolean {
+        for (i in 0 until parser.attributeCount) {
+            val attrName = parser.getAttributeName(i).lowercase().substringAfterLast(":")
+            if (attrName in setOf("begin", "dur", "end")) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun getAttribute(parser: XmlPullParser, namespace: String?, name: String): String? {
+        if (namespace != null) {
+            val value = parser.getAttributeValue(namespace, name)
+            if (value != null) return value
+        }
+        val valueNoNs = parser.getAttributeValue(null, name)
+        if (valueNoNs != null) return valueNoNs
+
+        for (i in 0 until parser.attributeCount) {
+            val attrName = parser.getAttributeName(i)
+            val localName = attrName.lowercase().substringAfterLast(":")
+            if (localName.equals(name, ignoreCase = true)) {
+                return parser.getAttributeValue(i)
+            }
+        }
+        return null
+    }
+
     private fun XmlPullParser.getTimeAttribute(name: String): Long {
         try {
-            val attribute = getAttributeValue(null, name)
+            val attribute = getAttribute(this, null, name)
             if (attribute != null) {
                 return parseTimeExpression(attribute)
             }
@@ -201,6 +360,13 @@ class TtmlLyricsParser : LyricsParser {
         return -1
     }
 
+    /**
+     * Parses time expressions from TTML attributes.
+     * Supports:
+     * - Simple seconds: `12.34`
+     * - Complex clock time: `00:12:34.56`
+     * - Offset time with units: `100ms`, `2.5s`, `1m`
+     */
     @Throws(XmlPullParserException::class)
     private fun parseTimeExpression(time: String?): Long {
         if (time == null) return -1
@@ -240,6 +406,10 @@ class TtmlLyricsParser : LyricsParser {
     }
 
     companion object {
+        private const val NS_METADATA = "http://www.w3.org/ns/ttml#metadata"
+        private const val NS_APPLE = "http://music.apple.com/lyric-ttml-internal"
+        private const val NS_XML = "http://www.w3.org/XML/1998/namespace"
+
         private val CLOCK_TIME_SIMPLE = Pattern.compile("^(\\d+)(?:\\.(\\d{1,3}))?$")
         private val CLOCK_TIME_COMPLEX = Pattern.compile("^(?:(\\d+):)?([0-5]?\\d):([0-5]?\\d)(?:\\.(\\d{1,3}))?$")
         private val OFFSET_TIME = Pattern.compile("^([0-9]+(?:\\.[0-9]+)?)(h|m|s|ms)$")

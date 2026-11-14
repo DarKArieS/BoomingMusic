@@ -64,7 +64,7 @@
     <string name="add_playlist_title">Afegeix a la llista</string>
     <string name="rename_playlist_title">Canvia el nom a la llista de reproducció</string>
     <string name="action_edit_playlist">Edita la llista</string>
-    <string name="action_delete">Esborra la llista</string>
+    <string name="action_delete_playlist">Esborra la llista</string>
     <string name="action_export_playlist">Exporta la llista</string>
     <string name="action_clear_history">Esborra l\'historial</string>
     <string name="history_cleared">S\'ha esborrat l\'historial</string>
@@ -124,18 +124,14 @@
     <string name="permission_external_storage_denied">Cal concedir permís per accedir a l\'emmagatzematge extern.</string>
     <string name="permission_bluetooth_title">Dispositius propers</string>
     <string name="permission_bluetooth_description">Cal permís de dispositius propers per cercar dispositius bluetooth</string>
-    <string name="permission_bluetooth_denied">S\'ha denegat el permís dels dispositius propers.</string>
     <string name="permission_read_images_title">Cerca imatges (opcional)</string>
     <string name="permission_read_images_summary">Cal donar permís perquè Booming Music trobi portades d\'àlbum a les vostres carpetes de música. Si no penseu fer servir aquesta funció, no cal donar-lo.</string>
     <string name="permission_read_images_denied">Cal donar permís per llegir imatges del dispositiu.</string>
-    <string name="permission_exact_alarms_title">Programa alarmes exactes (opcional)</string>
-    <string name="permission_exact_alarms_description">Cal permís per programar alarmes exactes perquè funcioni correctament el temporitzador d\'apagada</string>
     <string name="permissions_denied">Permís denegat</string>
     <string name="permissions_needed">Cal permís</string>
     <string name="grant_access_action">Atorga\'n l\'accés</string>
     <string name="action_grant">Atorga</string>
     <string name="granted">Atorgat</string>
-    <string name="hello_there">Hola!</string>
     <string name="welcome_to_x">Us donem la benvinguda a %s</string>
     <string name="get_started">Comença</string>
     <string name="select_storage_title">Selecciona l\'emmagatzematge</string>
@@ -213,7 +209,6 @@
     <string name="action_grid_size">Mida de la quadrícula</string>
     <string name="action_grid_size_land">Mida de la quadrícula (apaïsada)</string>
     <string name="action_sort_order">Ordena per</string>
-    <string name="sort_order_az">A-Z</string>
     <string name="sort_order_artist">Artista</string>
     <string name="sort_order_album">Àlbum</string>
     <string name="sort_order_year">Any</string>
@@ -246,15 +241,6 @@
     <string name="download_image">Descarrega la imatge</string>
     <string name="pick_from_local_storage">Tria des de l\'emmagatzematge intern</string>
     <string name="about_x_title">Quant a %s</string>
-    <string name="listeners_label">Oients</string>
-    <string name="scrobbles_label">Activitat d\'escolta</string>
-    <string name="save_cover">Desa la portada d\'àlbum</string>
-    <string name="saving_cover_please_wait">S\'està desant la portada, espereu…</string>
-    <string name="save_artwork_error">No s\'ha pogut desar la portada a l\'emmagatzematge</string>
-    <string name="save_artwork_success">S\'ha desat la portada de l\'àlbum</string>
-    <string name="save_artwork_view_action">Mostra</string>
-    <string name="save_artwork_copyright_info_title">Avís de drets d\'autor</string>
-    <string name="save_artwork_copyright_info_message">Algunes portades d\'àlbums (o totes) podrien estar protegides per lleis de drets d\'autor. No podeu fer servir aquelles imatges amb finalitats lucratives o publicitàries. \n\nSou plenament responsable del vostre ús de les portades d\'àlbum desades.</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
     <string name="keyboard">Teclat</string>
@@ -263,7 +249,6 @@
     <string name="label_file_format">Format</string>
     <string name="file_label">Fitxer</string>
     <string name="metadata_label">Metadades</string>
-    <string name="title_and_artist">Títol i Artista</string>
     <string name="song">Cançó</string>
     <string name="title">Títol</string>
     <string name="album">Àlbum</string>
@@ -298,10 +283,6 @@
     <string name="connection_unavailable">La connexió no està disponible.</string>
     <string name="you_have_to_select_at_least_one_category">Heu de triar, pel cap baix, una categoria</string>
     <string name="you_cannot_select_more_than_five_categories">No podeu triar més de cinc categories.</string>
-    <string name="backup_settings">Configuració</string>
-    <string name="backup_synced_lyrics">Lletra sincronitzada</string>
-    <string name="backup_artist_images">Imatges d\'artistes</string>
-    <string name="backup_playlists">Llistes de reproducció</string>
     <string name="backup_successful">La còpia de seguretat ha reeixit!</string>
     <string name="backup_failed">No s\'ha pogut fer la còpia de seguretat.</string>
     <string name="select_content_to_restore">Trieu el contingut a restablir:</string>
@@ -311,8 +292,6 @@
     <string name="playlist_locked">S\'ha fixat la llista</string>
     <string name="playlist_unlocked">S\'ha alliberat la llista</string>
     <string name="action_toggle_queue_lock">Fixa/allibera la cua</string>
-    <string name="queue_locked">S\'ha fixat la cua</string>
-    <string name="queue_unlocked">S\'ha alliberat la cua</string>
     <!-- Audio output devices-->
     <string name="audio_device_aux_line">Línia auxiliar</string>
     <string name="audio_device_bluetooth_a2dp">Bluetooth A2DP</string>
@@ -369,7 +348,7 @@
     <string name="top_albums">Els àlbums més populars</string>
     <string name="recent_artists">Artistes recents</string>
     <string name="recent_albums">Àlbums recents</string>
-    <string name="no_suggestions">No teniu cap suggeriment</string>
+
     <!-- Shuffle modes -->
     <string name="shuffle_mode_pure_random">Ben aleatori</string>
     <string name="shuffle_mode_most_played">El més reproduït</string>
@@ -511,11 +490,8 @@
     <string name="author">Autor</string>
     <string name="mardous_summary">Desenvolupador principal</string>
     <string name="contributors">Col·laboradors</string>
-    <string name="acknowledgments_title">Agraïments</string>
     <string name="translators_title">Traductors</string>
     <string name="translators_summary">Gràcies a tothom que fa possible que Booming Music estigui disponible en tants idiomes.</string>
-    <string name="contributors_title">Col·laboradors</string>
-    <string name="contributors_summary">Una llista d\'usuaris que han contribuït en el projecte d\'alguna manera.</string>
     <string name="view_profile_on_github">Mostra el perfil a Github</string>
     <string name="write_an_email">Escriviu un correu electrònic</string>
     <string name="support_development">Suport al desenvolupament</string>
@@ -528,7 +504,6 @@
     <string name="send_invitation_message">Envia missatge d\'invitació</string>
     <string name="invitation_message_content">Ei. Fes un cop d\'ull a Booming Music! La millor aplicació per escoltar música sense connexió a Android. Pots descarregar-la aquí: %s</string>
     <!-- Bug report -->
-    <string name="you_will_be_forwarded_to_the_issue_tracker_website">Se us enviarà al lloc web de seguiment de problemes.</string>
     <!-- SAF -->
     <string name="saf_access_required_title">Cal accés a l’emmagatzematge</string>
     <string name="saf_access_required_message">Cal permís per accedir a aquells fitxers. Seleccioneu una adreça on tingueu els fitxers de música.</string>
@@ -565,7 +540,6 @@
     <string name="audio_focus_header">Focus d\'àudio</string>
     <string name="shuffle_mode_header">Mode aleatori</string>
     <string name="display_header">Mostra</string>
-    <string name="backup_restore_header">Fes còpia de seguretat/Restableix-la</string>
     <string name="visuals_header">Visuals</string>
     <!-- Interface preferences -->
     <string name="general_theme_title">Tema general</string>
@@ -612,10 +586,10 @@
     <string name="synced_font_size_full_summary">Ajusta la mida de la lletra sincronitzada en pantalla completa.</string>
     <string name="unsynced_font_size_full_title">Mida de la lletra sense sincronitzar (pantalla completa)</string>
     <string name="unsynced_font_size_full_summary">Ajusta la mida de la lletra sense sincronitzar en pantalla completa.</string>
-    <string name="instrumental_tracks_identifiers_title">Identificadors de pistes instrumentals</string>
-    <string name="instrumental_tracks_identifiers_summary">Si la lletra d\'una cançó consisteix només en un o més indicadors d\'aquests, es marcarà com a pista instrumental (separat per comes).</string>
-    <string name="instrumental_tracks_mark_by_title_title">Marca per títol</string>
-    <string name="instrumental_tracks_mark_by_title_summary">El títol de la pista també es tindrà en compte per cercar identificadors.</string>
+
+
+
+
     <string name="ignore_blank_lines_title">Ignora les línies buides</string>
     <string name="ignore_blank_lines_summary">Ignora les línies buides en els fitxers LRC en lloc de mostrar bombolles animades.</string>
     <string name="treat_all_lyrics_files_as_utf8_title">Tracta tots els fitxers de lletra com a UTF-8</string>
@@ -637,8 +611,6 @@
     <string name="circle_button_title">Botó de reproducció circular</string>
     <string name="swipe_album_cover_title">Llisca a la portada de l\'àlbum</string>
     <string name="swipe_album_cover_summary">Llisqueu a l\'esquerra o la dreta a la portada de l\'àlbum per passar entre les cançons.</string>
-    <string name="queue_height_title">Cua de mitja pantalla d\'alçària</string>
-    <string name="queue_height_summary">La cua de reproducció ocuparà la meitat de la pantalla.</string>
     <string name="single_tap_on_album_cover_title">Un clic a la portada</string>
     <string name="double_tap_on_album_cover_title">Dos clics a la portada</string>
     <string name="double_tap_on_left_album_cover_title">Doble toc a la vora esquerra de la portada de l\'àlbum</string>
@@ -749,10 +721,6 @@
     <string name="min_song_duration_summary">Quants segons (pel cap baix) ha de durar una cançó per mostrar-la a la vostra biblioteca.</string>
     <!-- Remote preferences -->
     <string name="app_language_title">Idioma de l\'aplicació</string>
-    <string name="backup_data_title">Còpia de seguretat de dades de l\'aplicació</string>
-    <string name="backup_app_data_summary">Crea un fitxer amb dades essencials de l\'aplicació i el desa a l\'emmagatzematge.</string>
-    <string name="restore_backup_title">Restableix la còpia de seguretat</string>
-    <string name="restore_backup_summary">Restableix les dades (i estat) de l\'aplicació des d\'una còpia de seguretat.</string>
     <string name="stop_when_closed_from_recents_title">Atura en tancar des de recents</string>
     <string name="stop_when_closed_from_recents_summary">Atura la reproducció si l\'aplicació es tanca des de la llista de recents.</string>
     <string name="stop_when_closed_from_recents_note">Nota: Alguns dispositius amb gestió agressiva de la memòria o la bateria podrien ignorar aquesta opció i aturar sempre l\'aplicació en treure-la de recents.</string>
@@ -862,12 +830,8 @@
     <string name="network_features_title">Activa les funcionalitats de xarxa</string>
     <string name="use_lrclib_provider_title">Usa el proveïdor LRCLib</string>
     <string name="use_betterlyrics_provider_title">Usa el proveïdor BetterLyrics</string>
-    <string name="app_widget_responsive">Responsiu</string>
-    <string name="app_widget_responsive_desc">Un widget que adapta el seu disseny a diferents mides</string>
     <string name="app_widget_card">Targeta</string>
     <string name="app_widget_card_desc">Estil minimalista i simplificat</string>
-    <string name="app_widget_full">Complet</string>
-    <string name="app_widget_full_desc">La pantalla del reproductor directa al vostre escriptori</string>
     <string name="channel_mono">Monoaural</string>
     <string name="bit_perfect_info">Bit a bit: %1$s | %2$s</string>
     <string name="lastfm_login_toggle_password_visibility">Alterna la visibilitat de la contrasenya</string>
@@ -905,16 +869,8 @@
     <string name="telegram_community_summary">Uniu-vos a la nostra comunitat de Telegram per estar al dia d\'actualitzacions i notícies.</string>
     <string name="support_my_work">Dona\'m suport</string>
     <string name="network_summary">Gestioneu funcions d\'internet com ara la integració de Last.fm, els proveïdors de lletres i descàrregues de metadades.</string>
-    <string name="widgets_header">Widgets de l\'aplicació</string>
-    <string name="widget_small_layout_style_title">Aparença minimalista</string>
-    <string name="widget_small_layout_classic">Clàssic</string>
-    <string name="widget_small_layout_simplified">Simplificat</string>
     <string name="widget_dynamic_colors_title">Colors dinàmics</string>
     <string name="widget_dynamic_colors_summary">Adapta els colors del widget a la portada de la pista actual.</string>
-    <string name="widget_image_corner_radius_title">Radi del cantó de la imatge</string>
-    <string name="widget_image_corner_radius_summary">Canvia l\'arrodoniment de l\'art de l\'àlbum.</string>
-    <string name="widget_third_line_title">Tercera línia d\'informació</string>
-    <string name="widget_third_line_summary">Tria què mostrar a la tercera fila de text.</string>
     <string name="lyrics_center_horizontally_title">Centra la lletra horitzontalment</string>
     <string name="lyrics_center_horizontally_summary">Alinea cada línia de lletra al centre horitzontal de la pantalla.</string>
     <string name="wifi_only_network_features_title">Fer ús de funcions de xarxa només amb wifi</string>

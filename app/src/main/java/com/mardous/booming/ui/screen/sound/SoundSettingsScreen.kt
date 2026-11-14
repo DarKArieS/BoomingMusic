@@ -1,6 +1,5 @@
 package com.mardous.booming.ui.screen.sound
 
-import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,8 +31,10 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -47,11 +46,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -70,25 +67,29 @@ import com.mardous.booming.ui.component.compose.ShapedText
 import com.mardous.booming.ui.component.compose.TitledCard
 import com.mardous.booming.ui.screen.equalizer.EqualizerViewModel
 import com.mardous.booming.ui.theme.SliderTokens
-import com.mardous.booming.ui.theme.SurfaceColorTokens
+import org.koin.compose.viewmodel.koinViewModel
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SoundSettingsSheet(
-    viewModel: EqualizerViewModel
+    viewModel: EqualizerViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
 
     val outputDevice by viewModel.audioDevice.collectAsState()
-    val volume by viewModel.volumeState.collectAsState()
     val bitPerfectState by viewModel.bitPerfectState.collectAsState()
 
-    val bitPerfect by viewModel.bitPerfectAudio.collectAsState()
-    val audioOffload by viewModel.audioOffload.collectAsState()
-    val audioFloatOutput by viewModel.audioFloatOutput.collectAsState()
-    val skipSilence by viewModel.skipSilence.collectAsState()
+    val soundSettings by viewModel.soundSettings.collectAsState()
+
+    val volume = soundSettings.volume
+    val bitPerfect = soundSettings.bitPerfect
+    val audioOffload = soundSettings.audioOffload
+    val audioFloatOutput = soundSettings.audioFloatOutput
+    val skipSilence = soundSettings.skipSilence
+    val balance = soundSettings.balance
+    val tempo = soundSettings.tempo
 
     val isBitPerfectActuallyActive by remember {
         derivedStateOf { bitPerfect && bitPerfectState.isActive }
@@ -97,61 +98,199 @@ fun SoundSettingsSheet(
         derivedStateOf { audioOffload.not() && isBitPerfectActuallyActive.not() && audioFloatOutput.not() }
     }
 
-    val balance by viewModel.balanceState.collectAsState()
-    val tempo by viewModel.tempoState.collectAsState()
-
+    var currentVolume by remember(volume.currentVolume) { mutableFloatStateOf(volume.currentVolume) }
     var centerBalance by remember(balance.center) { mutableFloatStateOf(balance.center) }
     var tempoSpeed by remember(tempo.speed) { mutableFloatStateOf(tempo.speed) }
     var tempoPitch by remember(tempo.actualPitch) { mutableFloatStateOf(tempo.actualPitch) }
 
-    BottomSheetDialogSurface {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .nestedScroll(rememberNestedScrollInteropConnection())
+    val volumeSliderState = rememberSliderState(currentVolume, trackRange = volume.volumeRange)
+    LaunchedEffect(currentVolume) { volumeSliderState.value = currentVolume }
+
+    val balanceSliderState = rememberSliderState(centerBalance, trackRange = balance.range)
+    LaunchedEffect(centerBalance) { balanceSliderState.value = centerBalance }
+
+    val tempoSpeedSliderState = rememberSliderState(tempoSpeed, trackRange = tempo.speedRange)
+    LaunchedEffect(tempoSpeed) { tempoSpeedSliderState.value = tempoSpeed }
+
+    val tempoPitchSliderState = rememberSliderState(tempoPitch, trackRange = tempo.pitchRange)
+    LaunchedEffect(tempoSpeed, tempoPitch) {
+        tempoPitchSliderState.value = if (tempo.isFixedPitch) tempoSpeed else tempoPitch
+    }
+
+    BottomSheetDialogSurface(
+        title = { Text(text = stringResource(R.string.sound_settings)) }
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            BottomSheetDefaults.DragHandle(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ) {
-                item {
-                    Text(
-                        text = stringResource(R.string.sound_settings),
-                        style = MaterialTheme.typography.headlineSmallEmphasized
-                    )
-                }
+            item {
+                AudioDeviceInfo(
+                    outputDevice = outputDevice,
+                    bitPerfectState = bitPerfectState,
+                    onClick = { viewModel.showOutputDeviceSelector(context) }
+                )
+            }
 
-                item {
-                    AudioDeviceInfo(
-                        outputDevice = outputDevice,
-                        bitPerfectState = bitPerfectState,
-                        onClick = { viewModel.showOutputDeviceSelector(context) }
-                    )
-                }
+            item {
+                TitledCard(
+                    title = stringResource(R.string.volume_label),
+                    titleEndContent = {
+                        IconButton(
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(
+                                    HapticFeedbackType.Confirm
+                                )
+                                viewModel.setVolume(1f)
+                                viewModel.setBalance(0f)
+                            },
+                            modifier = Modifier.size(30.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_restart_alt_24dp),
+                                tint = MaterialTheme.colorScheme.secondary,
+                                contentDescription = stringResource(R.string.reset_balance),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) { cardContentPadding ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(cardContentPadding)
+                    ) {
+                        Slider(
+                            state = volumeSliderState,
+                            onValueChange = {
+                                currentVolume = it
+                                viewModel.setVolume(it, apply = false)
+                            },
+                            onValueChangeFinished = {
+                                hapticFeedback.performHapticFeedback(
+                                    HapticFeedbackType.SegmentFrequentTick
+                                )
+                                viewModel.setVolume(currentVolume)
+                            },
+                            track = { sliderState ->
+                                IconifiedSliderTrack(
+                                    state = sliderState,
+                                    icon = when {
+                                        currentVolume > 0.50f -> painterResource(R.drawable.ic_volume_up_24dp)
+                                        currentVolume > 0.10f -> painterResource(R.drawable.ic_volume_down_24dp)
+                                        else -> painterResource(R.drawable.ic_volume_mute_24dp)
+                                    },
+                                    disabledIcon = painterResource(R.drawable.ic_volume_off_24dp),
+                                    modifier = Modifier.height(SliderTokens.LargeTrackHeight)
+                                )
+                            },
+                            enabled = !bitPerfectState.isActive || !bitPerfectState.isVolumeFixed,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                item {
+                        AnimatedVisibility(visible = enableAudioEffects) {
+                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Slider(
+                                        state = balanceSliderState,
+                                        onValueChange = {
+                                            centerBalance = it
+                                            viewModel.setBalance(it, apply = false)
+                                        },
+                                        onValueChangeFinished = {
+                                            hapticFeedback.performHapticFeedback(
+                                                HapticFeedbackType.SegmentFrequentTick
+                                            )
+                                            viewModel.setBalance(centerBalance)
+                                        },
+                                        track = {
+                                            SliderDefaults.CenteredTrack(
+                                                sliderState = it,
+                                                trackCornerSize = SliderTokens.TrackCornerSize,
+                                                modifier = Modifier.height(SliderTokens.LargeTrackHeight)
+                                            )
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.balance_left),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.SemiBold,
+                                            textAlign = TextAlign.Start,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+
+                                        Text(
+                                            text = stringResource(R.string.balance_right),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.SemiBold,
+                                            textAlign = TextAlign.End,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                AnimatedVisibility(visible = isBitPerfectActuallyActive.not()) {
                     TitledCard(
-                        title = stringResource(R.string.volume_label),
+                        title = stringResource(R.string.speed_and_pitch_label),
                         titleEndContent = {
                             IconButton(
                                 onClick = {
                                     hapticFeedback.performHapticFeedback(
                                         HapticFeedbackType.Confirm
                                     )
-                                    viewModel.setVolume(1f)
-                                    viewModel.setBalance(0f)
+                                    viewModel.setTempo(isFixedPitch = tempo.isFixedPitch.not())
+                                },
+                                modifier = Modifier.size(30.dp)
+                            ) {
+                                Icon(
+                                    painter = if (tempo.isFixedPitch) {
+                                        painterResource(R.drawable.ic_lock_24dp)
+                                    } else {
+                                        painterResource(R.drawable.ic_lock_open_24dp)
+                                    },
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    contentDescription = stringResource(R.string.unlock_pitch_adjustment),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            IconButton(
+                                onClick = {
+                                    hapticFeedback.performHapticFeedback(
+                                        HapticFeedbackType.Confirm
+                                    )
+                                    viewModel.setTempo(speed = 1f, pitch = 1f)
                                 },
                                 modifier = Modifier.size(30.dp)
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_restart_alt_24dp),
                                     tint = MaterialTheme.colorScheme.secondary,
-                                    contentDescription = stringResource(R.string.reset_balance),
+                                    contentDescription = stringResource(R.string.reset_tempo),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -162,356 +301,228 @@ fun SoundSettingsSheet(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.padding(cardContentPadding)
                         ) {
-                            Slider(
-                                value = volume.currentVolume,
-                                valueRange = volume.volumeRange,
-                                onValueChange = {
-                                    viewModel.setVolume(it)
-                                },
-                                onValueChangeFinished = {
-                                    hapticFeedback.performHapticFeedback(
-                                        HapticFeedbackType.SegmentFrequentTick
-                                    )
-                                },
-                                track = { sliderState ->
-                                    IconifiedSliderTrack(
-                                        state = sliderState,
-                                        icon = when {
-                                            volume.volumePercent > 50 -> painterResource(R.drawable.ic_volume_up_24dp)
-                                            volume.volumePercent > 10 -> painterResource(R.drawable.ic_volume_down_24dp)
-                                            else -> painterResource(R.drawable.ic_volume_mute_24dp)
-                                        },
-                                        disabledIcon = painterResource(R.drawable.ic_volume_off_24dp),
-                                        modifier = Modifier.height(SliderTokens.LargeTrackHeight)
-                                    )
-                                },
-                                enabled = !bitPerfectState.isActive || !bitPerfectState.isVolumeFixed,
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
-                            )
-
-                            AnimatedVisibility(visible = enableAudioEffects) {
-                                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Slider(
-                                            value = centerBalance,
-                                            valueRange = balance.range,
-                                            onValueChange = { centerBalance = it },
-                                            onValueChangeFinished = {
-                                                hapticFeedback.performHapticFeedback(
-                                                    HapticFeedbackType.SegmentFrequentTick
-                                                )
-                                                viewModel.setBalance(center = centerBalance)
-                                            },
-                                            track = {
-                                                SliderDefaults.CenteredTrack(
-                                                    sliderState = it,
-                                                    trackCornerSize = SliderTokens.TrackCornerSize,
-                                                    modifier = Modifier.height(SliderTokens.LargeTrackHeight)
-                                                )
-                                            },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-
-                                        Row(
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 8.dp)
-
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.balance_left),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                fontWeight = FontWeight.SemiBold,
-                                                textAlign = TextAlign.Start,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-
-                                            Text(
-                                                text = stringResource(R.string.balance_right),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                fontWeight = FontWeight.SemiBold,
-                                                textAlign = TextAlign.End,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    AnimatedVisibility(visible = isBitPerfectActuallyActive.not()) {
-                        TitledCard(
-                            title = stringResource(R.string.speed_and_pitch_label),
-                            titleEndContent = {
-                                IconButton(
-                                    onClick = {
-                                        hapticFeedback.performHapticFeedback(
-                                            HapticFeedbackType.Confirm
-                                        )
-                                        viewModel.setTempo(isFixedPitch = tempo.isFixedPitch.not())
-                                    },
-                                    modifier = Modifier.size(30.dp)
-                                ) {
-                                    Icon(
-                                        painter = if (tempo.isFixedPitch) {
-                                            painterResource(R.drawable.ic_lock_24dp)
-                                        } else {
-                                            painterResource(R.drawable.ic_lock_open_24dp)
-                                        },
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        contentDescription = stringResource(R.string.unlock_pitch_adjustment),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(
-                                    onClick = {
-                                        hapticFeedback.performHapticFeedback(
-                                            HapticFeedbackType.Confirm
-                                        )
-                                        viewModel.setTempo(speed = 1f, pitch = 1f)
-                                    },
-                                    modifier = Modifier.size(30.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_restart_alt_24dp),
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        contentDescription = stringResource(R.string.reset_tempo),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) { cardContentPadding ->
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.padding(cardContentPadding)
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Slider(
-                                        value = tempoSpeed,
-                                        valueRange = tempo.speedRange,
-                                        onValueChange = { tempoSpeed = it },
-                                        onValueChangeFinished = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.SegmentFrequentTick
-                                            )
-                                            viewModel.setTempo(speed = tempoSpeed)
-                                        },
-                                        track = { sliderState ->
-                                            IconifiedSliderTrack(
-                                                state = sliderState,
-                                                icon = painterResource(R.drawable.ic_speed_24dp),
-                                                modifier = Modifier.height(SliderTokens.LargeTrackHeight)
-                                            )
-                                        },
-                                        modifier = Modifier.weight(1f)
-                                    )
+                                Slider(
+                                    state = tempoSpeedSliderState,
+                                    onValueChange = {
+                                        tempoSpeed = it
+                                        viewModel.setTempo(speed = it, apply = false)
+                                    },
+                                    onValueChangeFinished = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.SegmentFrequentTick
+                                        )
+                                        viewModel.setTempo(speed = tempoSpeed)
+                                    },
+                                    track = { sliderState ->
+                                        IconifiedSliderTrack(
+                                            state = sliderState,
+                                            icon = painterResource(R.drawable.ic_speed_24dp),
+                                            modifier = Modifier.height(SliderTokens.LargeTrackHeight)
+                                        )
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
 
-                                    SoundSettingsValueText(
-                                        text = "%.2fx".format(Locale.US, tempoSpeed),
-                                        modifier = Modifier.widthIn(min = 48.dp)
+                                SoundSettingsValueText(
+                                    text = "%.2fx".format(Locale.US, tempoSpeed),
+                                    modifier = Modifier.widthIn(min = 48.dp)
+                                )
+                            }
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                val sliderValue = if (tempo.isFixedPitch) tempoSpeed else tempoPitch
+                                Slider(
+                                    state = tempoPitchSliderState,
+                                    onValueChange = {
+                                        tempoPitch = it
+                                        viewModel.setTempo(pitch = it, apply = false)
+                                    },
+                                    onValueChangeFinished = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.SegmentFrequentTick
+                                        )
+                                        viewModel.setTempo(pitch = tempoPitch)
+                                    },
+                                    track = { sliderState ->
+                                        IconifiedSliderTrack(
+                                            state = sliderState,
+                                            icon = painterResource(R.drawable.ic_edit_audio_24dp),
+                                            modifier = Modifier.height(SliderTokens.LargeTrackHeight)
+                                        )
+                                    },
+                                    enabled = tempo.isFixedPitch.not(),
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                SoundSettingsValueText(
+                                    text = "%.2fx".format(Locale.US, sliderValue),
+                                    modifier = Modifier.widthIn(min = 48.dp)
+                                )
+                            }
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.ContextClick
+                                        )
+                                        viewModel.setTempo(speed = 0.5f)
+                                    },
+                                    shape = ButtonGroupDefaults.connectedLeadingButtonShape,
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.speed_0_5x),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
 
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
+                                OutlinedButton(
+                                    onClick = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.ContextClick
+                                        )
+                                        viewModel.setTempo(speed = 0.8f)
+                                    },
+                                    shape = ShapeDefaults.Small,
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    val sliderValue = if (tempo.isFixedPitch) tempoSpeed else tempoPitch
-                                    Slider(
-                                        enabled = tempo.isFixedPitch.not(),
-                                        value = sliderValue,
-                                        valueRange = tempo.pitchRange,
-                                        onValueChange = { tempoPitch = it },
-                                        onValueChangeFinished = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.SegmentFrequentTick
-                                            )
-                                            viewModel.setTempo(pitch = tempoPitch)
-                                        },
-                                        track = { sliderState ->
-                                            IconifiedSliderTrack(
-                                                state = sliderState,
-                                                icon = painterResource(R.drawable.ic_edit_audio_24dp),
-                                                modifier = Modifier.height(SliderTokens.LargeTrackHeight)
-                                            )
-                                        },
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                    SoundSettingsValueText(
-                                        text = "%.2fx".format(Locale.US, sliderValue),
-                                        modifier = Modifier.widthIn(min = 48.dp)
+                                    Text(
+                                        text = stringResource(R.string.speed_0_8x),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
 
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-                                    modifier = Modifier.fillMaxWidth()
+                                OutlinedButton(
+                                    onClick = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.ContextClick
+                                        )
+                                        viewModel.setTempo(speed = 1.0f)
+                                    },
+                                    shape = ShapeDefaults.Small,
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.ContextClick
-                                            )
-                                            viewModel.setTempo(speed = 0.5f)
-                                        },
-                                        shape = ButtonGroupDefaults.connectedLeadingButtonShape,
-                                        contentPadding = PaddingValues(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.speed_0_5x),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                    Text(
+                                        text = stringResource(R.string.speed_1_0x),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
 
-                                    OutlinedButton(
-                                        onClick = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.ContextClick
-                                            )
-                                            viewModel.setTempo(speed = 0.8f)
-                                        },
-                                        shape = ShapeDefaults.Small,
-                                        contentPadding = PaddingValues(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.speed_0_8x),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                OutlinedButton(
+                                    onClick = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.ContextClick
                                         )
-                                    }
+                                        viewModel.setTempo(speed = 1.2f)
+                                    },
+                                    shape = ShapeDefaults.Small,
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.speed_1_2x),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
 
-                                    OutlinedButton(
-                                        onClick = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.ContextClick
-                                            )
-                                            viewModel.setTempo(speed = 1.0f)
-                                        },
-                                        shape = ShapeDefaults.Small,
-                                        contentPadding = PaddingValues(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.speed_1_0x),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                OutlinedButton(
+                                    onClick = {
+                                        hapticFeedback.performHapticFeedback(
+                                            HapticFeedbackType.ContextClick
                                         )
-                                    }
-
-                                    OutlinedButton(
-                                        onClick = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.ContextClick
-                                            )
-                                            viewModel.setTempo(speed = 1.2f)
-                                        },
-                                        shape = ShapeDefaults.Small,
-                                        contentPadding = PaddingValues(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.speed_1_2x),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-
-                                    OutlinedButton(
-                                        onClick = {
-                                            hapticFeedback.performHapticFeedback(
-                                                HapticFeedbackType.ContextClick
-                                            )
-                                            viewModel.setTempo(speed = 1.5f)
-                                        },
-                                        shape = ButtonGroupDefaults.connectedTrailingButtonShape,
-                                        contentPadding = PaddingValues(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.speed_1_5x),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                        viewModel.setTempo(speed = 1.5f)
+                                    },
+                                    shape = ButtonGroupDefaults.connectedTrailingButtonShape,
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.speed_1_5x),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                item {
-                    TitledCard(
-                        title = stringResource(R.string.advanced_settings),
-                        modifier = Modifier.fillMaxWidth()
+            item {
+                TitledCard(
+                    title = stringResource(R.string.advanced_settings),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
-                        ) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                LabeledSwitch(
-                                    checked = bitPerfect,
-                                    title = stringResource(R.string.bit_perfect_title),
-                                    description = stringResource(R.string.bit_perfect_description)
-                                ) { checked ->
-                                    viewModel.setEnableBitPerfect(checked)
-                                }
-                            }
+                        /*
+                        Bit-perfect is temporarily disabled due to incompatibilities
+                        experienced by some users. While the necessary fixes are being made,
+                        the feature will remain disabled for users.
 
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             LabeledSwitch(
-                                checked = audioOffload,
-                                title = stringResource(R.string.enable_audio_offload_title),
-                                description = stringResource(R.string.enable_audio_offload_description),
-                                enabled = bitPerfect.not()
+                                checked = bitPerfect,
+                                title = stringResource(R.string.bit_perfect_title),
+                                description = stringResource(R.string.bit_perfect_description)
                             ) { checked ->
-                                viewModel.setEnableAudioOffload(checked)
+                                viewModel.setEnableBitPerfect(checked)
                             }
+                        }
+                         */
 
-                            LabeledSwitch(
-                                checked = audioFloatOutput,
-                                title = stringResource(R.string.enable_audio_float_output_title),
-                                description = stringResource(R.string.enable_audio_float_output_description)
-                            ) { checked ->
-                                viewModel.setEnableAudioFloatOutput(checked)
-                            }
+                        LabeledSwitch(
+                            checked = audioOffload,
+                            title = stringResource(R.string.enable_audio_offload_title),
+                            description = stringResource(R.string.enable_audio_offload_description),
+                            enabled = bitPerfect.not()
+                        ) { checked ->
+                            viewModel.setEnableAudioOffload(checked)
+                        }
 
-                            LabeledSwitch(
-                                checked = skipSilence,
-                                enabled = enableAudioEffects,
-                                title = stringResource(R.string.skip_silence_title),
-                                description = stringResource(R.string.skip_silence_description)
-                            ) { checked ->
-                                viewModel.setEnableSkipSilences(checked)
-                            }
+                        LabeledSwitch(
+                            checked = audioFloatOutput,
+                            title = stringResource(R.string.enable_audio_float_output_title),
+                            description = stringResource(R.string.enable_audio_float_output_description)
+                        ) { checked ->
+                            viewModel.setEnableAudioFloatOutput(checked)
+                        }
+
+                        LabeledSwitch(
+                            checked = skipSilence,
+                            enabled = enableAudioEffects,
+                            title = stringResource(R.string.skip_silence_title),
+                            description = stringResource(R.string.skip_silence_description)
+                        ) { checked ->
+                            viewModel.setEnableSkipSilences(checked)
                         }
                     }
                 }
@@ -530,9 +541,7 @@ private fun AudioDeviceInfo(
     Card(
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = SurfaceColorTokens.SurfaceVariantAlpha
-            )
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -656,8 +665,8 @@ private fun LabeledSwitch(
 @Composable
 private fun SoundSettingsValueText(
     text: String,
-    color: Color = MaterialTheme.colorScheme.secondary,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.secondary
 ) {
     Text(
         text = text,

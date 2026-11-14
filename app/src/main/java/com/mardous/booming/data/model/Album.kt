@@ -17,6 +17,7 @@
 package com.mardous.booming.data.model
 
 import android.net.Uri
+import com.mardous.booming.core.sort.SongSortMode
 import com.mardous.booming.data.SongProvider
 import com.mardous.booming.extensions.media.asAlbumCoverUri
 import java.util.Objects
@@ -26,6 +27,7 @@ data class Album(
     val artistName: String,
     val albumArtistName: String?,
     val year: Int,
+    val firstSongIndex: Int,
     override val songs: List<Song>
 ) : SongProvider {
 
@@ -42,6 +44,9 @@ data class Album(
 
     val dateAdded: Long by lazy { songs.minOf { it.dateAdded } }
 
+    val sortedSongs: List<Song>
+        get() = with(SongSortMode.AlbumSongs) { songs.sorted() }
+
     val isSingle: Boolean
         get() = songCount == 1
 
@@ -49,7 +54,7 @@ data class Album(
         get() = id.asAlbumCoverUri()
 
     fun safeGetFirstSong(): Song {
-        return songs.firstOrNull() ?: Song.emptySong
+        return songs.getOrNull(firstSongIndex) ?: Song.emptySong
     }
 
     override fun equals(other: Any?): Boolean {
@@ -70,6 +75,6 @@ data class Album(
     companion object {
         const val UNKNOWN_ALBUM_DISPLAY_NAME = "Unknown Album"
 
-        val empty = Album(-1, "", "", -1, arrayListOf())
+        val empty = Album(-1, "", "", -1, -1, arrayListOf())
     }
 }
