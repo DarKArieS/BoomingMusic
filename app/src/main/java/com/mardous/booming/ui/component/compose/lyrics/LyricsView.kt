@@ -99,6 +99,7 @@ fun LyricsView(
     isPowerSaveMode: Boolean,
     hasBackgroundEffects: Boolean,
     modifier: Modifier = Modifier,
+    scrollResetKey: Any? = null,
     onSeekTo: (Long) -> Unit
 ) {
     val density = LocalDensity.current
@@ -134,8 +135,25 @@ fun LyricsView(
         }
     }
 
+    // Song or lyrics changed: jump back to the top (skip the first composition,
+    // which restores the current line above)
+    var isInitialComposition by remember { mutableStateOf(true) }
+    LaunchedEffect(scrollResetKey, state) {
+        if (isInitialComposition) {
+            isInitialComposition = false
+            return@LaunchedEffect
+        }
+        listState.scrollToItem(0)
+    }
+
     LaunchedEffect(state.currentLineIndex) {
-        if (state.currentLineIndex >= 0) {
+        if (state.currentLineIndex < 0) {
+            // Before the first line (e.g. a new song started): go back to the top. Runs even if
+            // a previous auto-scroll is still animating, which this cancels.
+            if (!isInDragGesture && listState.firstVisibleItemIndex + listState.firstVisibleItemScrollOffset > 0) {
+                listState.animateScrollToItem(0)
+            }
+        } else {
             if (!isInDragGesture && !isScrollInProgress) {
                 val layoutInfo = listState.layoutInfo
                 val viewportHeight = with(layoutInfo) { viewportEndOffset - viewportStartOffset }

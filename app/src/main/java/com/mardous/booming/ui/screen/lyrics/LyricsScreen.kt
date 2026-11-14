@@ -99,6 +99,22 @@ private fun rememberLyricsViewState(lyrics: SyncedLyrics): LyricsViewState {
     return remember(lyrics) { LyricsViewState(lyrics) }
 }
 
+/**
+ * Right after a song change the reported progress still belongs to the previous song until the
+ * player emits a fresh value; report 0 meanwhile so the lyrics don't jump to a stale line.
+ * Must be called from a composable that survives song changes.
+ */
+@Composable
+private fun rememberFreshProgress(id: Long, playerProgress: Long): Long {
+    val initialId = remember { id }
+    val staleProgress = remember(id) { if (id == initialId) null else playerProgress }
+    val hasFreshProgress = remember(id) { mutableStateOf(staleProgress == null) }
+    if (!hasFreshProgress.value && playerProgress != staleProgress) {
+        hasFreshProgress.value = true
+    }
+    return if (hasFreshProgress.value) playerProgress else 0L
+}
+
 private const val FORWARD_SEEK_THRESHOLD_MS = 300L
 private const val BACKWARD_SEEK_THRESHOLD_MS = 100L
 
@@ -374,6 +390,13 @@ private fun LyricsSurface(
             else -> colorScheme.secondary
         }
     }
+
+    // Collected here (outside the uiState branches, which are recreated on every song change)
+    // so the stale-progress tracking survives the switch
+    val song by playerViewModel.currentSongFlow.collectAsStateWithLifecycle()
+    val rawPlayerProgress by playerViewModel.progressFlow.collectAsStateWithLifecycle()
+    val playerProgress = rememberFreshProgress(song.id, rawPlayerProgress)
+
     Box(modifier) {
         when (uiState) {
             is LyricsUiState.Empty -> {
@@ -408,7 +431,6 @@ private fun LyricsSurface(
             is LyricsUiState.Plain -> {
                 val scrollState = rememberScrollState()
 
-                val song by playerViewModel.currentSongFlow.collectAsStateWithLifecycle()
                 LaunchedEffect(song) {
                     scrollState.scrollTo(0)
                 }
@@ -437,8 +459,6 @@ private fun LyricsSurface(
             is LyricsUiState.Synced -> {
                 val lyricsViewState = rememberLyricsViewState(uiState.syncedLyrics)
 
-                val song by playerViewModel.currentSongFlow.collectAsStateWithLifecycle()
-                val playerProgress by playerViewModel.progressFlow.collectAsStateWithLifecycle()
                 val playbackSpeed by playerViewModel.playbackSpeed.collectAsStateWithLifecycle()
 
                 val smoothProgress = rememberSmoothPlaybackPosition(
@@ -464,7 +484,9 @@ private fun LyricsSurface(
                     contentColor = contentColor,
                     isPowerSaveMode = isPowerSaveMode,
                     hasBackgroundEffects = hasBackgroundEffects,
-                    onSeekTo = onSeekTo
+                    scrollResetKey = song.id,
+                    // Tapping a line only seeks while playing
+                    onSeekTo = { position -> if (isPlaying) onSeekTo(position) }
                 )
             }
         }
