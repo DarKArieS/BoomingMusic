@@ -49,7 +49,7 @@ class LibraryProvider(private val repository: Repository) {
             // We resolve MediaItems from the repository based on their IDs
             val (songs, missingMediaItems) = (mediaItems - resolvedMediaItems.toSet())
                 .let { invalidItems ->
-                    repository.songsByMediaItems(invalidItems, ignoreBlacklist = false)
+                    repository.songsByMediaItems(invalidItems, ignoreBlacklist = true)
                 }
 
             resolvedMediaItems.addAll(songs.toPlayableMediaItems())
